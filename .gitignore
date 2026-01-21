@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+build/
+out/
+.next/
+.turbo/
+
+# env
+.env
+.env.*.local
+
+# logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+
+# data (raw snapshots can be huge)
+data/raw/**
+
+# keep normalized JSON tracked
+!data/normalized/**

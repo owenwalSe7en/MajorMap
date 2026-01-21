@@ -1,0 +1,8 @@
+{
+  "name": "@major-map/planner",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "echo \"add eslint later\"",
+    "test": "echo \"add tests later\""
+  }
+}
