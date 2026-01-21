@@ -23,6 +23,7 @@ yarn-error.log*
 
 # data (raw snapshots can be huge)
 data/raw/**
+!data/raw/fixtures/**
 
 # keep normalized JSON tracked
 !data/normalized/**
