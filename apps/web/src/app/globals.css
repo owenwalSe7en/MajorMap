@@ -10,7 +10,7 @@
   --card-foreground: oklch(0.12 0.01 60);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.12 0.01 60);
-  --primary: oklch(0.45 0.2 25); /* Utah crimson in oklch */
+  --primary: oklch(0.45 0.2 25); /* Utah crimson */
   --primary-foreground: oklch(0.985 0.002 90);
   --secondary: oklch(0.96 0.005 90);
   --secondary-foreground: oklch(0.12 0.01 60);
@@ -18,11 +18,32 @@
   --muted-foreground: oklch(0.45 0.02 60);
   --accent: oklch(0.92 0.01 90);
   --accent-foreground: oklch(0.12 0.01 60);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.55 0.22 5); /* Distinct orange-red, away from crimson hue 25 */
   --border: oklch(0.88 0.01 90);
   --input: oklch(0.92 0.01 90);
   --ring: oklch(0.45 0.2 25);
   --radius: 0.5rem;
+}
+
+.dark {
+  --background: oklch(0.12 0.005 60);
+  --foreground: oklch(0.93 0.005 90);
+  --card: oklch(0.16 0.005 60);
+  --card-foreground: oklch(0.93 0.005 90);
+  --popover: oklch(0.16 0.005 60);
+  --popover-foreground: oklch(0.93 0.005 90);
+  --primary: oklch(0.55 0.2 25);
+  --primary-foreground: oklch(0.12 0.005 60);
+  --secondary: oklch(0.2 0.005 60);
+  --secondary-foreground: oklch(0.93 0.005 90);
+  --muted: oklch(0.22 0.005 60);
+  --muted-foreground: oklch(0.6 0.02 60);
+  --accent: oklch(0.25 0.01 60);
+  --accent-foreground: oklch(0.93 0.005 90);
+  --destructive: oklch(0.55 0.22 5);
+  --border: oklch(0.25 0.01 60);
+  --input: oklch(0.22 0.01 60);
+  --ring: oklch(0.55 0.2 25);
 }
 
 @theme inline {

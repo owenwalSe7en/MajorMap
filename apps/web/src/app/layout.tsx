@@ -27,38 +27,48 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl">
           <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-            <Link href="/" className="font-display text-lg tracking-tight">
+            <Link href="/" className="font-display text-lg tracking-tight hover:opacity-80 transition-opacity">
               Major Map
             </Link>
-            <nav className="flex items-center gap-6">
+            <nav className="flex items-center gap-1">
               <Link
                 href="/programs"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               >
                 Programs
               </Link>
               <Link
                 href="/courses"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               >
                 Courses
               </Link>
               <Link
                 href="/plans"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               >
                 Plan
               </Link>
               <Link
                 href="/compare"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               >
                 Compare
               </Link>
-              <AccountMenu />
+              <div className="ml-2 pl-3 border-l border-border">
+                <AccountMenu />
+              </div>
             </nav>
           </div>
         </header>
