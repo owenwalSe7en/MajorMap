@@ -3,12 +3,25 @@ import Link from "next/link";
 import { AccountMenu } from "@/components/account-menu";
 import "./globals.css";
 
-export const metadata = {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: {
-    default: "Major Map",
-    template: "%s | Major Map",
+    default: "MajorMap — Free Degree Planner",
+    template: "%s | MajorMap",
   },
-  description: "Plan your degree, your way. Browse programs, plan semesters, and track progress.",
+  description: "Plan your degree, your way. Browse programs, plan semesters, track progress, and import transcripts — free for University of Utah students.",
+  metadataBase: new URL("https://majormap.app"),
+  openGraph: {
+    type: "website",
+    siteName: "MajorMap",
+    title: "MajorMap — Free Degree Planner",
+    description: "Plan your degree, your way. Browse programs, plan semesters, track progress.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -38,6 +51,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Plan
+              </Link>
+              <Link
+                href="/compare"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Compare
               </Link>
               <AccountMenu />
             </nav>
