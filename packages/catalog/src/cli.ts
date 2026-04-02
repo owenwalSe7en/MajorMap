@@ -1,10 +1,15 @@
 #!/usr/bin/env node
-import { ping } from "./index.js";
+export {};
 
 const command = process.argv[2];
 
-if (command === "ping" || command === "--ping") {
-  console.log(ping());
+if (command === "fetch") {
+  const { fetchAll } = await import("./sources/coursedog.js");
+  await fetchAll();
+} else if (command === "seed") {
+  const { seed } = await import("./seed.js");
+  await seed();
 } else {
-  console.log(ping());
+  console.log("Usage: major-map-catalog <fetch|seed>");
+  process.exit(1);
 }
