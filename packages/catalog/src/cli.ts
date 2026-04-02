@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 export {};
 
+import { config } from "dotenv";
+import path from "node:path";
+
+// Load .env from repo root (two levels up from packages/catalog/)
+config({ path: path.resolve(import.meta.dirname, "../../..", ".env") });
+
 function requireEnvVars(vars: string[]): void {
   const missing = vars.filter((v) => !process.env[v]);
   if (missing.length > 0) {
