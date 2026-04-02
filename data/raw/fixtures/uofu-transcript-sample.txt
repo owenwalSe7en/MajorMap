@@ -1,0 +1,53 @@
+University of Utah
+Unofficial Academic Transcript
+
+Student: Jane Doe
+Student ID: u1234567
+
+------- Fall Semester 2022 -------
+
+CS  1400  Introduction to Computer Science  3.00  A
+MATH  1210  Calculus I  4.00  A-
+ENGL  1010  Introduction to Writing  3.00  B+
+BIOL  1010  General Biology  3.00  B
+
+Term GPA: 3.72   Term Credits: 13.00
+
+------- Spring Semester 2023 -------
+
+CS  1410  Object-Oriented Programming  3.00  A
+MATH  1220  Calculus II  4.00  B+
+PHYS  2210  Physics for Scientists I  4.00  B
+PHIL  1000  Introduction to Philosophy  3.00  CR
+
+Term GPA: 3.45   Term Credits: 14.00
+
+------- Fall Semester 2023 -------
+
+CS  2100  Discrete Structures  3.00  A-
+CS  2420  Introduction to Algorithms  3.00  A
+MATH  2210  Calculus III  3.00  C+
+ECON  1010  Economics as a Social Science  3.00  W
+
+Term GPA: 3.52   Term Credits: 9.00
+
+------- Spring Semester 2024 -------
+
+CS  3500  Software Practice  3.00  A
+CS  3810  Computer Organization  3.00  B+
+MATH  2270  Linear Algebra  3.00  B
+CS  3100  Models of Computation  3.00  I
+
+Term GPA: 3.33   Term Credits: 9.00
+
+------- Fall Semester 2024 -------
+
+CS  3505  Software Practice II  3.00  A
+CS  4400  Computer Systems  3.00  B-
+ECON  1010  Economics as a Social Science  3.00  B
+CS  4150  Algorithms  3.00  E
+
+Term GPA: 2.89   Term Credits: 12.00
+
+Cumulative GPA: 3.31
+Total Credits Earned: 57.00
