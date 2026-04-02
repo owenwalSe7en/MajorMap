@@ -32,6 +32,8 @@ export default defineConfig({
         resolve: {
           alias: {
             "@": path.resolve(__dirname, "apps/web/src"),
+            "@major-map/planner": path.resolve(__dirname, "packages/planner/src/index.ts"),
+            "@major-map/shared": path.resolve(__dirname, "packages/shared/src/index.ts"),
           },
         },
         test: {
