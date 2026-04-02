@@ -102,13 +102,13 @@ export async function seed(): Promise<void> {
   );
   console.log(`Upserted ${courseCount} courses`);
 
-  // 4. Pass 2: Normalize and upsert prerequisites
+  // 4. Pass 2: Normalize prereqs using allCourses (pre-dedup) for correct 1:1 mapping
   const allPrereqs: NormalizedPrereq[] = [];
   const allWarnings: string[] = [];
 
   for (let i = 0; i < rawCourses.length; i++) {
     const raw = rawCourses[i];
-    const courseId = courses[i].id;
+    const courseId = allCourses[i].id; // use allCourses (same length as rawCourses)
     const { prereqs, warnings } = normalizePrerequisites(raw, courseId, courseGroupIdMap);
     allPrereqs.push(...prereqs);
     allWarnings.push(...warnings);
