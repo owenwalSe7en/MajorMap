@@ -27,10 +27,12 @@ export default async function CoursesPage({ searchParams }: Props) {
     .order("number");
 
   if (params.q) {
-    query = query.ilike("title", `%${params.q}%`);
+    const sanitized = params.q.slice(0, 100).replace(/[%_]/g, "");
+    query = query.ilike("title", `%${sanitized}%`);
   }
   if (params.dept) {
-    query = query.eq("subject_code", params.dept);
+    const dept = params.dept.slice(0, 6).toUpperCase().replace(/[^A-Z ]/g, "");
+    query = query.eq("subject_code", dept);
   }
 
   const { data: courses } = await query.limit(50);

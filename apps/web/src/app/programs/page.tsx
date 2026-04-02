@@ -24,7 +24,8 @@ export default async function ProgramsPage({ searchParams }: Props) {
     .order("name");
 
   if (params.q) {
-    query = query.ilike("name", `%${params.q}%`);
+    const sanitized = params.q.slice(0, 100).replace(/[%_]/g, "");
+    query = query.ilike("name", `%${sanitized}%`);
   }
   if (params.type) {
     query = query.eq("degree_type", params.type);

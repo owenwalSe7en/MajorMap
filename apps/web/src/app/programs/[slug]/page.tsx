@@ -98,11 +98,9 @@ export default async function ProgramDetailPage({ params }: Props) {
           )}
         </Box>
         {program.description && (
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            dangerouslySetInnerHTML={{ __html: program.description }}
-          />
+          <Typography variant="body1" color="text.secondary">
+            {program.description.replace(/<[^>]*>/g, "")}
+          </Typography>
         )}
       </Box>
 
