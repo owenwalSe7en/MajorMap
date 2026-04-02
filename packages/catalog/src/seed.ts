@@ -79,11 +79,20 @@ export async function seed(): Promise<void> {
   const deptCount = await upsertBatch(supabase, "departments", departments, "university_id,code");
   console.log(`Upserted ${deptCount} departments`);
 
-  // 3. Pass 1: Normalize all courses + build courseGroupId map
-  const courses: NormalizedCourse[] = rawCourses.map((raw) =>
+  // 3. Pass 1: Normalize all courses, deduplicate by natural key, build courseGroupId map
+  const allCourses: NormalizedCourse[] = rawCourses.map((raw) =>
     normalizeCourse(raw, UNIVERSITY_SLUG, universityId),
   );
-  const courseGroupIdMap = buildCourseGroupIdMap(courses);
+
+  // Deduplicate: keep last version per (subject_code, number) — Coursedog returns multiple versions
+  const courseMap = new Map<string, NormalizedCourse>();
+  for (const c of allCourses) {
+    courseMap.set(`${c.subject_code}:${c.number}`, c);
+  }
+  const courses = [...courseMap.values()];
+  console.log(`Normalized ${allCourses.length} → ${courses.length} unique courses`);
+
+  const courseGroupIdMap = buildCourseGroupIdMap(allCourses); // use ALL for prereq lookup
 
   const courseCount = await upsertBatch(
     supabase,
@@ -106,19 +115,38 @@ export async function seed(): Promise<void> {
   }
 
   if (allPrereqs.length > 0) {
+    // Deduplicate prereqs by composite key and filter out FK violations
+    const validCourseIds = new Set(courses.map((c) => c.id));
+    const prereqMap = new Map<string, NormalizedPrereq>();
+    for (const p of allPrereqs) {
+      // Skip prereqs referencing courses that failed to insert
+      if (!validCourseIds.has(p.course_id)) continue;
+      if (p.prerequisite_course_id && !validCourseIds.has(p.prerequisite_course_id)) continue;
+
+      const key = `${p.course_id}:${p.prerequisite_course_id ?? "null"}:${p.group_id}`;
+      prereqMap.set(key, p);
+    }
+    const dedupedPrereqs = [...prereqMap.values()];
+    console.log(`Filtered ${allPrereqs.length} → ${dedupedPrereqs.length} valid unique prereqs`);
+
     const prereqCount = await upsertBatch(
       supabase,
       "course_prerequisites",
-      allPrereqs,
+      dedupedPrereqs,
       "course_id,prerequisite_course_id,group_id",
     );
     console.log(`Upserted ${prereqCount} prerequisite rules`);
   }
 
-  // 5. Normalize and upsert programs
-  const programs: NormalizedProgram[] = rawPrograms.map((raw) =>
+  // 5. Normalize and upsert programs (deduplicate by slug)
+  const allPrograms: NormalizedProgram[] = rawPrograms.map((raw) =>
     normalizeProgram(raw, UNIVERSITY_SLUG, universityId),
   );
+  const programMap = new Map<string, NormalizedProgram>();
+  for (const p of allPrograms) programMap.set(p.slug, p);
+  const programs = [...programMap.values()];
+  console.log(`Normalized ${allPrograms.length} → ${programs.length} unique programs`);
+
   const programCount = await upsertBatch(supabase, "programs", programs, "university_id,slug");
   console.log(`Upserted ${programCount} programs`);
 

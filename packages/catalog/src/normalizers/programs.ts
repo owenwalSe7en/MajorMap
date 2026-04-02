@@ -40,7 +40,7 @@ export function normalizeProgram(
     name,
     degree_type: degreeType,
     description: raw.catalogFullDescription || "",
-    total_credits: raw.programLengthValue,
+    total_credits: raw.programLengthValue != null ? Math.round(raw.programLengthValue) : null,
     source_url: null,
     raw_data: raw as unknown as Record<string, unknown>,
   };
