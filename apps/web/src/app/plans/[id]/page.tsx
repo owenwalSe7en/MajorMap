@@ -3,8 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { AuthenticatedPlanner } from "./authenticated-planner";
 import { CreditSidebar } from "./credit-sidebar";
 import { ImportTranscriptButton } from "./import-transcript-button";
-import { validateSemesters, creditSummary } from "@major-map/planner";
-import type { PrereqRule, PrereqWarning, PlanSemester, CreditSummary } from "@major-map/planner";
+import { SuggestionsPanel } from "./suggestions-panel";
+import { validateSemesters, creditSummary, suggestCourses } from "@major-map/planner";
+import type { PrereqRule, PrereqWarning, PlanSemester, CreditSummary, RequirementItem, SuggestedCourse } from "@major-map/planner";
 
 export const metadata = { title: "My Plan" };
 
@@ -93,13 +94,16 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
     .map((r) => r.prerequisite_course_id)
     .filter((id): id is string => id !== null && !allCourseIds.includes(id));
 
-  // Parallelize independent queries: prereq course codes + program data
-  const [prereqCoursesResult, programResult] = await Promise.all([
+  // Parallelize independent queries: prereq course codes + program data + requirements
+  const [prereqCoursesResult, programResult, reqSetResult] = await Promise.all([
     prereqCourseIds.length > 0
       ? supabase.from("courses").select("id, code").in("id", prereqCourseIds)
       : Promise.resolve({ data: [] as Array<{ id: string; code: string }> }),
     plan.program_id
       ? supabase.from("programs").select("total_credits").eq("id", plan.program_id).single()
+      : Promise.resolve({ data: null }),
+    plan.program_id
+      ? supabase.from("requirement_sets").select("id").eq("program_id", plan.program_id).eq("is_active", true).single()
       : Promise.resolve({ data: null }),
   ]);
 
@@ -135,6 +139,70 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
     0,
   );
 
+  // --- Sprint 6: Course suggestions ---
+  let suggestions: SuggestedCourse[] = [];
+  const activeReqSet = reqSetResult.data as { id: string } | null;
+
+  if (activeReqSet) {
+    // Fetch requirement items + all prereq rules for candidates + candidate course details
+    const { data: reqItems } = await supabase
+      .from("requirement_items")
+      .select("id, course_id, label, parent_id")
+      .eq("requirement_set_id", activeReqSet.id);
+
+    if (reqItems && reqItems.length > 0) {
+      // Build parent label map for categories
+      const itemsById = new Map((reqItems as Array<{ id: string; course_id: string | null; label: string; parent_id: string | null }>).map((r) => [r.id, r]));
+      const requirementItems: RequirementItem[] = (reqItems as Array<{ id: string; course_id: string | null; label: string; parent_id: string | null }>).map((r) => ({
+        id: r.id,
+        courseId: r.course_id,
+        label: r.label,
+        parentId: r.parent_id,
+        parentLabel: r.parent_id ? (itemsById.get(r.parent_id)?.label ?? "Requirements") : "Requirements",
+      }));
+
+      // Get candidate course IDs (required but not in plan)
+      const planCourseIdSet = new Set(allCourseIds);
+      const candidateCourseIds = requirementItems
+        .filter((ri) => ri.courseId !== null && !planCourseIdSet.has(ri.courseId))
+        .map((ri) => ri.courseId!);
+
+      if (candidateCourseIds.length > 0) {
+        // Fetch candidate course details + their prereq rules in parallel
+        const [candidateCoursesResult, candidatePrereqsResult] = await Promise.all([
+          supabase.from("courses").select("id, code, title, credits").in("id", candidateCourseIds),
+          supabase.from("course_prerequisites")
+            .select("course_id, prerequisite_course_id, group_id, group_operator, is_corequisite")
+            .in("course_id", candidateCourseIds),
+        ]);
+
+        const candidateCourses = (candidateCoursesResult.data ?? []) as Array<{ id: string; code: string; title: string; credits: number }>;
+        const candidatePrereqs: PrereqRule[] = (candidatePrereqsResult.data ?? []).map((r: { course_id: string; prerequisite_course_id: string | null; group_id: string; group_operator: string; is_corequisite: boolean }) => ({
+          courseId: r.course_id,
+          prerequisiteCourseId: r.prerequisite_course_id,
+          groupId: r.group_id,
+          groupOperator: r.group_operator as "AND" | "OR",
+          isCorequisite: r.is_corequisite,
+        }));
+
+        // Combine all prereq rules (plan courses + candidates)
+        const allPrereqRules = [...prereqRules, ...candidatePrereqs];
+
+        const planCoursesForSuggestions = allCourseIds.map((courseId) => {
+          const pc = (courses ?? []).find((c) => c.course_id === courseId);
+          return { courseId, status: (pc as { status?: string })?.status };
+        });
+
+        suggestions = suggestCourses(
+          planCoursesForSuggestions,
+          requirementItems,
+          allPrereqRules,
+          candidateCourses,
+        );
+      }
+    }
+  }
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center justify-between">
@@ -145,8 +213,14 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
         <div className="flex-1 min-w-0">
           <AuthenticatedPlanner planId={id} initialSemesters={semesterData} warnings={warnings} />
         </div>
-        <aside className="order-first lg:order-none lg:w-64 shrink-0">
+        <aside className="order-first lg:order-none lg:w-72 shrink-0 space-y-4">
           <CreditSidebar credits={credits} totalPlanned={totalPlanned} />
+          <SuggestionsPanel
+            suggestions={suggestions}
+            semesters={semesterData}
+            planId={id}
+            hasProgram={!!plan.program_id}
+          />
         </aside>
       </div>
     </main>
