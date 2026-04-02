@@ -11,7 +11,15 @@ export interface SemesterData {
   id: string;
   term: string;
   year: number;
-  courses: Array<{ id: string; courseId: string; code: string; title: string; credits: number }>;
+  courses: Array<{
+    id: string;
+    courseId: string;
+    code: string;
+    title: string;
+    credits: number;
+    status?: "planned" | "completed";
+    grade?: string;
+  }>;
 }
 
 interface PlannerGridProps {
