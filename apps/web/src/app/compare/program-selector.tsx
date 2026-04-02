@@ -18,7 +18,7 @@ interface ProgramSelectorProps {
   excludeId?: string | null;
 }
 
-export function ProgramSelector({ label, selectedId, onSelect, excludeId }: ProgramSelectorProps) {
+export function ProgramSelector({ label, onSelect, excludeId }: ProgramSelectorProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Program[]>([]);
   const [selectedName, setSelectedName] = useState<string | null>(null);

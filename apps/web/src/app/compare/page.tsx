@@ -33,7 +33,6 @@ export default function ComparePage() {
   const [loading, setLoading] = useState(false);
   const [overlap, setOverlap] = useState<OverlapResult | null>(null);
   const [courseMap, setCourseMap] = useState<Map<string, CourseInfo>>(new Map());
-  const [programAReqs, setProgramAReqs] = useState<ProgramRequirements | null>(null);
   const [programBReqs, setProgramBReqs] = useState<ProgramRequirements | null>(null);
 
   // What-if state
@@ -104,7 +103,6 @@ export default function ComparePage() {
 
     const result = computeOverlap(progA, progB, creditMap);
 
-    setProgramAReqs(progA);
     setProgramBReqs(progB);
     setOverlap(result);
     setCourseMap(allCourses);
