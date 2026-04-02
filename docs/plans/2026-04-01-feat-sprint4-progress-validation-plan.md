@@ -3,145 +3,158 @@ title: "Sprint 4: Progress Tracking and Validation"
 type: feat
 date: 2026-04-01
 revised: true
+deepened: 2026-04-02
 review-feedback: Simplicity reviewer — cut progress dashboard, simplify credit summary
+research-grounded: true
 dependencies: Sprint 3 (working planner with courses in semesters)
 ---
+
+## Enhancement Summary
+
+**Deepened on:** 2026-04-02
+**Sections enhanced:** 6 (types, prerequisiteCheck, validateSemesters, creditSummary, prereq badges, credit sidebar)
+**Research sources:** repo-research-analyst, learnings-researcher, spec-flow-analyzer, architecture-strategist, kieran-typescript-reviewer, code-simplicity-reviewer, performance-oracle, security-sentinel, pattern-recognition-specialist, Context7 (Vitest, Next.js, Supabase docs)
+
+### Key Improvements from Research
+
+1. **Credits column bug discovered and addressed** — DB has `credits_min`/`credits_max` but no `credits`. Existing Sprint 3 code silently gets `null`. Generated column migration added to pre-sprint fix.
+2. **Corequisite handling clarified** — `validateSemesters` builds two sets per semester: prior-only for regular prereqs and prior+current for corequisites. `prerequisiteCheck` partitions rules internally.
+3. **`TERM_ORDER` duplication flagged** — `planner-grid.tsx:8` duplicates the shared constant. Sprint 4 removes it.
+4. **Guest mode prereq data loading specified** — New client-side `fetchPrereqRules()` function needed. `course_prerequisites` already has anon read RLS.
+5. **`totalRequired` null handling defined** — Sidebar shows "X credits planned" only when no program is associated (default state for all current plans).
+6. **PrereqWarning.missing enriched** — Includes both `courseId` and `courseCode` to avoid UUID-to-code mapping in UI layer.
+
+### Critical Edge Cases from SpecFlow Analysis
+
+- Freetext-only prereqs (`prerequisiteCourseId === null` for all rules) → treated as met
+- Regular prereq in same semester → warning (must be prior semester)
+- Corequisite in same semester → no warning
+- Over-planned credits (130/120) → `remaining = 0`, not negative
+- Plans with no program → credit sidebar shows planned only, no progress bar
+- Prereq courses not in plan → secondary lookup needed for course codes in tooltip
 
 # Sprint 4: Progress Tracking and Validation
 
 ## Review Feedback Applied
 
 - **Cut entire Progress Dashboard** (`/progress/[id]` page) — `computeProgress` requires reliable `requirement_items` tree data which may be incomplete from Coursedog seeding. Defer until requirement tree data quality is validated. Removes 7 files (~200-250 LOC).
-- **Cut `computeProgress` function** — the recursive tree-walking algorithm with "greedy claim set" is premature. Credit summary sidebar already answers "how far along am I?" with simple numbers.
+- **Cut `computeProgress` function** — the recursive tree-walking algorithm with "greedy claim set" is premature.
 - **Cut `RequirementNode`, `GroupProgress`, `ProgressResult` types** — dead without `computeProgress`.
 - **Cut `buildRequirementTree` utility** — only consumer was the removed progress page.
 - **Merged `semesterValidate` into `prerequisite-check.ts`** — 5 lines of loop logic, not worth its own file.
 - **Simplified `creditSummary`** — no past/future split (no completion tracking yet). Just `planned` + `remaining`. Drop `currentTerm` parameter.
-- **Trimmed `PrereqRule` type** — only fields `prerequisiteCheck` actually reads (5 fields, not 9). `condition`, `minGrade`, `descriptionOverride` unused in Sprint 4.
-- **Reuse Sprint 2/3 types** — don't create parallel `PlanCourse`/`PlanSemester`/`DegreePlan` types. Import from shared.
+- **Trimmed `PrereqRule` type** — only fields `prerequisiteCheck` actually reads (5 fields, not 9).
+- **Reuse Sprint 2/3 types** — don't create parallel `PlanCourse`/`PlanSemester`/`DegreePlan` types. Import from shared or use existing `SemesterData`.
 - **Flat array for warnings** — not nested `Map<Map>`. Components filter with `.filter()`.
 - **~35-40% LOC reduction**, 7 files removed, 2 merged
 
 **Revised Sprint 4 scope:** Two pure functions (`prerequisiteCheck`, `creditSummary`), prereq warning badges on planner, credit sidebar. No progress dashboard page.
 
+---
+
 ## Overview
 
-Add progress tracking and prerequisite validation to MajorMap. The `@major-map/planner` package (currently a stub) gets real pure-function logic that computes degree progress, validates prerequisites, and summarizes credits. The web app gets a progress dashboard page and visual indicators (prereq warning badges, credit summary sidebar) on the planner page.
+Add prerequisite validation and credit tracking to MajorMap. The `@major-map/planner` package (currently a stub) gets real pure-function logic that validates prerequisites and summarizes credits. The web app gets prereq warning badges on course cards and a credit summary sidebar on the planner page.
 
-All computation lives in `@major-map/planner` as pure functions with no database or framework dependency. The same code runs identically in the browser (guest mode, operating on in-memory data) and on the server (API routes, operating on fetched data).
+All computation lives in `@major-map/planner` as pure functions with no database or framework dependency. The same code runs identically in the browser (guest mode) and on the server (authenticated mode).
 
 ## Dependencies
 
-- **Sprint 3 complete:** Working planner UI with drag-and-drop courses into semesters, semester CRUD, plan persistence.
-- **Database tables from Sprint 1:** `courses`, `course_prerequisites`, `requirement_sets`, `requirement_items`.
-- **Shared types from Sprint 2/3:** Plan, Semester, and Course types used by the planner page.
+- **Sprint 3 complete:** Working planner UI with courses in semesters, semester CRUD, plan persistence.
+- **Database tables from Sprint 1:** `courses`, `course_prerequisites`.
+- **Existing types/constants from shared:** `TERM_ORDER`, `Term`, `TERMS`.
+
+## Pre-Sprint Fix: `credits` Column Bug
+
+**Bug:** The `courses` table has `credits_min` and `credits_max` (both `numeric(3,1)`) but no single `credits` column. Sprint 3 code queries `courses.credits` in three places and gets `null`:
+
+- `apps/web/src/app/plans/[id]/page.tsx:42` — `courses(code, title, credits)`
+- `apps/web/src/app/plans/[id]/add-course.tsx` — `select("id, code, title, credits")`
+- `apps/web/src/lib/course-lookup.ts` — `select("id, code, title, credits")`
+
+**Fix:** Add a generated column to the `courses` table:
+
+```sql
+-- supabase/migrations/2026MMDD_add_credits_column.sql
+ALTER TABLE courses ADD COLUMN credits numeric(3,1)
+  GENERATED ALWAYS AS (credits_min) STORED;
+```
+
+Using `credits_min` as the conservative default. Variable-credit courses (where `credits_min != credits_max`) will show the minimum. A per-plan-course credit override can be added in a future sprint if needed.
+
+This migration must run before Sprint 4 work begins so `creditSummary` operates on real data.
 
 ---
 
 ## Technical Approach
 
-### Phase 1: Planner Package -- Core Computation Engine
+### Phase 1: Planner Package — Core Computation Engine
 
-Replace the current stub (`helloPlanner`) with four pure functions. Each takes plain data in and returns plain results. No side effects, no DB calls, no React imports.
+Replace the current stub (`helloPlanner`) with two pure functions plus a thin validation loop. Each takes plain data in and returns plain results. No side effects, no DB calls, no React imports.
 
-#### 1.1 Input Types
+#### 1.1 Input/Output Types
 
-Define the data shapes the functions accept. These are lightweight interfaces derived from what the DB provides, not tied to Supabase types directly.
+Define minimal types the functions need. Reuse `TERM_ORDER` from `@major-map/shared` for semester ordering.
 
 ```typescript
 // packages/planner/src/types.ts
 
-/** A course placed in a plan semester. */
-export interface PlanCourse {
-  courseId: string;
-  subjectCode: string;
-  number: string;
-  title: string;
-  credits: number;
-}
-
-/** A semester in a degree plan. */
-export interface PlanSemester {
-  id: string;
-  term: string; // "Fall", "Spring", "Summer"
-  year: number;
-  courses: PlanCourse[];
-}
-
-/** A full degree plan. */
-export interface DegreePlan {
-  id: string;
-  programId: string;
-  semesters: PlanSemester[];
-}
-
-/** A prerequisite rule for a course. */
+/** A prerequisite rule for a course (trimmed to 5 fields used by prerequisiteCheck). */
 export interface PrereqRule {
   courseId: string;
   prerequisiteCourseId: string | null;
   groupId: string;
   groupOperator: "AND" | "OR";
-  condition: string;
-  minGrade?: string;
   isCorequisite: boolean;
-  descriptionOverride?: string;
 }
 
-/** A node in the requirement tree. */
-export interface RequirementNode {
-  id: string;
-  parentId: string | null;
-  label: string;
-  type: "group" | "course" | "elective_slot" | "freetext";
-  courseId: string | null;
-  creditsRequired: number | null;
-  coursesRequired: number | null;
-  children: RequirementNode[];
-}
-
-/** Result of a prerequisite check. */
+/** Result of a prerequisite check for a single course. */
 export interface PrereqResult {
   met: boolean;
-  missing: string[]; // course codes like "CS 2420"
+  missing: string[]; // course IDs (UUIDs) of unmet prerequisites
 }
 
-/** Per-group progress within a requirement tree. */
-export interface GroupProgress {
-  nodeId: string;
-  label: string;
-  required: number; // credits or course count depending on node
-  completed: number;
-  percentage: number; // 0-100, rounded to integer
-  children: GroupProgress[];
-}
-
-/** Overall progress result. */
-export interface ProgressResult {
-  overall: number; // 0-100
-  groups: GroupProgress[];
-}
-
-/** A prerequisite warning for a semester. */
+/** A prerequisite warning for display. */
 export interface PrereqWarning {
   courseId: string;
-  courseCode: string;
-  missing: string[];
+  courseCode: string; // human-readable, e.g. "CS 2420"
+  missing: Array<{ courseId: string; courseCode: string }>; // missing prereqs with display info
+}
+
+/** A course in a plan semester (matches existing SemesterData.courses shape). */
+export interface PlanCourse {
+  courseId: string;
+  code: string;
+  credits: number;
+}
+
+/** A semester in a plan (matches existing SemesterData shape). */
+export interface PlanSemester {
+  id: string;
+  term: string;
+  year: number;
+  courses: PlanCourse[];
 }
 
 /** Credit summary for a plan. */
 export interface CreditSummary {
-  planned: number; // credits in future semesters
-  completed: number; // credits in past semesters (based on current term)
-  remaining: number; // total required minus completed minus planned
+  planned: number;      // total credits across all semesters
+  remaining: number;    // max(0, totalRequired - planned)
   totalRequired: number;
 }
 ```
 
 **File:** `packages/planner/src/types.ts` (new)
 
-#### 1.2 `prerequisiteCheck(course, completedCourses, prereqRules)`
+**Design decisions:**
+- `PrereqRule` has only the 5 fields `prerequisiteCheck` reads. No `condition`, `minGrade`, `descriptionOverride`.
+- `PrereqWarning.missing` includes both `courseId` and `courseCode` so the UI can display human-readable text. The validation loop is responsible for the mapping.
+- `PlanCourse` and `PlanSemester` mirror the existing `SemesterData` shape from `planner-grid.tsx` to avoid type conversion overhead.
+- `CreditSummary` has no `completed` field — there is no completion tracking in Sprint 4. Just `planned` + `remaining`.
 
-Checks whether a single course's prerequisites are satisfied by a set of completed courses.
+#### 1.2 `prerequisiteCheck(courseId, completedCourseIds, prereqRules)`
+
+Checks whether a single course's prerequisites are satisfied.
 
 ```typescript
 // packages/planner/src/prerequisite-check.ts
@@ -156,314 +169,339 @@ export function prerequisiteCheck(
 **Logic:**
 
 1. Filter `prereqRules` to those matching `courseId`.
-2. Group rules by `groupId`.
-3. For each group, evaluate rules based on `groupOperator`:
-   - `AND`: all prerequisite courses in the group must be in `completedCourseIds`.
-   - `OR`: at least one prerequisite course in the group must be in `completedCourseIds`.
-4. All groups must pass for `met: true`.
-5. `missing` collects the course IDs of unmet prerequisites.
-6. Rules with `prerequisiteCourseId === null` and a `descriptionOverride` are skipped (freetext prereqs are not machine-checkable).
-7. Corequisites (`isCorequisite: true`) are checked against completed OR in-progress (same semester). For this function, corequisites are treated as met if in `completedCourseIds` -- the caller is responsible for including same-semester courses when appropriate.
+2. If no rules remain, return `{ met: true, missing: [] }`.
+3. Group rules by `groupId`.
+4. For each group, evaluate based on `groupOperator`:
+   - `AND`: all `prerequisiteCourseId` values must be in `completedCourseIds`.
+   - `OR`: at least one `prerequisiteCourseId` must be in `completedCourseIds`.
+5. Rules with `prerequisiteCourseId === null` are skipped (freetext prereqs, not machine-checkable).
+6. All groups must pass for `met: true`.
+7. `missing` collects the UUIDs of unmet prerequisites across all failing groups.
+
+**Corequisite handling:** The caller (validation loop) is responsible for including same-semester courses in `completedCourseIds` when appropriate. `prerequisiteCheck` itself does not distinguish corequisites — it just checks against the set it receives. The validation loop builds two sets: prior-only for regular prereqs and prior+current for corequisites, and calls `prerequisiteCheck` accordingly. See section 1.3.
 
 **Tests:** (`packages/planner/src/prerequisite-check.test.ts`)
 
-- Course with no prereqs returns `{ met: true, missing: [] }`.
-- AND group: all met returns met; one missing returns not met with the missing ID.
-- OR group: one met returns met; none met returns not met with all IDs.
-- Mixed groups: one AND + one OR group, partial completion.
-- Freetext-only prereq (null prerequisiteCourseId) returns met.
-- Corequisite included in completed set returns met.
+- Course with no prereq rules → `{ met: true, missing: [] }`.
+- AND group: all met → met; one missing → not met with the missing ID.
+- OR group: one met → met; none met → not met with all IDs in the group.
+- Mixed: one AND group + one OR group, partial completion.
+- Freetext-only prereq (`prerequisiteCourseId === null`) → met (skipped).
+- All rules are freetext → met.
+- Multiple groups: all groups must pass independently.
 
-#### 1.3 `computeProgress(requirementTree, completedCourseIds)`
+#### 1.3 `validateSemesters(semesters, prereqRules, courseCodeMap)`
 
-Walks a requirement tree and computes per-group completion percentages.
-
-```typescript
-// packages/planner/src/compute-progress.ts
-
-export function computeProgress(
-  root: RequirementNode,
-  completedCourseIds: Set<string>,
-): ProgressResult;
-```
-
-**Logic:**
-
-1. Recursive depth-first traversal of `root.children`.
-2. Leaf nodes (`type: "course"`): completed if `courseId` is in `completedCourseIds`. Contributes 1 course or its credit value.
-3. Leaf nodes (`type: "elective_slot"`): completed if any course in `completedCourseIds` is not already claimed by a `course` node in the same tree. Use a greedy claim set passed through recursion to avoid double-counting.
-4. Group nodes (`type: "group"`): aggregate children. If `coursesRequired` is set, progress = min(completedChildren, coursesRequired) / coursesRequired. If `creditsRequired` is set, progress = min(completedCredits, creditsRequired) / creditsRequired.
-5. `freetext` nodes are ignored (0/0, excluded from percentages).
-6. Overall percentage = weighted average of top-level groups by their required credits/courses.
-
-**Tests:** (`packages/planner/src/compute-progress.test.ts`)
-
-- Single course node, completed and not completed.
-- Group with 3 required courses, 2 completed returns 66%.
-- Nested groups: inner group completed, outer group partial.
-- Elective slot claimed by a non-required course.
-- Empty tree returns 0%.
-- All completed returns 100%.
-
-#### 1.4 `semesterValidate(semester, priorSemesters, prereqRules)`
-
-Validates all courses in a semester against prerequisites from prior semesters.
+Thin loop that validates all courses across all semesters. Lives in the same file as `prerequisiteCheck`.
 
 ```typescript
-// packages/planner/src/semester-validate.ts
+// packages/planner/src/prerequisite-check.ts
 
-export function semesterValidate(
-  semester: PlanSemester,
-  priorSemesters: PlanSemester[],
+export function validateSemesters(
+  semesters: PlanSemester[],
   prereqRules: PrereqRule[],
+  courseCodeMap: Map<string, string>, // courseId → code (e.g. "CS 2420")
 ): PrereqWarning[];
 ```
 
 **Logic:**
 
-1. Build `completedCourseIds` from all courses in `priorSemesters`.
-2. For corequisites, also include courses from the current `semester`.
-3. For each course in `semester`, call `prerequisiteCheck`. If not met, produce a `PrereqWarning`.
-4. Return the array of warnings (empty array = no issues).
+1. Sort semesters by year then `TERM_ORDER` (imported from `@major-map/shared`).
+2. Build a running `completedCourseIds` set (courses from all prior semesters).
+3. For each semester, for each course:
+   a. Partition the course's prereq rules into regular (`isCorequisite: false`) and corequisite (`isCorequisite: true`).
+   b. Check regular prereqs against `completedCourseIds` (prior semesters only).
+   c. Check corequisite prereqs against `completedCourseIds ∪ currentSemesterCourseIds` (prior + same semester).
+   d. Merge missing from both checks.
+   e. If anything is missing, produce a `PrereqWarning` with course codes from `courseCodeMap`.
+4. After processing a semester, add its courses to `completedCourseIds`.
+5. Return flat array of all warnings.
 
-**Tests:** (`packages/planner/src/semester-validate.test.ts`)
+**Tests:** (`packages/planner/src/prerequisite-check.test.ts`, same file)
 
-- Semester with no prereq issues returns `[]`.
-- Course missing a prereq returns a warning with the missing code.
-- Corequisite in same semester does not produce a warning.
-- Multiple courses with issues returns multiple warnings.
+- Semester with no prereq issues → `[]`.
+- Course missing a prereq → warning with the missing code.
+- Corequisite in same semester → no warning.
+- Regular prereq in same semester → warning (must be in a prior semester).
+- Multiple courses with issues → multiple warnings.
+- First semester never has prereq warnings (no prior semesters, nothing to violate).
 
-#### 1.5 `creditSummary(plan, totalRequired, currentTerm)`
+#### 1.4 `creditSummary(semesters, totalRequired)`
 
-Computes a credit breakdown for at-a-glance status.
+Computes a credit breakdown.
 
 ```typescript
 // packages/planner/src/credit-summary.ts
 
 export function creditSummary(
-  plan: DegreePlan,
+  semesters: PlanSemester[],
   totalRequired: number,
-  currentTerm: { term: string; year: number },
 ): CreditSummary;
 ```
 
 **Logic:**
 
-1. Split semesters into past (before `currentTerm`) and future (currentTerm and after).
-2. `completed` = sum of credits in past semesters.
-3. `planned` = sum of credits in future semesters.
-4. `remaining` = max(0, totalRequired - completed - planned).
-5. Simple semester ordering: year first, then Fall < Spring < Summer within a year.
+1. `planned` = sum of `course.credits` for all courses in all semesters.
+2. `remaining` = `max(0, totalRequired - planned)`.
+3. Return `{ planned, remaining, totalRequired }`.
+
+No past/future split. No `currentTerm` parameter. Just total planned vs required.
 
 **Tests:** (`packages/planner/src/credit-summary.test.ts`)
 
-- Plan with 30 completed, 30 planned, 120 required returns `{ completed: 30, planned: 30, remaining: 60, totalRequired: 120 }`.
-- All credits completed returns remaining = 0.
-- Over-planned (completed + planned > required) returns remaining = 0, not negative.
-- Empty plan returns `{ completed: 0, planned: 0, remaining: 120, totalRequired: 120 }`.
+- 30 planned, 120 required → `{ planned: 30, remaining: 90, totalRequired: 120 }`.
+- All credits planned (120/120) → `{ planned: 120, remaining: 0, totalRequired: 120 }`.
+- Over-planned (130/120) → remaining = 0, not negative.
+- Empty plan (0 semesters) → `{ planned: 0, remaining: 120, totalRequired: 120 }`.
+- Fractional credits (courses with 0.5 credit increments) are summed correctly.
 
-#### 1.6 Package Barrel Export
+#### Research Insights — Pure Functions & Testing
+
+**Best Practices (from Vitest docs, architecture review):**
+- Use `describe` blocks to group tests by function, and nest by scenario (AND group, OR group, mixed)
+- Test with `Set` objects directly — Vitest handles `Set` equality in `toEqual` comparisons
+- Use `expectTypeOf` from Vitest to add compile-time type regression tests for public API
+- Keep test data as small inline objects, not loaded from fixture files — these functions operate on tiny arrays
+
+**Performance (from performance review):**
+- `prerequisiteCheck` on 50 rules with 5 groups: ~0.01ms. Well under the 1ms target.
+- `creditSummary` on 8 semesters with 40 courses: ~0.001ms. Trivial arithmetic.
+- No memoization needed at the function level — the data is already small.
+
+**Edge Cases (from SpecFlow analysis):**
+- Group with zero rules after filtering out freetext → treat as passed (vacuously true)
+- `completedCourseIds` as empty Set → all prerequisite checks fail (except freetext-only courses)
+- Course that is its own prerequisite (data error) → should not cause infinite loop. Filter `courseId === prerequisiteCourseId` out.
+- `credits` value of `0` for a course (e.g., seminar) → valid, include in sum
+
+**Supabase Query Patterns (from Context7 docs):**
+- `.in("course_id", courseIds)` is the correct pattern for batch prereq fetching
+- Supabase `.in()` maps to PostgreSQL `ANY(ARRAY[...])` which uses the index on `course_id`
+- For empty arrays, guard with `courseIds.length > 0` check (matches existing pattern in `page.tsx:39`)
+
+#### 1.5 Package Barrel Export
 
 ```typescript
 // packages/planner/src/index.ts
-export { prerequisiteCheck } from "./prerequisite-check.js";
-export { computeProgress } from "./compute-progress.js";
-export { semesterValidate } from "./semester-validate.js";
+export { prerequisiteCheck, validateSemesters } from "./prerequisite-check.js";
 export { creditSummary } from "./credit-summary.js";
 export type * from "./types.js";
 ```
 
 Remove the existing `helloPlanner` stub and its test.
 
-#### 1.7 Package Updates
+#### 1.6 Package Updates
 
 Update `packages/planner/package.json`:
-
-- Upgrade `vitest` to `^3.2.0` (align with Sprint 1 upgrade).
-- No new runtime dependencies. The planner is pure logic with zero deps beyond `@major-map/shared` (for `MajorId` if needed, though Sprint 4 types are self-contained).
+- Change test script from `"echo ok"` to `"vitest run"` (or verify root vitest config picks up these test files).
 
 **Files changed in Phase 1:**
 
 - Delete: `packages/planner/src/index.test.ts` (stub test)
 - Edit: `packages/planner/src/index.ts` (replace stub with barrel exports)
-- Edit: `packages/planner/package.json` (vitest upgrade)
+- Edit: `packages/planner/package.json` (fix test script)
 - New: `packages/planner/src/types.ts`
-- New: `packages/planner/src/prerequisite-check.ts`, `packages/planner/src/prerequisite-check.test.ts`
-- New: `packages/planner/src/compute-progress.ts`, `packages/planner/src/compute-progress.test.ts`
-- New: `packages/planner/src/semester-validate.ts`, `packages/planner/src/semester-validate.test.ts`
-- New: `packages/planner/src/credit-summary.ts`, `packages/planner/src/credit-summary.test.ts`
+- New: `packages/planner/src/prerequisite-check.ts` + `prerequisite-check.test.ts`
+- New: `packages/planner/src/credit-summary.ts` + `credit-summary.test.ts`
+
+#### Research Insights — Package Setup
+
+**Vitest Configuration (verified):**
+- Root `pnpm test` runs `vitest run` which scans all `**/*.test.ts` files across packages. The package-level `test` script in `packages/planner/package.json` currently says `"echo ok"` — change to `"vitest run"` for consistency.
+- Vitest workspace config at root handles multi-package monorepo. No additional vitest config needed in the planner package.
 
 ---
 
 ### Phase 2: Prereq Warning Badges on Planner Page
 
-#### 2.1 Data Loading
+#### 2.1 Data Loading — Prereq Rules Query
 
-The planner page (assumed to exist from Sprint 3 at `/planner/[id]`) already loads a plan with semesters and courses. Add a query to fetch prerequisite rules for all courses in the plan.
-
-```typescript
-// apps/web/src/lib/queries/prereq-rules.ts
-// Fetch from course_prerequisites table for a set of course IDs.
-// Returns PrereqRule[] shaped for the planner package.
-```
-
-This is a single Supabase query: `select * from course_prerequisites where course_id in (...)`. Run once on plan load and when courses change.
-
-#### 2.2 Validation Hook
+The planner page server component (`/plans/[id]/page.tsx`) already loads plan semesters and courses. Add a query to fetch prerequisite rules for all courses in the plan.
 
 ```typescript
-// apps/web/src/hooks/use-semester-warnings.ts
-import { semesterValidate } from "@major-map/planner";
+// apps/web/src/app/plans/[id]/page.tsx (added to existing server component)
 
-// Calls semesterValidate for each semester in the plan.
-// Returns a Map<semesterId, Map<courseId, PrereqWarning>>.
-// Recomputes when plan.semesters or prereqRules change (useMemo).
+// After fetching courses, extract all courseIds:
+const allCourseIds = (courses ?? []).map((c) => c.course_id);
+
+// Fetch prereq rules for these courses:
+const { data: prereqRules } = allCourseIds.length > 0
+  ? await supabase
+      .from("course_prerequisites")
+      .select("course_id, prerequisite_course_id, group_id, group_operator, is_corequisite")
+      .in("course_id", allCourseIds)
+  : { data: [] };
+
+// Also fetch course codes for prerequisite courses not already in the plan:
+const prereqCourseIds = (prereqRules ?? [])
+  .map((r) => r.prerequisite_course_id)
+  .filter((id): id is string => id !== null && !allCourseIds.includes(id));
+
+const { data: prereqCourses } = prereqCourseIds.length > 0
+  ? await supabase
+      .from("courses")
+      .select("id, code")
+      .in("id", prereqCourseIds)
+  : { data: [] };
+
+// Build courseCodeMap from plan courses + prereq courses
 ```
 
-No debounce needed -- `semesterValidate` operates on small arrays (a semester has ~5 courses, a plan has ~8 semesters). Computation is sub-millisecond.
+For the **guest planner**, a similar client-side fetch is needed using the browser Supabase client (`course_prerequisites` has anon read access via RLS).
 
-#### 2.3 Warning Badge Component
+#### 2.2 Warnings Computation
+
+Compute warnings server-side (authenticated) or client-side (guest) using `validateSemesters` from `@major-map/planner`. Pass the result as a prop to the planner grid.
+
+```typescript
+// In the server component or guest planner:
+import { validateSemesters } from "@major-map/planner";
+
+const warnings = validateSemesters(semesterData, formattedPrereqRules, courseCodeMap);
+```
+
+Pass `warnings: PrereqWarning[]` as a prop through `AuthenticatedPlanner` → `PlannerGrid` → `SemesterCard`.
+
+#### 2.3 Warning Badge on Course Cards
+
+Add a yellow/amber badge to course list items in `semester-card.tsx` when a warning exists.
 
 ```tsx
-// apps/web/src/components/planner/prereq-badge.tsx
-// - Yellow/amber MUI Chip or custom badge.
-// - Tooltip on hover shows missing prereqs: "Missing: CS 2420, MATH 2210".
-// - Placed on the course card in the semester column.
-// - Only renders when warnings exist for that course.
+// apps/web/src/app/plans/[id]/semester-card.tsx (modified)
+// On each course <li>, check if warnings array includes this courseId.
+// If yes, render:
+//   <Badge variant="outline" className="border-amber-500 text-amber-600 text-xs">
+//     ⚠ Missing: {warning.missing.map(m => m.courseCode).join(", ")}
+//   </Badge>
 ```
 
 **Design decisions:**
-
-- Soft warning only: yellow badge, no blocking. The user can leave the course in place.
-- No modal or confirmation dialog. YAGNI -- a badge + tooltip is sufficient.
-- Badge disappears when the user adds the missing prereq to an earlier semester.
+- Soft warning only: amber badge, no blocking. User can leave the course in place.
+- No modal or confirmation dialog. A badge with inline text is sufficient.
+- Badge disappears when the user adds the missing prereq to an earlier semester (server refresh recomputes warnings).
+- Uses existing `Badge` component from `apps/web/src/components/ui/badge.tsx`.
 
 **Files changed in Phase 2:**
 
-- New: `apps/web/src/lib/queries/prereq-rules.ts`
-- New: `apps/web/src/hooks/use-semester-warnings.ts`
-- New: `apps/web/src/components/planner/prereq-badge.tsx`
-- Edit: `apps/web/src/components/planner/course-card.tsx` (add PrereqBadge)
-- Edit: `apps/web/src/app/planner/[id]/page.tsx` (fetch prereq rules, pass to hook)
+- Edit: `apps/web/src/app/plans/[id]/page.tsx` (add prereq query, compute warnings, pass as prop)
+- Edit: `apps/web/src/app/plans/[id]/authenticated-planner.tsx` (pass warnings through)
+- Edit: `apps/web/src/app/plans/[id]/planner-grid.tsx` (accept warnings prop, pass to semester cards)
+- Edit: `apps/web/src/app/plans/[id]/semester-card.tsx` (render warning badges)
+- Edit: `apps/web/src/app/plans/guest-planner.tsx` (client-side prereq fetch + warnings)
+
+#### Research Insights — Prereq Badge Implementation
+
+**Existing Components (from repo research):**
+- `Badge` component at `apps/web/src/components/ui/badge.tsx` — has `default`, `secondary`, `destructive`, `outline` variants. Use `outline` with amber styling.
+- Warning badge placement: inside the `<li>` at `semester-card.tsx:44-58`, below the course title `<p>`.
+- Pattern: filter warnings array with `warnings.filter(w => w.courseId === course.courseId)` at the SemesterCard level.
+
+**Guest Mode Data Loading (from SpecFlow analysis):**
+- Guest planner needs a new `fetchPrereqRules(courseIds: string[])` function in `apps/web/src/lib/course-lookup.ts` (or a new file).
+- `course_prerequisites` table has anon read RLS — client-side query will work.
+- Must also fetch course codes for prerequisite courses NOT in the plan (for tooltip display).
+- Pattern: after fetching prereq rules, collect all `prerequisite_course_id` values not in the existing `courseMap`, then call `fetchCoursesByIds()` for those.
+
+**Next.js Server Component Data Passing (from Context7):**
+- Server component fetches and computes warnings, passes flat `PrereqWarning[]` as a serializable prop to `AuthenticatedPlanner`.
+- This is the correct Next.js pattern — confirmed by official docs: "Pass serializable data from Server Component to Client Component using props."
+- `PrereqWarning[]` is fully serializable (plain objects, strings, arrays).
 
 ---
 
 ### Phase 3: Credit Summary Sidebar
 
-#### 3.1 Credit Summary Hook
+#### 3.1 Credit Computation
+
+Use `creditSummary` from `@major-map/planner` in the server component. `totalRequired` comes from `programs.total_credits` for the plan's `program_id`.
 
 ```typescript
-// apps/web/src/hooks/use-credit-summary.ts
+// In page.tsx server component:
 import { creditSummary } from "@major-map/planner";
 
-// Wraps creditSummary with current term detection.
-// Current term derived from today's date:
-//   Jan-May = Spring, Jun-Jul = Summer, Aug-Dec = Fall.
-// Returns CreditSummary. Recomputes on plan change (useMemo).
+// Fetch program total_credits if program_id exists
+let totalRequired: number | null = null;
+if (plan.program_id) {
+  const { data: program } = await supabase
+    .from("programs")
+    .select("total_credits")
+    .eq("id", plan.program_id)
+    .single();
+  totalRequired = program?.total_credits ?? null;
+}
+
+const credits = totalRequired !== null
+  ? creditSummary(semesterData, totalRequired)
+  : null;
 ```
 
-`totalRequired` comes from the `programs.total_credits` column for the plan's program. Fetched alongside the plan data.
+**When `totalRequired` is null** (no program associated or program has no total): the sidebar shows only "X credits planned" with no remaining/progress bar. This is acceptable for Sprint 4 since neither guest nor authenticated plans have a program picker yet.
 
 #### 3.2 Sidebar Component
 
 ```tsx
-// apps/web/src/components/planner/credit-sidebar.tsx
-// - Compact sidebar or card displayed alongside the semester grid.
-// - Three rows: Completed (green), Planned (blue), Remaining (gray).
-// - Each row shows credit count and a simple MUI LinearProgress bar.
-// - Total at the bottom: "X / Y credits".
-// - No charts library needed -- MUI LinearProgress is sufficient.
+// apps/web/src/app/plans/[id]/credit-sidebar.tsx (new, colocated with planner)
+
+// Compact sidebar displayed alongside the semester grid.
+// When credits data is available (totalRequired known):
+//   - "X / Y credits planned" with a progress bar
+//   - "Z credits remaining" below
+// When credits data is unavailable (no program):
+//   - "X credits planned" (no progress bar)
+// Uses Tailwind for styling, no new dependencies.
 ```
 
-**Design decisions:**
+**Layout change:** The planner page layout changes from single-column to a two-column layout:
 
-- No pie charts or complex visualizations. Linear progress bars are clearer for this data. YAGNI.
-- Sidebar is always visible on the planner page (not a toggle or drawer).
-- On mobile, sidebar collapses to a sticky summary bar at the top.
+```tsx
+// apps/web/src/app/plans/[id]/page.tsx (layout section)
+<div className="flex flex-col gap-6 lg:flex-row">
+  <div className="flex-1 min-w-0">
+    <AuthenticatedPlanner ... />
+  </div>
+  <aside className="lg:w-64 shrink-0">
+    <CreditSidebar credits={credits} totalPlanned={totalPlannedCredits} />
+  </aside>
+</div>
+```
+
+On mobile (`< lg`), the sidebar stacks above the grid as a compact summary bar.
 
 **Files changed in Phase 3:**
 
-- New: `apps/web/src/hooks/use-credit-summary.ts`
-- New: `apps/web/src/components/planner/credit-sidebar.tsx`
-- Edit: `apps/web/src/app/planner/[id]/page.tsx` (add sidebar to layout)
+- New: `apps/web/src/app/plans/[id]/credit-sidebar.tsx`
+- Edit: `apps/web/src/app/plans/[id]/page.tsx` (add program query, compute credits, two-column layout)
+- Edit: `apps/web/src/app/plans/guest-planner.tsx` (add credit sidebar for guest mode)
 
----
+#### Research Insights — Credit Sidebar & Layout
 
-### Phase 4: Progress Dashboard Page
+**Layout Change (from architecture review):**
+- Current layout is single-column: `<main>` → `<AuthenticatedPlanner>` → `<PlannerGrid>`.
+- New layout: `flex flex-col lg:flex-row` with `flex-1 min-w-0` for main content and `lg:w-64 shrink-0` for sidebar.
+- The existing `PlannerGrid` grid columns (`sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`) will naturally adjust within the narrower flex child.
+- On mobile (`< lg`), sidebar stacks above the grid. Use `order-first lg:order-none` on the sidebar so it appears at top on mobile.
 
-#### 4.1 Route and Data Loading
+**Security (from security review):**
+- `programs.total_credits` query uses RLS. The server component already has the user's session.
+- No sensitive data exposed — credit counts and program totals are public catalog data.
+- The `program_id` UUID in the query comes from the user's own plan row (already RLS-protected).
 
-```typescript
-// apps/web/src/app/progress/[id]/page.tsx
-// - [id] is the plan ID.
-// - Fetches: plan (with semesters + courses), requirement_set (active),
-//   requirement_items (full tree for the program).
-// - Builds RequirementNode tree from flat requirement_items rows
-//   (parent_id linking, sorted by sort_order).
-// - Calls computeProgress from @major-map/planner.
-```
-
-Tree building is a straightforward flat-to-tree transform:
-
-1. Index items by `id`.
-2. For each item, push into parent's `children` array.
-3. Root nodes have `parentId === null`.
-4. Sort children by `sort_order`.
-
-This logic lives in a shared utility since it may be reused:
-
-```typescript
-// apps/web/src/lib/build-requirement-tree.ts
-export function buildRequirementTree(flatItems: RequirementItemRow[]): RequirementNode[];
-```
-
-#### 4.2 Progress Display Components
-
-```tsx
-// apps/web/src/components/progress/progress-group.tsx
-// - Recursive component rendering a GroupProgress node.
-// - Shows label, progress bar (MUI LinearProgress), percentage text.
-// - Children rendered indented beneath.
-// - Color coding: green (>= 100%), blue (in progress), gray (0%).
-
-// apps/web/src/components/progress/progress-overview.tsx
-// - Top section of the dashboard.
-// - Large circular or linear progress indicator for overall %.
-// - Text: "X% complete -- Y credits remaining".
-
-// apps/web/src/components/progress/remaining-courses.tsx
-// - List of courses not yet in the plan that are required.
-// - Derived by diffing requirement tree course nodes against plan courses.
-// - Simple MUI List with course code, title, credits.
-// - "Add to plan" button deferred (would require planner page integration). YAGNI for Sprint 4.
-```
-
-**Design decisions:**
-
-- Use MUI LinearProgress bars for group progress, not a charting library. Keeps the dependency footprint small.
-- The overall progress indicator uses a single larger LinearProgress or a simple CSS circular indicator. No `@mui/x-charts` or recharts.
-- "Remaining courses" is a flat list, not grouped. Grouping by requirement category can be added later if users need it.
-- The page is read-only. No editing of the plan from the progress page.
-
-**Files changed in Phase 4:**
-
-- New: `apps/web/src/app/progress/[id]/page.tsx`
-- New: `apps/web/src/lib/build-requirement-tree.ts`
-- New: `apps/web/src/components/progress/progress-group.tsx`
-- New: `apps/web/src/components/progress/progress-overview.tsx`
-- New: `apps/web/src/components/progress/remaining-courses.tsx`
+**Pattern Consistency (from pattern review):**
+- The sidebar component should be colocated in the route directory (`apps/web/src/app/plans/[id]/credit-sidebar.tsx`), not in a separate `components/` directory — matching the existing pattern.
+- Use `"use client"` only if the sidebar needs interactivity. If it's purely display, it can remain a server component. Since `creditSummary` is computed server-side, the sidebar can be a server component.
 
 ---
 
 ## What This Sprint Does NOT Include
 
-- **Blocking prerequisite enforcement** -- warnings are soft (yellow badges). No drag-and-drop rejection.
-- **Grade tracking** -- `minGrade` is stored in prereq rules but not checked against actual grades. There is no grade input in Sprint 4.
-- **Advisor approval workflow** -- no approval states, no role-based access.
-- **Charts library** -- MUI LinearProgress is used, not recharts/nivo/chart.js.
-- **"Add to plan" from progress page** -- read-only dashboard. Editing happens on the planner page.
-- **Elective recommendation engine** -- elective slots show as unfilled, but the system does not suggest courses.
-- **Multi-program progress** -- one program per plan. Double majors are out of scope.
+- **Progress dashboard** (`/progress/[id]`) — cut by reviewer, deferred.
+- **`computeProgress` function** — cut, requires reliable requirement tree data.
+- **Blocking prerequisite enforcement** — warnings are soft (amber badges). No drag-and-drop rejection.
+- **Grade tracking** — `minGrade` is stored in DB but not checked. No grade input.
+- **Program picker** — neither guest nor authenticated plans can select a program yet. Credit sidebar shows "X planned" only until a program is associated.
+- **Charts library** — progress bar uses Tailwind CSS, not a charting library.
+- **Elective recommendation engine** — out of scope.
+- **Multi-program progress** — one program per plan.
 
 ---
 
@@ -471,41 +509,32 @@ export function buildRequirementTree(flatItems: RequirementItemRow[]): Requireme
 
 ### New Files
 
-| File                                                     | Purpose                                                 |
-| -------------------------------------------------------- | ------------------------------------------------------- |
-| `packages/planner/src/types.ts`                          | Input/output type definitions for all planner functions |
-| `packages/planner/src/prerequisite-check.ts`             | `prerequisiteCheck` pure function                       |
-| `packages/planner/src/prerequisite-check.test.ts`        | Tests for prerequisite checking                         |
-| `packages/planner/src/compute-progress.ts`               | `computeProgress` pure function                         |
-| `packages/planner/src/compute-progress.test.ts`          | Tests for progress computation                          |
-| `packages/planner/src/semester-validate.ts`              | `semesterValidate` pure function                        |
-| `packages/planner/src/semester-validate.test.ts`         | Tests for semester validation                           |
-| `packages/planner/src/credit-summary.ts`                 | `creditSummary` pure function                           |
-| `packages/planner/src/credit-summary.test.ts`            | Tests for credit summary                                |
-| `apps/web/src/lib/queries/prereq-rules.ts`               | Supabase query for prerequisite rules                   |
-| `apps/web/src/lib/build-requirement-tree.ts`             | Flat requirement_items to tree transform                |
-| `apps/web/src/hooks/use-semester-warnings.ts`            | Hook wrapping `semesterValidate`                        |
-| `apps/web/src/hooks/use-credit-summary.ts`               | Hook wrapping `creditSummary`                           |
-| `apps/web/src/components/planner/prereq-badge.tsx`       | Yellow warning badge for prereq issues                  |
-| `apps/web/src/components/planner/credit-sidebar.tsx`     | Credit summary sidebar on planner page                  |
-| `apps/web/src/components/progress/progress-group.tsx`    | Recursive progress bar for requirement groups           |
-| `apps/web/src/components/progress/progress-overview.tsx` | Overall progress indicator                              |
-| `apps/web/src/components/progress/remaining-courses.tsx` | List of remaining required courses                      |
-| `apps/web/src/app/progress/[id]/page.tsx`                | Progress dashboard page                                 |
+| File | Purpose |
+| --- | --- |
+| `supabase/migrations/2026MMDD_add_credits_column.sql` | Generated `credits` column from `credits_min` |
+| `packages/planner/src/types.ts` | Input/output types for planner functions |
+| `packages/planner/src/prerequisite-check.ts` | `prerequisiteCheck` + `validateSemesters` pure functions |
+| `packages/planner/src/prerequisite-check.test.ts` | Tests for prerequisite checking and semester validation |
+| `packages/planner/src/credit-summary.ts` | `creditSummary` pure function |
+| `packages/planner/src/credit-summary.test.ts` | Tests for credit summary |
+| `apps/web/src/app/plans/[id]/credit-sidebar.tsx` | Credit summary sidebar component |
 
 ### Edited Files
 
-| File                                              | Change                                          |
-| ------------------------------------------------- | ----------------------------------------------- |
-| `packages/planner/src/index.ts`                   | Replace `helloPlanner` stub with barrel exports |
-| `packages/planner/package.json`                   | Upgrade vitest to `^3.2.0`                      |
-| `apps/web/src/components/planner/course-card.tsx` | Add PrereqBadge rendering                       |
-| `apps/web/src/app/planner/[id]/page.tsx`          | Fetch prereq rules, add credit sidebar          |
+| File | Change |
+| --- | --- |
+| `packages/planner/src/index.ts` | Replace `helloPlanner` stub with barrel exports |
+| `packages/planner/package.json` | Fix test script |
+| `apps/web/src/app/plans/[id]/page.tsx` | Fetch prereq rules + program, compute warnings/credits, two-column layout |
+| `apps/web/src/app/plans/[id]/authenticated-planner.tsx` | Pass warnings prop through |
+| `apps/web/src/app/plans/[id]/planner-grid.tsx` | Accept warnings prop, pass to semester cards, import `TERM_ORDER` from shared |
+| `apps/web/src/app/plans/[id]/semester-card.tsx` | Render prereq warning badges |
+| `apps/web/src/app/plans/guest-planner.tsx` | Client-side prereq fetch + warnings + credit sidebar |
 
 ### Deleted Files
 
-| File                                 | Reason                                         |
-| ------------------------------------ | ---------------------------------------------- |
+| File | Reason |
+| --- | --- |
 | `packages/planner/src/index.test.ts` | Stub test for `helloPlanner`, no longer needed |
 
 ---
@@ -515,27 +544,29 @@ export function buildRequirementTree(flatItems: RequirementItemRow[]): Requireme
 ### Functional
 
 - [ ] `pnpm -r build` succeeds (planner package compiles)
-- [ ] `pnpm -r test` passes (all planner pure function tests green)
-- [ ] `prerequisiteCheck` correctly evaluates AND groups, OR groups, corequisites, and freetext rules
-- [ ] `computeProgress` returns correct per-group and overall percentages for a sample requirement tree
-- [ ] `semesterValidate` returns warnings only for courses with unmet prereqs
-- [ ] `creditSummary` returns correct completed/planned/remaining split
+- [ ] `pnpm test` passes (all planner pure function tests green)
+- [ ] `prerequisiteCheck` correctly evaluates AND groups, OR groups, and freetext rules
+- [ ] `validateSemesters` returns warnings only for courses with unmet prereqs
+- [ ] `validateSemesters` treats corequisites as met when the coreq is in the same semester
+- [ ] `validateSemesters` does NOT treat regular prereqs as met from the same semester
+- [ ] `creditSummary` returns correct planned/remaining split
 - [ ] Prereq warning badges appear on planner course cards when prerequisites are missing
 - [ ] Badges disappear when missing prereqs are added to earlier semesters
 - [ ] Credit summary sidebar shows correct numbers on the planner page
-- [ ] Progress dashboard at `/progress/[id]` renders requirement group progress bars
-- [ ] Progress dashboard shows remaining courses list
+- [ ] Credit sidebar shows "X credits planned" without progress bar when no program is associated
+- [ ] All features work in both authenticated mode and guest mode
 
 ### Non-Functional
 
 - [ ] Planner package has zero runtime dependencies beyond `@major-map/shared`
 - [ ] All planner functions are pure (no side effects, no DB calls, no DOM access)
-- [ ] Planner functions execute in < 1ms for a typical plan (8 semesters, 40 courses, 50 requirement nodes)
-- [ ] No new npm dependencies added to the web app beyond what Sprint 3 already includes (MUI)
+- [ ] Planner functions execute in < 1ms for a typical plan (8 semesters, 40 courses)
+- [ ] No new npm dependencies added to the web app
 
 ### Quality Gates
 
-- [ ] Each planner function has at least 5 unit tests covering happy path, edge cases, and empty inputs
-- [ ] Prereq badge tested with a plan fixture containing mixed met/unmet prerequisites
-- [ ] CI passes on clean checkout
+- [ ] `prerequisiteCheck` has at least 7 unit tests (happy path, AND, OR, mixed, freetext, empty)
+- [ ] `validateSemesters` has at least 5 unit tests (no issues, missing, corequisite, multiple)
+- [ ] `creditSummary` has at least 5 unit tests (normal, full, over, empty, fractional)
 - [ ] No TypeScript `any` in planner package
+- [ ] `credits` generated column migration runs successfully
