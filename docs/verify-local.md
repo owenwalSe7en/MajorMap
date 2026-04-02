@@ -2,25 +2,25 @@
 
 Run these commands from the repo root:
 
-1) Install dependencies
+1. Install dependencies
 
 ```bash
 pnpm i
 ```
 
-2) Lint
+2. Lint
 
 ```bash
 pnpm -r lint
 ```
 
-3) Test
+3. Test
 
 ```bash
 pnpm -r test
 ```
 
-4) Start dev server
+4. Start dev server
 
 ```bash
 pnpm dev

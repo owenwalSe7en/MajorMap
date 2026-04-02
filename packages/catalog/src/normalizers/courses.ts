@@ -41,9 +41,7 @@ export function normalizeCourse(
   };
 }
 
-export function buildCourseGroupIdMap(
-  courses: NormalizedCourse[],
-): Map<string, string> {
+export function buildCourseGroupIdMap(courses: NormalizedCourse[]): Map<string, string> {
   const map = new Map<string, string>();
   for (const c of courses) {
     map.set(c.course_group_id, c.id);

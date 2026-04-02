@@ -25,7 +25,11 @@ function extractCourseGroupIds(value: unknown): string[] {
 
   const ids: string[] = [];
   for (const group of v.values) {
-    if (group && typeof group === "object" && Array.isArray((group as Record<string, unknown>).value)) {
+    if (
+      group &&
+      typeof group === "object" &&
+      Array.isArray((group as Record<string, unknown>).value)
+    ) {
       for (const id of (group as Record<string, unknown>).value as string[]) {
         if (typeof id === "string") ids.push(id);
       }

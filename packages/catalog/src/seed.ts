@@ -1,7 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createServiceClient } from "./supabase-client.js";
-import { normalizeCourse, buildCourseGroupIdMap, type NormalizedCourse } from "./normalizers/courses.js";
+import {
+  normalizeCourse,
+  buildCourseGroupIdMap,
+  type NormalizedCourse,
+} from "./normalizers/courses.js";
 import { normalizeProgram, type NormalizedProgram } from "./normalizers/programs.js";
 import { normalizePrerequisites, type NormalizedPrereq } from "./normalizers/prerequisites.js";
 import { universityUuid, departmentUuid } from "./uuid.js";
@@ -10,17 +14,18 @@ import type { CoursedogCourse, CoursedogProgram } from "./schemas/coursedog.js";
 const BATCH_SIZE = 100;
 const UNIVERSITY_SLUG = "utah";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function upsertBatch(
   supabase: ReturnType<typeof createServiceClient>,
   table: string,
-  rows: Record<string, unknown>[],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rows: any[],
   onConflict: string,
 ): Promise<number> {
   let inserted = 0;
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await supabase.from(table).upsert(batch as any[], { onConflict });
+    const { error } = await supabase.from(table).upsert(batch, { onConflict });
     if (error) {
       console.error(`Error upserting to ${table} (batch ${i / BATCH_SIZE + 1}):`, error.message);
     } else {
@@ -84,7 +89,7 @@ export async function seed(): Promise<void> {
   const courseCount = await upsertBatch(
     supabase,
     "courses",
-    courses as unknown as Record<string, unknown>[],
+    courses,
     "university_id,subject_code,number",
   );
   console.log(`Upserted ${courseCount} courses`);
@@ -105,7 +110,7 @@ export async function seed(): Promise<void> {
     const prereqCount = await upsertBatch(
       supabase,
       "course_prerequisites",
-      allPrereqs as unknown as Record<string, unknown>[],
+      allPrereqs,
       "course_id,prerequisite_course_id,group_id",
     );
     console.log(`Upserted ${prereqCount} prerequisite rules`);
@@ -115,12 +120,7 @@ export async function seed(): Promise<void> {
   const programs: NormalizedProgram[] = rawPrograms.map((raw) =>
     normalizeProgram(raw, UNIVERSITY_SLUG, universityId),
   );
-  const programCount = await upsertBatch(
-    supabase,
-    "programs",
-    programs as unknown as Record<string, unknown>[],
-    "university_id,slug",
-  );
+  const programCount = await upsertBatch(supabase, "programs", programs, "university_id,slug");
   console.log(`Upserted ${programCount} programs`);
 
   // Summary

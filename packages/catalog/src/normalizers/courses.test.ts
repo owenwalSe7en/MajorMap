@@ -5,7 +5,9 @@ import { normalizeCourse, buildCourseGroupIdMap } from "./courses.js";
 import { universityUuid } from "../uuid.js";
 
 const fixtureDir = path.resolve(import.meta.dirname, "../../../../data/raw/fixtures");
-const fixture = JSON.parse(fs.readFileSync(path.join(fixtureDir, "coursedog-courses-cs-sample.json"), "utf-8"));
+const fixture = JSON.parse(
+  fs.readFileSync(path.join(fixtureDir, "coursedog-courses-cs-sample.json"), "utf-8"),
+);
 const rawCourses = fixture.data;
 const universityId = universityUuid("utah");
 

@@ -28,13 +28,15 @@ describe("normalizePrerequisites", () => {
     const { prereqs, warnings } = normalizePrerequisites(cs3500raw, cs3500.id, courseGroupIdMap);
 
     expect(prereqs.length).toBeGreaterThan(0);
-    expect(prereqs.every((p: Record<string, string>) => p.course_id === cs3500.id)).toBe(true);
+    expect(prereqs.every((p) => p.course_id === cs3500.id)).toBe(true);
 
     // Some prereqs should resolve to known courses
-    const resolved = prereqs.filter((p: Record<string, string | null>) => p.prerequisite_course_id !== null);
+    const resolved = prereqs.filter((p) => p.prerequisite_course_id !== null);
     expect(resolved.length).toBeGreaterThan(0);
 
-    console.log(`CS 3500: ${prereqs.length} prereq rules, ${resolved.length} resolved, ${warnings.length} warnings`);
+    console.log(
+      `CS 3500: ${prereqs.length} prereq rules, ${resolved.length} resolved, ${warnings.length} warnings`,
+    );
   });
 
   it("handles courses with no prerequisites", () => {
