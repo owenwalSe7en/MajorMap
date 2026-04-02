@@ -105,7 +105,7 @@ export function HeroSection() {
           >
             <Button
               size="lg"
-              className="bg-foreground hover:bg-foreground/90 text-background px-8 h-14 text-base rounded-full group"
+              className="px-8 h-14 text-base rounded-full group"
               asChild
             >
               <Link href="/programs">
@@ -116,10 +116,10 @@ export function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
+              className="h-14 px-8 text-base rounded-full"
               asChild
             >
-              <Link href="/courses">Search Courses</Link>
+              <Link href="/plans">Start Planning</Link>
             </Button>
           </div>
         </div>
