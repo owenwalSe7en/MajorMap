@@ -46,7 +46,7 @@ describe("normalizePrerequisites", () => {
     );
     if (!cs1000raw || !cs1000) throw new Error("CS 1000 not in fixtures");
 
-    const { prereqs, warnings } = normalizePrerequisites(cs1000raw, cs1000.id, courseGroupIdMap);
+    const { warnings } = normalizePrerequisites(cs1000raw, cs1000.id, courseGroupIdMap);
     expect(warnings.length).toBe(0);
     // CS 1000 may or may not have prereqs depending on catalog data
   });

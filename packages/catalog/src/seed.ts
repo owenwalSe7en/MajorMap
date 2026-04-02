@@ -14,7 +14,6 @@ import type { CoursedogCourse, CoursedogProgram } from "./schemas/coursedog.js";
 const BATCH_SIZE = 100;
 const UNIVERSITY_SLUG = "utah";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function upsertBatch(
   supabase: ReturnType<typeof createServiceClient>,
   table: string,

@@ -6,7 +6,6 @@ import {
   CoursedogProgramSchema,
   CoursedogPageSchema,
 } from "../schemas/coursedog.js";
-import type { CoursedogCourse, CoursedogProgram } from "../schemas/coursedog.js";
 
 const PAGE_SIZE = 500;
 const DELAY_MS = 200;
@@ -66,7 +65,6 @@ async function fetchAllPages<T extends z.ZodTypeAny>(
 
   console.log(`Fetching ${label}...`);
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const url = `${endpoint}/search/%24filters?catalogId=${catalogId}&limit=${PAGE_SIZE}&skip=${skip}`;
     const page = await fetchPage(url, referer, pageSchema);
