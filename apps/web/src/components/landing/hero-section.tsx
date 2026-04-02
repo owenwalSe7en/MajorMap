@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { AnimatedSphere } from "./animated-sphere";
+import { AnimatedGradCap } from "./animated-grad-cap";
 import Link from "next/link";
 
 const words = ["plan", "explore", "track", "graduate"];
@@ -22,10 +22,10 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-[calc(100vh-3.5rem)] flex flex-col justify-center overflow-hidden">
-      {/* ASCII sphere background */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] opacity-40 pointer-events-none">
-        <AnimatedSphere />
+    <section className="relative min-h-[calc(100vh-3.5rem)] flex flex-col justify-center overflow-visible">
+      {/* ASCII grad cap background */}
+      <div className="absolute right-[15%] top-1/2 -translate-y-1/2 w-[1100px] h-[900px] lg:w-[1400px] lg:h-[1100px] opacity-40 pointer-events-none">
+        <AnimatedGradCap />
       </div>
 
       {/* Subtle grid lines */}
