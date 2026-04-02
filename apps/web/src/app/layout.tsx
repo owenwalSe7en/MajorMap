@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
-import { ThemeRegistry } from "@/components/ThemeRegistry";
-import { AppNav } from "@/components/AppNav";
-import Container from "@mui/material/Container";
+import "./globals.css";
 
 export const metadata = {
   title: {
@@ -14,14 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <ThemeRegistry>
-          <AppNav />
-          <Container maxWidth="lg" sx={{ py: 4 }}>
-            {children}
-          </Container>
-        </ThemeRegistry>
-      </body>
+      <body className="min-h-screen bg-background text-foreground antialiased">{children}</body>
     </html>
   );
 }

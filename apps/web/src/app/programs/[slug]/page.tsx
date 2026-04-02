@@ -1,11 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { buildRequirementTree, type RequirementNode } from "@/lib/requirements-tree";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
+import { Navigation } from "@/components/landing/navigation";
+import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 
 interface Props {
@@ -20,37 +16,36 @@ export async function generateMetadata({ params }: Props) {
     .select("name, degree_type")
     .eq("slug", slug)
     .single();
-
   if (!program) return { title: "Program Not Found" };
   return { title: `${program.name} ${program.degree_type}` };
 }
 
-function RequirementTreeView({ nodes, depth = 0 }: { nodes: RequirementNode[]; depth?: number }) {
+function RequirementTree({ nodes, depth = 0 }: { nodes: RequirementNode[]; depth?: number }) {
   return (
-    <List dense sx={{ pl: depth * 2 }}>
+    <div className={depth > 0 ? "ml-6 border-l border-foreground/10 pl-4" : ""}>
       {nodes.map((node) => (
-        <Box key={node.id}>
-          <ListItem>
-            <ListItemText
-              primary={node.label}
-              secondary={
-                node.type === "course" && node.course_id
-                  ? `Course`
-                  : node.credits_required
-                    ? `${node.credits_required} credits required`
-                    : node.courses_required
-                      ? `${node.courses_required} courses required`
-                      : undefined
-              }
-            />
-            {node.type !== "group" && <Chip label={node.type} size="small" variant="outlined" />}
-          </ListItem>
-          {node.children.length > 0 && (
-            <RequirementTreeView nodes={node.children} depth={depth + 1} />
-          )}
-        </Box>
+        <div key={node.id} className="py-2">
+          <div className="flex items-center gap-2">
+            {node.type === "group" ? (
+              <span className="font-semibold text-foreground">{node.label}</span>
+            ) : (
+              <span className="text-muted-foreground">{node.label}</span>
+            )}
+            {node.type !== "group" && (
+              <Badge variant="outline" className="text-xs">
+                {node.type}
+              </Badge>
+            )}
+            {node.credits_required && (
+              <span className="text-xs text-muted-foreground">
+                ({node.credits_required} cr required)
+              </span>
+            )}
+          </div>
+          {node.children.length > 0 && <RequirementTree nodes={node.children} depth={depth + 1} />}
+        </div>
       ))}
-    </List>
+    </div>
   );
 }
 
@@ -59,10 +54,8 @@ export default async function ProgramDetailPage({ params }: Props) {
   const supabase = await createClient();
 
   const { data: program } = await supabase.from("programs").select("*").eq("slug", slug).single();
-
   if (!program) notFound();
 
-  // Get active requirement set
   const { data: reqSet } = await supabase
     .from("requirement_sets")
     .select("id, version_label")
@@ -77,47 +70,53 @@ export default async function ProgramDetailPage({ params }: Props) {
       .select("*")
       .eq("requirement_set_id", reqSet.id)
       .order("sort_order");
-
-    if (items) {
-      requirementTree = buildRequirementTree(items);
-    }
+    if (items) requirementTree = buildRequirementTree(items);
   }
 
   return (
-    <>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h1" gutterBottom>
-          {program.name}
-        </Typography>
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center", mb: 2 }}>
-          <Chip label={program.degree_type} color="primary" />
-          {program.total_credits && (
-            <Typography variant="body1" color="text.secondary">
-              {program.total_credits} total credits
-            </Typography>
-          )}
-        </Box>
-        {program.description && (
-          <Typography variant="body1" color="text.secondary">
-            {program.description.replace(/<[^>]*>/g, "")}
-          </Typography>
-        )}
-      </Box>
+    <main className="min-h-screen noise-overlay">
+      <Navigation />
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-32 pb-16">
+        <div className="mb-12">
+          <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
+            <span className="w-8 h-px bg-foreground/30" />
+            Program Detail
+          </span>
+          <h1 className="text-4xl lg:text-6xl font-display tracking-tight mb-4">{program.name}</h1>
+          <div className="flex items-center gap-3">
+            <Badge>{program.degree_type}</Badge>
+            {program.total_credits && (
+              <span className="text-muted-foreground">{program.total_credits} total credits</span>
+            )}
+          </div>
+        </div>
 
-      {reqSet && (
-        <Box>
-          <Typography variant="h2" gutterBottom>
-            Requirements ({reqSet.version_label})
-          </Typography>
-          {requirementTree.length > 0 ? (
-            <RequirementTreeView nodes={requirementTree} />
-          ) : (
-            <Typography color="text.secondary">
-              No detailed requirements available for this program yet.
-            </Typography>
-          )}
-        </Box>
-      )}
-    </>
+        {program.description && (
+          <div className="mb-12 max-w-3xl">
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              {program.description.replace(/<[^>]*>/g, "")}
+            </p>
+          </div>
+        )}
+
+        {reqSet && (
+          <div>
+            <h2 className="text-2xl font-display mb-6">
+              Requirements
+              <span className="text-muted-foreground text-lg ml-2">({reqSet.version_label})</span>
+            </h2>
+            {requirementTree.length > 0 ? (
+              <div className="border border-foreground/10 rounded-xl p-6">
+                <RequirementTree nodes={requirementTree} />
+              </div>
+            ) : (
+              <p className="text-muted-foreground">
+                No detailed requirements available for this program yet.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

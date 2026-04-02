@@ -1,11 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
-import Paper from "@mui/material/Paper";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
+import { Navigation } from "@/components/landing/navigation";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -23,7 +18,6 @@ export async function generateMetadata({ params }: Props) {
     .eq("subject_code", subjectCode)
     .eq("number", number)
     .single();
-
   if (!course) return { title: "Course Not Found" };
   return { title: `${course.subject_code} ${course.number} — ${course.title}` };
 }
@@ -42,7 +36,6 @@ export default async function CourseDetailPage({ params }: Props) {
 
   if (!course) notFound();
 
-  // Get prerequisites
   const { data: prereqs } = await supabase
     .from("course_prerequisites")
     .select(
@@ -50,13 +43,11 @@ export default async function CourseDetailPage({ params }: Props) {
     )
     .eq("course_id", course.id);
 
-  // Resolve prerequisite course names
   let prereqCourses: { id: string; subject_code: string; number: string; title: string }[] = [];
   if (prereqs && prereqs.length > 0) {
     const prereqIds = prereqs
       .map((p) => p.prerequisite_course_id)
       .filter((id): id is string => id !== null);
-
     if (prereqIds.length > 0) {
       const { data } = await supabase
         .from("courses")
@@ -69,65 +60,64 @@ export default async function CourseDetailPage({ params }: Props) {
   const credits =
     course.credits_min === course.credits_max
       ? `${course.credits_min}`
-      : `${course.credits_min}-${course.credits_max}`;
+      : `${course.credits_min}–${course.credits_max}`;
 
   return (
-    <>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h1" gutterBottom>
-          {course.subject_code} {course.number}
-        </Typography>
-        <Typography variant="h5" color="text.secondary" gutterBottom>
-          {course.title}
-        </Typography>
-        <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-          <Chip label={`${credits} credits`} color="primary" />
-          {course.typically_offered?.length > 0 &&
-            course.typically_offered.map((term: string) => (
-              <Chip key={term} label={term} variant="outlined" size="small" />
+    <main className="min-h-screen noise-overlay">
+      <Navigation />
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-32 pb-16">
+        <div className="mb-8">
+          <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
+            <span className="w-8 h-px bg-foreground/30" />
+            Course Detail
+          </span>
+          <h1 className="text-4xl lg:text-6xl font-display tracking-tight mb-2">
+            {course.subject_code} {course.number}
+          </h1>
+          <p className="text-xl text-muted-foreground mb-4">{course.title}</p>
+          <div className="flex items-center gap-2">
+            <Badge>{credits} credits</Badge>
+            {course.typically_offered?.map((term: string) => (
+              <Badge key={term} variant="outline">
+                {term}
+              </Badge>
             ))}
-        </Box>
-      </Box>
+          </div>
+        </div>
 
-      {course.description && (
-        <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h3" gutterBottom>
-            Description
-          </Typography>
-          <Typography variant="body1">{course.description}</Typography>
-        </Paper>
-      )}
+        {course.description && (
+          <div className="border border-foreground/10 rounded-xl p-6 mb-8 max-w-3xl">
+            <h2 className="text-lg font-semibold mb-3">Description</h2>
+            <p className="text-muted-foreground leading-relaxed">{course.description}</p>
+          </div>
+        )}
 
-      {prereqs && prereqs.length > 0 && (
-        <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h3" gutterBottom>
-            Prerequisites
-          </Typography>
-          <List dense>
-            {prereqCourses.map((pc) => (
-              <ListItem key={pc.id}>
-                <ListItemText>
+        {prereqs && prereqs.length > 0 && (
+          <div className="border border-foreground/10 rounded-xl p-6 max-w-3xl">
+            <h2 className="text-lg font-semibold mb-3">Prerequisites</h2>
+            <ul className="space-y-2">
+              {prereqCourses.map((pc) => (
+                <li key={pc.id}>
                   <Link
                     href={`/courses/${pc.subject_code}-${pc.number}`}
-                    style={{ color: "#CC0000", textDecoration: "none" }}
+                    className="text-primary hover:underline font-mono text-sm"
                   >
                     {pc.subject_code} {pc.number}
                   </Link>
-                  {" — "}
-                  {pc.title}
-                </ListItemText>
-              </ListItem>
-            ))}
-            {prereqs
-              .filter((p) => p.description_override)
-              .map((p, i) => (
-                <ListItem key={`override-${i}`}>
-                  <ListItemText secondary={p.description_override} />
-                </ListItem>
+                  <span className="text-muted-foreground ml-2">— {pc.title}</span>
+                </li>
               ))}
-          </List>
-        </Paper>
-      )}
-    </>
+              {prereqs
+                .filter((p) => p.description_override)
+                .map((p, i) => (
+                  <li key={`override-${i}`} className="text-muted-foreground text-sm">
+                    {p.description_override}
+                  </li>
+                ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

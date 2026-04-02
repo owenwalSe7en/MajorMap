@@ -1,12 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
-import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardActionArea from "@mui/material/CardActionArea";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
+import { Navigation } from "@/components/landing/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { Search } from "lucide-react";
 
 export const metadata = { title: "Programs" };
 
@@ -34,82 +32,75 @@ export default async function ProgramsPage({ searchParams }: Props) {
   const { data: programs } = await query.limit(100);
 
   return (
-    <>
-      <Typography variant="h1" gutterBottom>
-        Programs
-      </Typography>
+    <main className="min-h-screen noise-overlay">
+      <Navigation />
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-32 pb-16">
+        <div className="mb-12">
+          <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
+            <span className="w-8 h-px bg-foreground/30" />
+            Browse
+          </span>
+          <h1 className="text-4xl lg:text-6xl font-display tracking-tight">Programs</h1>
+        </div>
 
-      <Box component="form" method="get" sx={{ display: "flex", gap: 2, mb: 4 }}>
-        <input
-          name="q"
-          placeholder="Search programs..."
-          defaultValue={params.q ?? ""}
-          style={{
-            flex: 1,
-            padding: "8px 12px",
-            borderRadius: 8,
-            border: "1px solid #E5E5E5",
-            fontSize: 16,
-          }}
-        />
-        <select
-          name="type"
-          defaultValue={params.type ?? ""}
-          style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #E5E5E5" }}
-        >
-          <option value="">All Types</option>
-          <option value="Bachelor of Science">BS</option>
-          <option value="Bachelor of Arts">BA</option>
-          <option value="Minor">Minor</option>
-          <option value="Graduate Certificate">Certificate</option>
-          <option value="Master of Science">MS</option>
-          <option value="Doctor of Philosophy">PhD</option>
-        </select>
-        <button
-          type="submit"
-          style={{
-            padding: "8px 20px",
-            borderRadius: 8,
-            border: "none",
-            background: "#CC0000",
-            color: "white",
-            cursor: "pointer",
-            fontSize: 16,
-          }}
-        >
-          Search
-        </button>
-      </Box>
+        <form method="get" className="flex gap-3 mb-12">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              name="q"
+              placeholder="Search programs..."
+              defaultValue={params.q ?? ""}
+              className="pl-10 h-12 rounded-full border-foreground/10"
+            />
+          </div>
+          <select
+            name="type"
+            defaultValue={params.type ?? ""}
+            className="h-12 px-4 rounded-full border border-foreground/10 bg-background text-sm"
+          >
+            <option value="">All Types</option>
+            <option value="Bachelor of Science">BS</option>
+            <option value="Bachelor of Arts">BA</option>
+            <option value="Minor">Minor</option>
+            <option value="Graduate Certificate">Certificate</option>
+            <option value="Master of Science">MS</option>
+            <option value="Doctor of Philosophy">PhD</option>
+          </select>
+          <Button type="submit" className="h-12 px-6 rounded-full">
+            Search
+          </Button>
+        </form>
 
-      <Grid container spacing={2}>
-        {programs?.map((program) => (
-          <Grid item xs={12} sm={6} md={4} key={program.id}>
-            <Card>
-              <CardActionArea component={Link} href={`/programs/${program.slug}`}>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {program.name}
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                    <Chip label={program.degree_type} size="small" />
-                    {program.total_credits && (
-                      <Typography variant="body2" color="text.secondary">
-                        {program.total_credits} credits
-                      </Typography>
-                    )}
-                  </Box>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {programs?.map((program) => (
+            <Link
+              key={program.id}
+              href={`/programs/${program.slug}`}
+              className="group block p-6 rounded-xl border border-foreground/10 hover:border-foreground/20 transition-all duration-300 hover:-translate-y-1"
+            >
+              <h3 className="text-lg font-semibold mb-2 group-hover:translate-x-1 transition-transform duration-300">
+                {program.name}
+              </h3>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="text-xs">
+                  {program.degree_type}
+                </Badge>
+                {program.total_credits && (
+                  <span className="text-sm text-muted-foreground">
+                    {program.total_credits} credits
+                  </span>
+                )}
+              </div>
+            </Link>
+          ))}
+        </div>
 
-      {(!programs || programs.length === 0) && (
-        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4 }}>
-          No programs found. Try a different search.
-        </Typography>
-      )}
-    </>
+        {(!programs || programs.length === 0) && (
+          <p className="text-center text-muted-foreground py-12">
+            No programs found. Try a different search.
+          </p>
+        )}
+      </div>
+    </main>
   );
 }

@@ -1,13 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import { Navigation } from "@/components/landing/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = { title: "Courses" };
@@ -31,96 +26,95 @@ export default async function CoursesPage({ searchParams }: Props) {
     query = query.ilike("title", `%${sanitized}%`);
   }
   if (params.dept) {
-    const dept = params.dept.slice(0, 6).toUpperCase().replace(/[^A-Z ]/g, "");
+    const dept = params.dept
+      .slice(0, 6)
+      .toUpperCase()
+      .replace(/[^A-Z ]/g, "");
     query = query.eq("subject_code", dept);
   }
 
   const { data: courses } = await query.limit(50);
 
   return (
-    <>
-      <Typography variant="h1" gutterBottom>
-        Courses
-      </Typography>
+    <main className="min-h-screen noise-overlay">
+      <Navigation />
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-32 pb-16">
+        <div className="mb-12">
+          <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
+            <span className="w-8 h-px bg-foreground/30" />
+            Search
+          </span>
+          <h1 className="text-4xl lg:text-6xl font-display tracking-tight">Courses</h1>
+        </div>
 
-      <Box component="form" method="get" sx={{ display: "flex", gap: 2, mb: 4 }}>
-        <input
-          name="q"
-          placeholder="Search by title..."
-          defaultValue={params.q ?? ""}
-          style={{
-            flex: 1,
-            padding: "8px 12px",
-            borderRadius: 8,
-            border: "1px solid #E5E5E5",
-            fontSize: 16,
-          }}
-        />
-        <input
-          name="dept"
-          placeholder="Subject (e.g. CS)"
-          defaultValue={params.dept ?? ""}
-          style={{
-            width: 140,
-            padding: "8px 12px",
-            borderRadius: 8,
-            border: "1px solid #E5E5E5",
-            fontSize: 16,
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            padding: "8px 20px",
-            borderRadius: 8,
-            border: "none",
-            background: "#CC0000",
-            color: "white",
-            cursor: "pointer",
-            fontSize: 16,
-          }}
-        >
-          Search
-        </button>
-      </Box>
+        <form method="get" className="flex gap-3 mb-12">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              name="q"
+              placeholder="Search by title..."
+              defaultValue={params.q ?? ""}
+              className="pl-10 h-12 rounded-full border-foreground/10"
+            />
+          </div>
+          <Input
+            name="dept"
+            placeholder="Subject (e.g. CS)"
+            defaultValue={params.dept ?? ""}
+            className="w-36 h-12 rounded-full border-foreground/10"
+          />
+          <Button type="submit" className="h-12 px-6 rounded-full">
+            Search
+          </Button>
+        </form>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Code</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell align="right">Credits</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {courses?.map((course) => (
-              <TableRow key={course.id} hover>
-                <TableCell>
-                  <Link
-                    href={`/courses/${course.subject_code}-${course.number}`}
-                    style={{ color: "#CC0000", textDecoration: "none" }}
-                  >
-                    {course.subject_code} {course.number}
-                  </Link>
-                </TableCell>
-                <TableCell>{course.title}</TableCell>
-                <TableCell align="right">
-                  {course.credits_min === course.credits_max
-                    ? course.credits_min
-                    : `${course.credits_min}-${course.credits_max}`}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        <div className="border border-foreground/10 rounded-xl overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-foreground/10 bg-muted/50">
+                <th className="text-left px-6 py-3 text-sm font-mono text-muted-foreground">
+                  Code
+                </th>
+                <th className="text-left px-6 py-3 text-sm font-mono text-muted-foreground">
+                  Title
+                </th>
+                <th className="text-right px-6 py-3 text-sm font-mono text-muted-foreground">
+                  Credits
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {courses?.map((course) => (
+                <tr
+                  key={course.id}
+                  className="border-b border-foreground/5 hover:bg-muted/30 transition-colors"
+                >
+                  <td className="px-6 py-3">
+                    <Link
+                      href={`/courses/${course.subject_code}-${course.number}`}
+                      className="font-mono text-sm text-primary hover:underline"
+                    >
+                      {course.subject_code} {course.number}
+                    </Link>
+                  </td>
+                  <td className="px-6 py-3 text-sm">{course.title}</td>
+                  <td className="px-6 py-3 text-sm text-right text-muted-foreground">
+                    {course.credits_min === course.credits_max
+                      ? course.credits_min
+                      : `${course.credits_min}–${course.credits_max}`}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      {(!courses || courses.length === 0) && (
-        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4 }}>
-          No courses found. Try a different search.
-        </Typography>
-      )}
-    </>
+        {(!courses || courses.length === 0) && (
+          <p className="text-center text-muted-foreground py-12">
+            No courses found. Try a different search.
+          </p>
+        )}
+      </div>
+    </main>
   );
 }
