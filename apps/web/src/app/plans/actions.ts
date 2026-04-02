@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { parseTranscript, PASSING_GRADE_SET } from "@major-map/planner";
+import { parseTranscript, PASSING_GRADE_SET, ALL_GRADES } from "@major-map/planner";
 import type { GuestPlan } from "@/lib/guest-plan";
 
 const VALID_TERMS = ["Fall", "Spring", "Summer"];
@@ -196,7 +196,11 @@ export interface UnmatchedCourse {
 
 const MAX_TRANSCRIPT_LENGTH = 50_000;
 
-export async function parseTranscriptAction(text: string) {
+type ParseResult =
+  | { error: string }
+  | { matched: MatchedCourse[]; unmatched: UnmatchedCourse[]; skippedLines: number; totalCredits: number };
+
+export async function parseTranscriptAction(text: string): Promise<ParseResult> {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
@@ -245,15 +249,29 @@ export async function parseTranscriptAction(text: string) {
   return { matched, unmatched, skippedLines, totalCredits };
 }
 
+type ImportResult = { error: string } | { success: true; importedCount: number };
+
 export async function importTranscriptCourses(
   planId: string,
   courses: Array<{ courseId: string; grade: string }>,
-) {
+): Promise<ImportResult> {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
   if (!Array.isArray(courses) || courses.length === 0) {
     return { error: "No courses to import" };
+  }
+
+  if (courses.length > 200) return { error: "Too many courses" };
+
+  const GRADE_SET = new Set<string>(ALL_GRADES);
+  for (const c of courses) {
+    if (typeof c.courseId !== "string" || typeof c.grade !== "string") {
+      return { error: "Invalid course data" };
+    }
+    if (!GRADE_SET.has(c.grade)) {
+      return { error: "Invalid grade value" };
+    }
   }
 
   // Verify plan ownership (RLS ensures only owner's plan returned)
@@ -294,7 +312,7 @@ export async function importTranscriptCourses(
       .insert({ plan_id: planId, user_id: user.id, term: "Fall", year: MIN_YEAR })
       .select("id")
       .single();
-    if (semError) return { error: semError.message };
+    if (semError) return { error: "Failed to create semester" };
     semesterId = newSem.id;
   }
 
@@ -311,7 +329,7 @@ export async function importTranscriptCourses(
     .from("plan_courses")
     .upsert(rows, { onConflict: "plan_semester_id,course_id" });
 
-  if (upsertError) return { error: upsertError.message };
+  if (upsertError) return { error: "Failed to import courses" };
 
   revalidatePath("/plans");
   return { success: true, importedCount: rows.length };

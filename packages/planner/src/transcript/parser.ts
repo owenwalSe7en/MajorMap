@@ -11,7 +11,7 @@ export const PASSING_GRADE_SET = new Set<string>(PASSING_GRADES);
 const GRADE_SET = new Set<string>(ALL_GRADES);
 
 /** Higher number = better grade. Used to pick best attempt for repeated courses. */
-export const GRADE_RANK: Record<string, number> = {
+export const GRADE_RANK: Record<Grade, number> = {
   A: 20, "A-": 19,
   "B+": 18, B: 17, "B-": 16,
   "C+": 15, C: 14, "C-": 13,
@@ -35,7 +35,6 @@ export interface TranscriptCourse {
 
 export interface ParseResult {
   courses: TranscriptCourse[];
-  totalCredits: number;
   skippedLines: number;
 }
 
@@ -80,14 +79,14 @@ function parseLine(line: string): TranscriptCourse | null {
   return {
     subjectCode: fields[0],
     number: fields[1],
-    title: title || undefined,
+    title,
     credits: roundedCredits,
     grade: gradeStr as Grade,
   };
 }
 
 export function parseTranscript(text: string): ParseResult {
-  if (!text.trim()) return { courses: [], totalCredits: 0, skippedLines: 0 };
+  if (!text.trim()) return { courses: [], skippedLines: 0 };
 
   const lines = text.split("\n");
   const parsed: TranscriptCourse[] = [];
@@ -115,7 +114,6 @@ export function parseTranscript(text: string): ParseResult {
   }
 
   const courses = [...best.values()];
-  const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
 
-  return { courses, totalCredits, skippedLines };
+  return { courses, skippedLines };
 }

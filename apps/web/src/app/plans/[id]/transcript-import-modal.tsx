@@ -134,12 +134,7 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
       return;
     }
 
-    const { matched, unmatched, totalCredits, skippedLines } = result as {
-      matched: MatchedCourse[];
-      unmatched: UnmatchedCourse[];
-      totalCredits: number;
-      skippedLines: number;
-    };
+    const { matched, unmatched, totalCredits, skippedLines } = result;
 
     if (matched.length === 0 && unmatched.length === 0) {
       dispatch({ type: "PARSE_ERROR", error: "No courses found in the pasted text. Check the format and try again." });

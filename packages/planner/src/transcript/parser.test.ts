@@ -16,7 +16,6 @@ describe("parseTranscript", () => {
 
     // Fixture has 20 course lines (ECON 1010 appears twice — dedup keeps highest grade)
     expect(result.courses.length).toBe(19);
-    expect(result.totalCredits).toBeGreaterThan(0);
     expect(result.skippedLines).toBeGreaterThan(0); // Headers, GPA lines, etc.
   });
 
@@ -78,14 +77,12 @@ describe("parseTranscript", () => {
   it("returns empty result for empty input", () => {
     const result = parseTranscript("");
     expect(result.courses).toEqual([]);
-    expect(result.totalCredits).toBe(0);
     expect(result.skippedLines).toBe(0);
   });
 
   it("returns empty result for whitespace-only input", () => {
     const result = parseTranscript("   \n  \n  ");
     expect(result.courses).toEqual([]);
-    expect(result.totalCredits).toBe(0);
   });
 
   it("skips header, footer, and GPA summary lines", () => {
@@ -164,14 +161,15 @@ describe("parseTranscript", () => {
     expect(result.courses[0].subjectCode).toBe("CVEEN");
   });
 
-  it("computes totalCredits from all parsed courses", () => {
+  it("sums credits correctly from parsed courses", () => {
     const text = [
       "CS  1400  Intro to CS  3.00  A",
       "MATH  1210  Calculus I  4.00  B",
     ].join("\n");
     const result = parseTranscript(text);
+    const totalCredits = result.courses.reduce((sum, c) => sum + c.credits, 0);
 
-    expect(result.totalCredits).toBe(7.0);
+    expect(totalCredits).toBe(7.0);
   });
 
   it("does not hang on long lines (ReDoS safety)", () => {
