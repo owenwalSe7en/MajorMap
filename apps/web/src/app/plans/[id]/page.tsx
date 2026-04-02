@@ -24,7 +24,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
   // Fetch plan with semesters and courses
   const { data: plan } = await supabase
     .from("semester_plans")
-    .select("id, name, program_id")
+    .select("id, name, program_id, secondary_program_id")
     .eq("id", id)
     .single();
 
@@ -95,15 +95,20 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
     .filter((id): id is string => id !== null && !allCourseIds.includes(id));
 
   // Parallelize independent queries: prereq course codes + program data + requirements
-  const [prereqCoursesResult, programResult, reqSetResult] = await Promise.all([
+  const secondaryProgramId = (plan as { secondary_program_id?: string }).secondary_program_id;
+
+  const [prereqCoursesResult, programResult, reqSetResult, secondaryProgramResult] = await Promise.all([
     prereqCourseIds.length > 0
       ? supabase.from("courses").select("id, code").in("id", prereqCourseIds)
       : Promise.resolve({ data: [] as Array<{ id: string; code: string }> }),
     plan.program_id
-      ? supabase.from("programs").select("total_credits").eq("id", plan.program_id).single()
+      ? supabase.from("programs").select("name, total_credits").eq("id", plan.program_id).single()
       : Promise.resolve({ data: null }),
     plan.program_id
       ? supabase.from("requirement_sets").select("id").eq("program_id", plan.program_id).eq("is_active", true).single()
+      : Promise.resolve({ data: null }),
+    secondaryProgramId
+      ? supabase.from("programs").select("name, total_credits").eq("id", secondaryProgramId).single()
       : Promise.resolve({ data: null }),
   ]);
 
@@ -129,9 +134,14 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
 
   // --- Sprint 4: Credit summary ---
   let credits: CreditSummary | null = null;
-  const program = programResult.data as { total_credits: number | null } | null;
+  let secondaryCredits: CreditSummary | null = null;
+  const program = programResult.data as { name: string; total_credits: number | null } | null;
+  const secondaryProgram = secondaryProgramResult.data as { name: string; total_credits: number | null } | null;
   if (program?.total_credits != null) {
     credits = creditSummary(planSemesters, program.total_credits);
+  }
+  if (secondaryProgram?.total_credits != null) {
+    secondaryCredits = creditSummary(planSemesters, secondaryProgram.total_credits);
   }
 
   const totalPlanned = planSemesters.reduce(
@@ -214,7 +224,12 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
           <AuthenticatedPlanner planId={id} initialSemesters={semesterData} warnings={warnings} />
         </div>
         <aside className="order-first lg:order-none lg:w-72 shrink-0 space-y-4">
-          <CreditSidebar credits={credits} totalPlanned={totalPlanned} />
+          <CreditSidebar
+            credits={credits}
+            totalPlanned={totalPlanned}
+            secondaryCredits={secondaryCredits}
+            secondaryProgramName={secondaryProgram?.name}
+          />
           <SuggestionsPanel
             suggestions={suggestions}
             semesters={semesterData}
