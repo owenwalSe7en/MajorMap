@@ -7,7 +7,9 @@ interface CreditSidebarProps {
 
 export function CreditSidebar({ credits, totalPlanned }: CreditSidebarProps) {
   if (credits) {
-    const pct = Math.min(100, Math.round((credits.planned / credits.totalRequired) * 100));
+    const pct = credits.totalRequired > 0
+      ? Math.min(100, Math.round((credits.planned / credits.totalRequired) * 100))
+      : 0;
     return (
       <div className="rounded-lg border bg-card p-4 space-y-4">
         <h3 className="text-sm font-medium">Credit Summary</h3>

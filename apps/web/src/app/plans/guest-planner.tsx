@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
   loadGuestPlan,
   saveGuestPlan,
@@ -32,7 +32,10 @@ export function GuestPlanner() {
     setIsHydrated(true);
   }, []);
 
-  // Fetch course display data and prereq rules when plan changes
+  // Stable course ID key — only refetch when the set of courses actually changes
+  const courseIdKey = plan?.semesters.flatMap((s) => s.courseIds).sort().join(",") ?? "";
+
+  // Fetch course display data and prereq rules when course set changes
   useEffect(() => {
     if (!plan) return;
     const allIds = plan.semesters.flatMap((s) => s.courseIds);
@@ -56,7 +59,7 @@ export function GuestPlanner() {
         });
       }
     });
-  }, [plan]);
+  }, [courseIdKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function updatePlan(newPlan: GuestPlan) {
     setPlan(newPlan);

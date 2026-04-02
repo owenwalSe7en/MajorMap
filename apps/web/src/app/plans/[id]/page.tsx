@@ -90,16 +90,23 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
     .map((r) => r.prerequisite_course_id)
     .filter((id): id is string => id !== null && !allCourseIds.includes(id));
 
-  const { data: prereqCourses } = prereqCourseIds.length > 0
-    ? await supabase.from("courses").select("id, code").in("id", prereqCourseIds)
-    : { data: [] };
+  // Parallelize independent queries: prereq course codes + program data
+  const [prereqCoursesResult, programResult] = await Promise.all([
+    prereqCourseIds.length > 0
+      ? supabase.from("courses").select("id, code").in("id", prereqCourseIds)
+      : Promise.resolve({ data: [] as Array<{ id: string; code: string }> }),
+    plan.program_id
+      ? supabase.from("programs").select("total_credits").eq("id", plan.program_id).single()
+      : Promise.resolve({ data: null }),
+  ]);
 
+  const prereqCourses = prereqCoursesResult.data ?? [];
   const courseCodeMap = new Map<string, string>();
   for (const c of courses ?? []) {
     const courseData = c.courses as unknown as CourseJoin;
     if (courseData) courseCodeMap.set(c.course_id, courseData.code);
   }
-  for (const c of prereqCourses ?? []) {
+  for (const c of prereqCourses) {
     courseCodeMap.set(c.id, c.code);
   }
 
@@ -115,15 +122,9 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
 
   // --- Sprint 4: Credit summary ---
   let credits: CreditSummary | null = null;
-  if (plan.program_id) {
-    const { data: program } = await supabase
-      .from("programs")
-      .select("total_credits")
-      .eq("id", plan.program_id)
-      .single();
-    if (program?.total_credits != null) {
-      credits = creditSummary(planSemesters, program.total_credits);
-    }
+  const program = programResult.data as { total_credits: number | null } | null;
+  if (program?.total_credits != null) {
+    credits = creditSummary(planSemesters, program.total_credits);
   }
 
   const totalPlanned = planSemesters.reduce(
