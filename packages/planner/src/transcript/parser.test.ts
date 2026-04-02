@@ -4,7 +4,6 @@ import { join } from "node:path";
 import {
   parseTranscript,
   PASSING_GRADE_SET,
-  ALL_GRADES,
   GRADE_RANK,
 } from "./parser.js";
 

@@ -31,7 +31,6 @@ export function SemesterCard({
   const existingCourseIds = semester.courses.map((c) => c.courseId);
 
   const isPriorCoursework = semester.term === "Fall" && semester.year === PRIOR_COURSEWORK_YEAR;
-  const hasCompletedCourses = semester.courses.some((c) => c.status === "completed");
 
   return (
     <Card className={`flex flex-col gap-0 p-0 ${isPriorCoursework ? "border-green-200 dark:border-green-900" : ""}`}>
