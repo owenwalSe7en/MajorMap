@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { GuestPlan } from "@/lib/guest-plan";
 
+const VALID_TERMS = ["Fall", "Spring", "Summer"];
+const MIN_YEAR = 2020;
+const MAX_YEAR = 2040;
+
 async function getAuthenticatedUser() {
   const supabase = await createClient();
   const {
@@ -28,6 +32,9 @@ export async function createPlan(name = "My Plan") {
 }
 
 export async function addSemester(planId: string, term: string, year: number) {
+  if (!VALID_TERMS.includes(term)) return { error: "Invalid term" };
+  if (!Number.isInteger(year) || year < MIN_YEAR || year > MAX_YEAR) return { error: "Invalid year" };
+
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
@@ -84,6 +91,24 @@ export async function removeCourse(planCourseId: string) {
 }
 
 export async function migrateGuestPlan(guestPlan: GuestPlan) {
+  if (typeof guestPlan?.name !== "string" || guestPlan.name.trim().length === 0) {
+    return { error: "Plan name is required" };
+  }
+  if (!Array.isArray(guestPlan.semesters)) {
+    return { error: "Invalid plan structure" };
+  }
+  for (const semester of guestPlan.semesters) {
+    if (!VALID_TERMS.includes(semester.term)) {
+      return { error: `Invalid term "${semester.term}" in semester` };
+    }
+    if (!Number.isInteger(semester.year) || semester.year < MIN_YEAR || semester.year > MAX_YEAR) {
+      return { error: `Invalid year ${semester.year} in semester` };
+    }
+    if (!Array.isArray(semester.courseIds) || !semester.courseIds.every((id) => typeof id === "string")) {
+      return { error: "Each semester must contain a valid list of course IDs" };
+    }
+  }
+
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 

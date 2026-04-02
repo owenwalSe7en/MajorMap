@@ -42,11 +42,14 @@ export function AddCourse({ excludeCourseIds, onSelect, onClose }: AddCourseProp
       setLoading(true);
       const supabase = createClient();
 
+      // Strip PostgREST filter delimiters to prevent injection
+      const sanitized = q.replace(/[,().]/g, "");
+
       try {
         const { data } = await supabase
           .from("courses")
           .select("id, code, title, credits")
-          .or(`code.ilike.%${q}%,title.ilike.%${q}%`)
+          .or(`code.ilike.%${sanitized}%,title.ilike.%${sanitized}%`)
           .limit(20)
           .abortSignal(controller.signal);
 
