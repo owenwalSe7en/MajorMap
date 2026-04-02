@@ -4,4 +4,6 @@ export { parseTranscript, PASSING_GRADE_SET, ALL_GRADES, GRADE_RANK } from "./tr
 export { suggestCourses } from "./suggestions/engine.js";
 export type { TranscriptCourse, ParseResult, Grade } from "./transcript/parser.js";
 export type { RequirementItem, CourseCatalogEntry, SuggestedCourse } from "./suggestions/engine.js";
+export { computeOverlap } from "./comparison/overlap.js";
+export type { ProgramRequirements, OverlapResult } from "./comparison/overlap.js";
 export type * from "./types.js";
