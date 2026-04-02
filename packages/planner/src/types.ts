@@ -1,3 +1,5 @@
+import type { Grade } from "./transcript/parser.js";
+
 /** A prerequisite rule for a course (trimmed to fields prerequisiteCheck reads). */
 export interface PrereqRule {
   courseId: string;
@@ -25,7 +27,10 @@ export interface PlanCourse {
   courseId: string;
   code: string;
   credits: number;
+  status?: "planned" | "completed";
+  grade?: Grade;
 }
+
 
 /** A semester in a plan. */
 export interface PlanSemester {
@@ -38,6 +43,7 @@ export interface PlanSemester {
 /** Credit summary for a plan. */
 export interface CreditSummary {
   planned: number;
+  completed: number;
   remaining: number;
   totalRequired: number;
 }

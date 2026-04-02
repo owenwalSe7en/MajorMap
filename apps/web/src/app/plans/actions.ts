@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { parseTranscript, PASSING_GRADE_SET, ALL_GRADES } from "@major-map/planner";
 import type { GuestPlan } from "@/lib/guest-plan";
 
 const VALID_TERMS = ["Fall", "Spring", "Summer"];
@@ -174,4 +175,162 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
 
   revalidatePath("/plans");
   return { success: true, planId: plan.id };
+}
+
+// --- Transcript Import ---
+
+export interface MatchedCourse {
+  courseId: string;
+  code: string;
+  title: string;
+  credits: number;
+  grade: string;
+  isPassingGrade: boolean;
+}
+
+export interface UnmatchedCourse {
+  subjectCode: string;
+  number: string;
+  grade: string;
+}
+
+const MAX_TRANSCRIPT_LENGTH = 50_000;
+
+type ParseResult =
+  | { error: string }
+  | { matched: MatchedCourse[]; unmatched: UnmatchedCourse[]; skippedLines: number; totalCredits: number };
+
+export async function parseTranscriptAction(text: string): Promise<ParseResult> {
+  const { user, supabase } = await getAuthenticatedUser();
+  if (!user) return { error: "Not authenticated" };
+
+  if (typeof text !== "string" || text.length > MAX_TRANSCRIPT_LENGTH) {
+    return { error: "Invalid input" };
+  }
+
+  const { courses: parsed, skippedLines } = parseTranscript(text);
+
+  if (parsed.length === 0) {
+    return { matched: [] as MatchedCourse[], unmatched: [] as UnmatchedCourse[], skippedLines, totalCredits: 0 };
+  }
+
+  // Single query using the generated `code` column
+  const codes = parsed.map((c) => `${c.subjectCode} ${c.number}`);
+  const { data: dbCourses } = await supabase
+    .from("courses")
+    .select("id, code, title, credits")
+    .in("code", codes);
+
+  const codeToDb = new Map(
+    (dbCourses ?? []).map((c: { id: string; code: string; title: string; credits: number }) => [c.code, c]),
+  );
+
+  const matched: MatchedCourse[] = [];
+  const unmatched: UnmatchedCourse[] = [];
+
+  for (const pc of parsed) {
+    const code = `${pc.subjectCode} ${pc.number}`;
+    const db = codeToDb.get(code);
+    if (db) {
+      matched.push({
+        courseId: db.id,
+        code: db.code,
+        title: db.title,
+        credits: db.credits,
+        grade: pc.grade,
+        isPassingGrade: PASSING_GRADE_SET.has(pc.grade),
+      });
+    } else {
+      unmatched.push({ subjectCode: pc.subjectCode, number: pc.number, grade: pc.grade });
+    }
+  }
+
+  const totalCredits = matched.reduce((s, c) => s + c.credits, 0);
+  return { matched, unmatched, skippedLines, totalCredits };
+}
+
+type ImportResult = { error: string } | { success: true; importedCount: number };
+
+export async function importTranscriptCourses(
+  planId: string,
+  courses: Array<{ courseId: string; grade: string }>,
+): Promise<ImportResult> {
+  const { user, supabase } = await getAuthenticatedUser();
+  if (!user) return { error: "Not authenticated" };
+
+  if (!Array.isArray(courses) || courses.length === 0) {
+    return { error: "No courses to import" };
+  }
+
+  if (courses.length > 200) return { error: "Too many courses" };
+
+  const GRADE_SET = new Set<string>(ALL_GRADES);
+  for (const c of courses) {
+    if (typeof c.courseId !== "string" || typeof c.grade !== "string") {
+      return { error: "Invalid course data" };
+    }
+    if (!GRADE_SET.has(c.grade)) {
+      return { error: "Invalid grade value" };
+    }
+  }
+
+  // Verify plan ownership (RLS ensures only owner's plan returned)
+  const { data: plan } = await supabase
+    .from("semester_plans")
+    .select("id")
+    .eq("id", planId)
+    .single();
+  if (!plan) return { error: "Plan not found" };
+
+  // Validate courseIds exist
+  const courseIds = courses.map((c) => c.courseId);
+  const { data: validCourses } = await supabase
+    .from("courses")
+    .select("id")
+    .in("id", courseIds);
+  const validIds = new Set(validCourses?.map((c: { id: string }) => c.id) ?? []);
+  const invalidCount = courseIds.filter((id) => !validIds.has(id)).length;
+  if (invalidCount > 0) {
+    return { error: `${invalidCount} course(s) not found in catalog` };
+  }
+
+  // Find or create "Prior Coursework" semester (Fall 2020)
+  const { data: existing } = await supabase
+    .from("plan_semesters")
+    .select("id")
+    .eq("plan_id", planId)
+    .eq("term", "Fall")
+    .eq("year", MIN_YEAR)
+    .maybeSingle();
+
+  let semesterId: string;
+  if (existing) {
+    semesterId = existing.id;
+  } else {
+    const { data: newSem, error: semError } = await supabase
+      .from("plan_semesters")
+      .insert({ plan_id: planId, user_id: user.id, term: "Fall", year: MIN_YEAR })
+      .select("id")
+      .single();
+    if (semError) return { error: "Failed to create semester" };
+    semesterId = newSem.id;
+  }
+
+  // Upsert plan_courses with status='completed'
+  const rows = courses.map((c) => ({
+    plan_semester_id: semesterId,
+    user_id: user.id,
+    course_id: c.courseId,
+    status: "completed" as const,
+    grade: c.grade,
+  }));
+
+  const { error: upsertError } = await supabase
+    .from("plan_courses")
+    .upsert(rows, { onConflict: "plan_semester_id,course_id" });
+
+  if (upsertError) return { error: "Failed to import courses" };
+
+  revalidatePath("/plans");
+  return { success: true, importedCount: rows.length };
 }

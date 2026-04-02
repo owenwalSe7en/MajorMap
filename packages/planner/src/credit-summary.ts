@@ -2,20 +2,31 @@ import type { PlanSemester, CreditSummary } from "./types.js";
 
 /**
  * Computes a credit breakdown for a plan.
- * No past/future split — just total planned vs required.
+ * Separates completed credits from planned credits.
  */
 export function creditSummary(
   semesters: PlanSemester[],
   totalRequired: number,
 ): CreditSummary {
-  const planned = semesters.reduce(
-    (sum, s) => sum + s.courses.reduce((cs, c) => cs + c.credits, 0),
-    0,
-  );
+  let planned = 0;
+  let completed = 0;
+
+  for (const s of semesters) {
+    for (const c of s.courses) {
+      if (c.status === "completed") {
+        completed += c.credits;
+      } else {
+        planned += c.credits;
+      }
+    }
+  }
+
+  const total = planned + completed;
 
   return {
     planned,
-    remaining: Math.max(0, totalRequired - planned),
+    completed,
+    remaining: Math.max(0, totalRequired - total),
     totalRequired,
   };
 }

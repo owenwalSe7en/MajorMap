@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AuthenticatedPlanner } from "./authenticated-planner";
 import { CreditSidebar } from "./credit-sidebar";
+import { ImportTranscriptButton } from "./import-transcript-button";
 import { validateSemesters, creditSummary } from "@major-map/planner";
 import type { PrereqRule, PrereqWarning, PlanSemester, CreditSummary } from "@major-map/planner";
 
@@ -42,7 +43,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
   const { data: courses } = semesterIds.length > 0
     ? await supabase
         .from("plan_courses")
-        .select("id, plan_semester_id, course_id, courses(code, title, credits)")
+        .select("id, plan_semester_id, course_id, status, grade, courses(code, title, credits)")
         .in("plan_semester_id", semesterIds)
     : { data: [] };
 
@@ -62,6 +63,8 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
           code: joined?.code ?? "",
           title: joined?.title ?? "",
           credits: joined?.credits ?? 0,
+          status: (c as { status?: string }).status as "planned" | "completed" | undefined,
+          grade: (c as { grade?: string }).grade,
         };
       }),
   }));
@@ -115,7 +118,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
     id: s.id,
     term: s.term,
     year: s.year,
-    courses: s.courses.map((c) => ({ courseId: c.courseId, code: c.code, credits: c.credits })),
+    courses: s.courses.map((c) => ({ courseId: c.courseId, code: c.code, credits: c.credits, status: c.status, grade: c.grade })),
   }));
 
   const warnings: PrereqWarning[] = validateSemesters(planSemesters, prereqRules, courseCodeMap);
@@ -134,8 +137,9 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-display tracking-tight">{plan.name}</h1>
+        <ImportTranscriptButton planId={id} />
       </div>
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex-1 min-w-0">
