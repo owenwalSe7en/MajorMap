@@ -14,7 +14,15 @@ export default defineConfig({
         test: {
           name: "catalog",
           root: "./packages/catalog",
-          include: ["src/**/*.test.ts", "src/**/*.test.ts"],
+          include: ["src/**/*.test.ts"],
+        },
+      },
+      {
+        test: {
+          name: "web",
+          root: "./apps/web",
+          include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+          environment: "jsdom",
         },
       },
     ],
