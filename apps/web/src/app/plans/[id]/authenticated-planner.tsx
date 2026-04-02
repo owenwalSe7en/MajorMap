@@ -3,13 +3,15 @@
 import { useRouter } from "next/navigation";
 import { PlannerGrid, type SemesterData } from "./planner-grid";
 import * as actions from "../actions";
+import type { PrereqWarning } from "@major-map/planner";
 
 interface AuthenticatedPlannerProps {
   planId: string;
   initialSemesters: SemesterData[];
+  warnings: PrereqWarning[];
 }
 
-export function AuthenticatedPlanner({ planId, initialSemesters }: AuthenticatedPlannerProps) {
+export function AuthenticatedPlanner({ planId, initialSemesters, warnings }: AuthenticatedPlannerProps) {
   const router = useRouter();
 
   async function handleAddSemester(term: string, year: number) {
@@ -36,9 +38,6 @@ export function AuthenticatedPlanner({ planId, initialSemesters }: Authenticated
   }
 
   async function handleRemoveCourse(semesterId: string, courseEntryId: string) {
-    // For authenticated, courseEntryId is the plan_course row ID
-    // We need to find it — the semesterData has courseId (the course UUID), not the plan_courses.id
-    // Actually, we pass the plan_courses.id as course.id in the semester data
     const semester = initialSemesters.find((s) => s.id === semesterId);
     const courseEntry = semester?.courses.find((c) => c.courseId === courseEntryId);
     if (courseEntry) {
@@ -50,6 +49,7 @@ export function AuthenticatedPlanner({ planId, initialSemesters }: Authenticated
   return (
     <PlannerGrid
       semesters={initialSemesters}
+      warnings={warnings}
       onAddSemester={handleAddSemester}
       onRemoveSemester={handleRemoveSemester}
       onAddCourse={handleAddCourse}

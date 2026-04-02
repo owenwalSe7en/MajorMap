@@ -4,8 +4,8 @@ import { useState } from "react";
 import { SemesterCard } from "./semester-card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-
-const TERM_ORDER: Record<string, number> = { Fall: 0, Spring: 1, Summer: 2 };
+import { TERM_ORDER } from "@major-map/shared";
+import type { PrereqWarning } from "@major-map/planner";
 
 export interface SemesterData {
   id: string;
@@ -16,6 +16,7 @@ export interface SemesterData {
 
 interface PlannerGridProps {
   semesters: SemesterData[];
+  warnings?: PrereqWarning[];
   onAddSemester: (term: string, year: number) => void;
   onRemoveSemester: (semesterId: string) => void;
   onAddCourse: (semesterId: string, courseId: string) => void;
@@ -27,6 +28,7 @@ const sortSemesters = (a: SemesterData, b: SemesterData) =>
 
 export function PlannerGrid({
   semesters,
+  warnings = [],
   onAddSemester,
   onRemoveSemester,
   onAddCourse,
@@ -55,11 +57,14 @@ export function PlannerGrid({
         </h2>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
         {sorted.map((semester) => (
           <SemesterCard
             key={semester.id}
             semester={semester}
+            warnings={warnings.filter((w) =>
+              semester.courses.some((c) => c.courseId === w.courseId),
+            )}
             onAddCourse={(courseId) => onAddCourse(semester.id, courseId)}
             onRemoveCourse={(courseId) => onRemoveCourse(semester.id, courseId)}
             onRemoveSemester={() => onRemoveSemester(semester.id)}

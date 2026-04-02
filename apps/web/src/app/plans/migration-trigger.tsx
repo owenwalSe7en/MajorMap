@@ -34,7 +34,7 @@ export function MigrationTrigger() {
           router.push(`/plans/${result.planId}`);
         } else {
           migrationInProgress.current = false;
-          setError("error" in result ? result.error : "Migration failed");
+          setError("error" in result ? result.error ?? "Migration failed" : "Migration failed");
         }
       });
     });
