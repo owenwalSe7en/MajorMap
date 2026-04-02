@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { Navigation } from "@/components/landing/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -37,8 +36,7 @@ export default async function CoursesPage({ searchParams }: Props) {
 
   return (
     <main className="min-h-screen noise-overlay">
-      <Navigation />
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-32 pb-16">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-8 pb-16">
         <div className="mb-12">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
             <span className="w-8 h-px bg-foreground/30" />
