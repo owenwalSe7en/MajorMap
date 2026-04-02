@@ -5,9 +5,45 @@ describe("buildRequirementTree", () => {
     const { buildRequirementTree } = await import("./requirements-tree.js");
 
     const items = [
-      { id: "root", requirement_set_id: "rs1", parent_id: null, sort_order: 0, label: "Core", type: "group", course_id: null, credits_required: null, courses_required: null, description: null, raw_rule: null },
-      { id: "child1", requirement_set_id: "rs1", parent_id: "root", sort_order: 0, label: "CS 1400", type: "course", course_id: "c1", credits_required: null, courses_required: null, description: null, raw_rule: null },
-      { id: "child2", requirement_set_id: "rs1", parent_id: "root", sort_order: 1, label: "CS 1410", type: "course", course_id: "c2", credits_required: null, courses_required: null, description: null, raw_rule: null },
+      {
+        id: "root",
+        requirement_set_id: "rs1",
+        parent_id: null,
+        sort_order: 0,
+        label: "Core",
+        type: "group",
+        course_id: null,
+        credits_required: null,
+        courses_required: null,
+        description: null,
+        raw_rule: null,
+      },
+      {
+        id: "child1",
+        requirement_set_id: "rs1",
+        parent_id: "root",
+        sort_order: 0,
+        label: "CS 1400",
+        type: "course",
+        course_id: "c1",
+        credits_required: null,
+        courses_required: null,
+        description: null,
+        raw_rule: null,
+      },
+      {
+        id: "child2",
+        requirement_set_id: "rs1",
+        parent_id: "root",
+        sort_order: 1,
+        label: "CS 1410",
+        type: "course",
+        course_id: "c2",
+        credits_required: null,
+        courses_required: null,
+        description: null,
+        raw_rule: null,
+      },
     ];
 
     const tree = buildRequirementTree(items);
@@ -27,9 +63,45 @@ describe("buildRequirementTree", () => {
     const { buildRequirementTree } = await import("./requirements-tree.js");
 
     const items = [
-      { id: "root", requirement_set_id: "rs1", parent_id: null, sort_order: 0, label: "Core", type: "group", course_id: null, credits_required: null, courses_required: null, description: null, raw_rule: null },
-      { id: "b", requirement_set_id: "rs1", parent_id: "root", sort_order: 2, label: "Second", type: "course", course_id: "c2", credits_required: null, courses_required: null, description: null, raw_rule: null },
-      { id: "a", requirement_set_id: "rs1", parent_id: "root", sort_order: 1, label: "First", type: "course", course_id: "c1", credits_required: null, courses_required: null, description: null, raw_rule: null },
+      {
+        id: "root",
+        requirement_set_id: "rs1",
+        parent_id: null,
+        sort_order: 0,
+        label: "Core",
+        type: "group",
+        course_id: null,
+        credits_required: null,
+        courses_required: null,
+        description: null,
+        raw_rule: null,
+      },
+      {
+        id: "b",
+        requirement_set_id: "rs1",
+        parent_id: "root",
+        sort_order: 2,
+        label: "Second",
+        type: "course",
+        course_id: "c2",
+        credits_required: null,
+        courses_required: null,
+        description: null,
+        raw_rule: null,
+      },
+      {
+        id: "a",
+        requirement_set_id: "rs1",
+        parent_id: "root",
+        sort_order: 1,
+        label: "First",
+        type: "course",
+        course_id: "c1",
+        credits_required: null,
+        courses_required: null,
+        description: null,
+        raw_rule: null,
+      },
     ];
 
     const tree = buildRequirementTree(items);
