@@ -1,0 +1,2953 @@
+{
+  "listLength": 2,
+  "data": [
+    {
+      "_id": "CPSCBS-2025-04-01",
+      "assessments": "",
+      "campus": "",
+      "campuses": [],
+      "career": "Undergraduate Semester",
+      "careerPaths": [],
+      "catalogDescription": "Bachelor of Science",
+      "catalogDisplayName": "Computer Science",
+      "catalogFullDescription": "<ul><li><p><strong>Computer Science</strong> encompasses the theory and discipline of solving computational problems. Computer scientists analyze and engineer the software, algorithms, computer systems, and theories that continue to advance the modern technological world. They work in a broad range of areas including artificial intelligence, security, graphics, robotics, operating systems, networking and communication.</p></li></ul>",
+      "catalogQuote": "",
+      "catalogQuoteAuthor": "",
+      "categories": "",
+      "cipCode": "11.0701",
+      "code": "CPSCBS",
+      "college": "EN - J & M Price College of Eng.",
+      "contacts": [],
+      "createdAt": 1738187657429,
+      "customFields": {
+        "Cg8Es": "<p>Website: <a href=\"http://www.cs.utah.edu/\" target=\"_blank\" rel=\"noopener noreferrer nofollow\">www.cs.utah.edu</a><br><br>Merrill Engineering Building, Rm 3190<br><br>Phone: 801-581-8224 <br>Email: <a href=\"mailto:ugrad-help@cs.utah.edu\" rel=\"noopener noreferrer nofollow\">ugrad-help@cs.utah.edu</a></p>",
+        "9VKoN": "<ul><li><p>A \"B-\" or better in CS 2420</p></li><li><p>A \"C\" or better in Math 1210</p></li></ul>",
+        "XwfIO": "<ul><li><p>A minimum cumulative gpa of 2.50 is required for graduation</p></li><li><p>All CS courses of 2000 level and higher must maintain a minimum cumulative gpa of 2.50 for graduation</p></li><li><p>All major requirements must have a C- or better to satisfy degree requirements. With an exception of CS 2420 requiring a B- or better.</p></li></ul>",
+        "GgLIH": false,
+        "kgNb8": [],
+        "d9JTS": false,
+        "dCFyF": false,
+        "tkyPP": "<a href='https://majormaps.utah.edu/majors_list/index.php'>https://majormaps.utah.edu/majors_list/index.php</a>",
+        "QBO1Z": "<p><a href=\"https://advising.utah.edu/majors/quick-look/computer-science.php\">https://advising.utah.edu/majors/quick-look/computer-science.php</a></p>",
+        "ZKOtz": 78,
+        "XoBjj": false,
+        "lr4tn": "Fall 2025",
+        "p4eXX": true,
+        "Scxg5": false,
+        "XHTFF": "<p>Want to write software, create applications for phones and websites, and engineer human-computer interfaces? If you want to enhance your programming skills, work to create exciting new technologies, and learn more about the place computing has in society, consider this program.</p>",
+        "jZ7Lv": "<p>https://zion.umc.utah.edu/wp-content/uploads/2020/07/computer-science-banner.jpg</p>",
+        "X78RZ": "Coding, Apps, Programming, Medical Imaging, AI, Robotics, Hardware, Web Development, Artificial Intelligence, Machine Learning, Robots, Software",
+        "UdvvG": "Software Development, Cascading Style Sheets (CSS), Project Management, C (Programming Language), IT Manager, JavaScript (Programming Language), IT Specialist, Software Engineering, Unix, Python (Programming Language), Network Engineer, Web Developer, JQuery, Systems Engineer, PHP (Scripting Language), Systems Administrator, Requirements Analysis, Consultant, SQL (Programming Language), Programmer Analyst, Microsoft SQL Servers, C++ (Programming Language), Linux, Research Assistant, Java (Programming Language), Software Engineer, Software Developer, Systems Analyst, HyperText Markup Language (HTML), Project Manager, Developer, Application Developer, Teaching Assistant, Software Development Engineer, Extensible Markup Language (XML), MySQL, Agile Methodology, Data Analysis, Business Analysis, Business Analyst, C# (Programming Language), Web Services, Java Developer, Systems Development Life Cycle",
+        "stjkB": [
+          "Arts & Performance",
+          "Computers & Technology",
+          "Math & Sciences"
+        ],
+        "G04Oc": false,
+        "XjsXO": "<p>Entertainments Arts and Engineering </p>",
+        "bKsc2": "<p><a href=\"https://us.utah.edu/loa-matrix-public/eng_computing-combined_computerscience_assessplan.docx\" class=\"open_in_new_tab\" rel=\"noopener noreferrer nofollow\">https://us.utah.edu/loa-matrix-public/eng_computing-combined_computerscience_assessplan.docx</a></p>",
+        "w0Vf8": "<p></p><p><strong><em>General Education and Bachelor Degree Requirements</em></strong> <br>Visit:  <a href=\"https://universityofutah.catalog.prod.coursedog.com/programs/JjuSJtwJRQHsrs1PEQM7\" rel=\"noopener noreferrer nofollow\">https://universityofutah.catalog.prod.coursedog.com/programs/JjuSJtwJRQHsrs1PEQM7</a></p><p><strong><em>Honors Requirements</em><br></strong>Visit: <a href=\"https://universityofutah.catalog.staging.coursedog.com/programs/u43Jwu3UUqqhtDnfVuH1\" rel=\"noopener noreferrer nofollow\">https://universityofutah.catalog.prod.coursedog.com/programs/u43Jwu3UUqqhtDnfVuH1</a></p>",
+        "fvl9s": 11.0701,
+        "nHBHl": "<p>Added math alternatives.  The math/science section was not correct, it was showing 3 math/science electives and last year we changed it to one.  Removed 3011, 3020 and 4011 as an option  to take as a CS elective.  Added the honors thesis to the capstone project.  Added C- or better required for major requirements which we have always had but did not see it listed on the catalog.  Changed the wording to the CS Electives to be 21 credits and 7 CS electives required which it has always been but did not state in this catalog.</p>"
+      },
+      "defaultOfRequirementTerm": "",
+      "degreeDesignation": "",
+      "degreeDesignations": [],
+      "degreeMaps": [
+        {
+          "degreeMapName": "Computer Science Sample 4 Year Plan",
+          "semesters": [
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2058221",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "criticality": true,
+                  "id": "wMwZTcvip1",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2017511",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "courseRequirementGroupFreeText": "GE-QL",
+                  "id": "LXAG8zkF7M",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - LS (Life Sciences)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "yt5wpE7ria",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "requirementDesignations",
+                      "value": "WR1 - Writing Requirement 1",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "HU1Yy2EZ5K",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 1",
+              "semester": "Fall",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2058231",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "criticality": true,
+                  "id": "mJRnCNFiHh",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2017531",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "criticality": true,
+                  "id": "5MphadvF6f",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2058801",
+                      "code": ""
+                    }
+                  ],
+                  "courseRequirementGroupFreeText": "GE-WR2",
+                  "area": "generalEducation",
+                  "id": "AvnnUwCHkt",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - BF (Social/Behavioral Science Expl)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "AUXmgix9QO",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 1",
+              "semester": "Spring",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0014611",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "owPzHHpUKu",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2018111",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "bChlhoJ5Em",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2059041",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "NTUxsx3IZ7",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - AI (American Institutions)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "Ubk6vkDS0H",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "requirementDesignations",
+                      "value": "PS - Physical Sciences",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "MlWlNIxgEX",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 2",
+              "semester": "Fall",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0050012",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "Bx6n66ijyy",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0068611",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "8FwOtRbJOX",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2092871",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "SSD1AaSbUu",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "BD - DV (Diversity)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "5Q3TjGuU31",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "requirementDesignations",
+                      "value": "HF - Humanities Exploration",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3
+                  },
+                  "progressCredits": {
+                    "min": 3
+                  },
+                  "id": "HoUYqtswVs",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 2",
+              "semester": "Spring",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2092801",
+                      "code": ""
+                    },
+                    {
+                      "type": "courses",
+                      "value": "0056421",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "o49qfNTFZk",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "CS Electives (6 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 6,
+                    "max": 6
+                  },
+                  "progressCredits": {
+                    "min": 6
+                  },
+                  "id": "a2yOxNOYwM",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - FF (Fine Art Exploration)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "xeo2yWKAI5",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "BD - IR (International Requirement)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "Tgxxrd0M3C",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 3",
+              "semester": "Fall",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2092771",
+                      "code": ""
+                    },
+                    {
+                      "type": "courses",
+                      "value": "2092781",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "bcqVd5mkMW",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2092801",
+                      "code": ""
+                    },
+                    {
+                      "type": "courses",
+                      "value": "0056421",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "1fNsiICnMk",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "CS Electives (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3
+                  },
+                  "progressCredits": {
+                    "min": 3
+                  },
+                  "id": "Uqa8OvvezW",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0058671",
+                      "code": ""
+                    },
+                    {
+                      "type": "courses",
+                      "value": "2090951",
+                      "code": ""
+                    }
+                  ],
+                  "courseRequirementGroupFreeText": "BD-CW",
+                  "area": "major",
+                  "id": "alT1obOj6Z",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "General Elective (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "elective",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "tZaT7StSMC",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 3",
+              "semester": "Spring",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0120521",
+                      "code": ""
+                    },
+                    {
+                      "type": "courses",
+                      "value": "0120511",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "bdC5SmoGNW",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "CS Electives (6 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 6
+                  },
+                  "progressCredits": {
+                    "min": 6
+                  },
+                  "id": "qYQob82PFf",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "Additional Math/Science (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3
+                  },
+                  "progressCredits": {
+                    "min": 3
+                  },
+                  "id": "8FnmZ2D7b9",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "General Elective (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "elective",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "ZZavYlyQBe",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 4",
+              "semester": "Fall",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2089611",
+                      "code": ""
+                    },
+                    {
+                      "type": "courses",
+                      "value": "2059871",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "8yoligoHl5",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "CS Electives (6 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 6
+                  },
+                  "progressCredits": {
+                    "min": 6
+                  },
+                  "id": "uHAXXoDZaO",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": " General Electives (6 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "elective",
+                  "actualCredits": {
+                    "min": 6,
+                    "max": 6
+                  },
+                  "progressCredits": {
+                    "min": 6,
+                    "max": 6
+                  },
+                  "id": "yiEqMu37av",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 4",
+              "semester": "Spring",
+              "sequence": 1,
+              "sisId": ""
+            }
+          ],
+          "id": "RvEeNhh4rf",
+          "degreeMapNarrative": "<p>Note: This is just a sample. Log into My Degree Dashboard (in CIS) and meet with your academic advisor to fit a program of study with your academic record.</p><p>For students to graduate within the 120 hours, they must take General Education Breadth Requirements (FF, HF, and/or BF) that also fulfill the Baccalaureate Degree Requirements of DV and IR.</p>",
+          "displayedInCatalog": true,
+          "isActive": false,
+          "sisId": "",
+          "termScheme": ""
+        },
+        {
+          "degreeMapName": "Computer Science - EAE Emphases Sample 4 Year Plan",
+          "semesters": [
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2058221",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "criticality": true,
+                  "id": "wMwZTcvip1",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2017511",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "courseRequirementGroupFreeText": "GE-QL",
+                  "id": "LXAG8zkF7M",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - WR1 (Writing Requirement 1)",
+                      "code": ""
+                    }
+                  ],
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "area": "generalEducation",
+                  "id": "9iVTKNjUOn",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - PS (Physical Sciences)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "yt5wpE7ria",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0166431",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "HU1Yy2EZ5K",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 1",
+              "semester": "Fall",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2058231",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "criticality": true,
+                  "id": "mJRnCNFiHh",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2017531",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "criticality": true,
+                  "id": "5MphadvF6f",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - WR2 (Writing Requirement 2)",
+                      "code": ""
+                    }
+                  ],
+                  "courseRequirementGroupFreeText": "GE-WR2",
+                  "area": "generalEducation",
+                  "id": "AvnnUwCHkt",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2017171",
+                      "code": ""
+                    },
+                    {
+                      "type": "courses",
+                      "value": "0076241",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "AUXmgix9QO",
+                  "courseRequirementGroupFreeText": "GE-FF",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0166571",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "HQXYx6F70n",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 1",
+              "semester": "Spring",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0014611",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "owPzHHpUKu",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2018111",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "bChlhoJ5Em",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2059041",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "NTUxsx3IZ7",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0166591",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "Ubk6vkDS0H",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 2",
+              "semester": "Fall",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0050012",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "Bx6n66ijyy",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0068611",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "8FwOtRbJOX",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2092871",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "SSD1AaSbUu",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - LS (Life Sciences)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "5Q3TjGuU31",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0087251",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "LD01xmAM4V",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 2",
+              "semester": "Spring",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0056421",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "o49qfNTFZk",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "requirementDesignations",
+                      "value": "DVHF - Diversity & Humanities Exploration",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "xeo2yWKAI5",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0074603",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "BoaLyQ5B8B",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0039111",
+                      "code": ""
+                    },
+                    {
+                      "type": "courses",
+                      "value": "0070891",
+                      "code": ""
+                    }
+                  ],
+                  "courseRequirementGroupFreeText": "BD-CW",
+                  "id": "cl7yeiurkd",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "area": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "CS Theory or Area Focus (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3
+                  },
+                  "progressCredits": {
+                    "min": 3
+                  },
+                  "id": "aQQrFcCX0x",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 3",
+              "semester": "Fall",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2092801",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "1fNsiICnMk",
+                  "courseRequirementGroupFreeText": "BD-QI",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0074613",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "CpUUSG7Afo",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "CS Theory or Area Focus (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3
+                  },
+                  "progressCredits": {
+                    "min": 3
+                  },
+                  "id": "jH5Cpa2y5U",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "Area Focus (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3
+                  },
+                  "progressCredits": {
+                    "min": 3
+                  },
+                  "id": "wRkp29KvXa",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "General Elective (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "elective",
+                  "actualCredits": {
+                    "min": 3
+                  },
+                  "progressCredits": {
+                    "min": 3
+                  },
+                  "id": "DYtETpL3tf",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 3",
+              "semester": "Spring",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "2089651",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "bdC5SmoGNW",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "Area Focus (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "qYQob82PFf",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "Area Focus (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3
+                  },
+                  "progressCredits": {
+                    "min": 3
+                  },
+                  "id": "8FnmZ2D7b9",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - AI (American Institutions)",
+                      "code": ""
+                    }
+                  ],
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "area": "generalEducation",
+                  "id": "KISeaZ4MTS",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "BD - IR (International Requirement)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "mzfrrVktJ2",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 4",
+              "semester": "Fall",
+              "sequence": 1,
+              "sisId": ""
+            },
+            {
+              "requirements": [
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courses",
+                      "value": "0087241",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "id": "8yoligoHl5",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "Area Focus (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "EJ8IoFE8ON",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "generic",
+                      "value": "Area Focus (3 cr)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "major",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3
+                  },
+                  "id": "FUtJ5l2Rgq",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                },
+                {
+                  "requirementSelect": [
+                    {
+                      "type": "courseAttributes",
+                      "value": "GE - BF (Social/Behavioral Science Expl)",
+                      "code": ""
+                    }
+                  ],
+                  "area": "generalEducation",
+                  "actualCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "progressCredits": {
+                    "min": 3,
+                    "max": 3
+                  },
+                  "id": "sKVadD9vil",
+                  "sisId": "",
+                  "minimumGrade": "",
+                  "minimumGpa": "",
+                  "courseRequirementGroupFreeText": ""
+                }
+              ],
+              "year": "Year 4",
+              "semester": "Spring",
+              "sequence": 1,
+              "sisId": ""
+            }
+          ],
+          "id": "9JTKHO2sdT",
+          "degreeMapNarrative": "<p>Note: This plan assumes the student is prepared to take the courses listed. If prerequisites are required, additional semesters may be required to complete this degree. Please note that student-specific plans may differ. </p><p>This is just a sample. Log into My Degree Dashboard (in CIS) and meet with your academic advisor to fit a program of study with your academic record.</p><p>For students to graduate within the 120 hours, they must take General Education Breadth Requirements (HF, and/or BF) that also fulfill the Baccalaureate Degree Requirements of DV and IR.</p>",
+          "displayedInCatalog": true,
+          "isActive": false,
+          "defaultDegreeMap": false,
+          "sisId": "",
+          "termScheme": ""
+        }
+      ],
+      "delivery": "",
+      "departments": [
+        "CP SC"
+      ],
+      "description": "",
+      "diplomaDescription": "",
+      "effectiveEndDate": null,
+      "effectiveStartDate": "2025-04-01",
+      "fieldOfStudy": "",
+      "firstTermValid": "",
+      "hegisCode": "",
+      "id": "CPSCBS-2025-04-01",
+      "institution": "",
+      "institutionId": "",
+      "instructionalMethods": [],
+      "lastAdmitTerm": "",
+      "lastEditedAt": 1754426962247,
+      "lastEditedBy": "u1160244@utah.edu",
+      "lastProspectDate": "",
+      "learningOutcomes": [
+        {
+          "name": "Demonstrate the ability to develop and work with abstractions",
+          "tags": [
+            "Institution: Knowledge & Skills"
+          ],
+          "activity": "CPSCBSLO1",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Demonstrate a knowledge of classical algorithms and data structures",
+          "tags": [
+            "Institution: Knowledge & Skills"
+          ],
+          "activity": "CPSCBSLO2",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Be able to analyze the efficiency of algorithms",
+          "tags": [
+            "Institution: Knowledge & Skills"
+          ],
+          "activity": "CPSCBSLO3",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Be able to design and implement efficient algorithms to solve computational problems",
+          "tags": [
+            "Institution: Transformation",
+            "Institution: Impact"
+          ],
+          "activity": "CPSCBSLO4",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Demonstrate deep knowledge of a specific area of computer science",
+          "tags": [
+            "Institution: Knowledge & Skills"
+          ],
+          "activity": "CPSCBSLO5",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Demonstrate programming skills and the ability to learn new languages and tools",
+          "tags": [
+            "Institution: Transformation"
+          ],
+          "activity": "CPSCBSLO6",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Demonstrate the ability to work with a large code base",
+          "tags": [],
+          "activity": "CPSCBSLO7",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Demonstrate an understanding of the interaction between application software, systems software, and hardware",
+          "tags": [
+            "Institution: Knowledge & Skills"
+          ],
+          "activity": "CPSCBSLO8",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Be able to work in a team setting",
+          "tags": [
+            "Institution: Community"
+          ],
+          "activity": "CPSCBSLO9",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Demonstrate clarity in technical communication",
+          "tags": [],
+          "activity": "CPSCBSLO10",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Demonstrate the ability to apply current ethical standards as related to computer science / software engineering",
+          "tags": [
+            "Institution: Community"
+          ],
+          "activity": "CPSCBSLO11",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        }
+      ],
+      "learningOutcomesV2": {
+        "originalValue": {},
+        "mappedDocumentItemIds": [],
+        "customValue": {}
+      },
+      "level": "Bachelor of Science",
+      "longName": "",
+      "name": "Computer Science BS",
+      "notes": "",
+      "nscClassification": "",
+      "parentName": "",
+      "programGroupId": "CPSCBS",
+      "programLengthType": "",
+      "programLengthValue": 120,
+      "registrationMode": "",
+      "requirementLevels": [],
+      "requisites": {
+        "requisitesSimple": [
+          {
+            "id": "yVELCumb",
+            "name": "Required Course Work",
+            "showInCatalog": true,
+            "requirementLevel": "programRequirements",
+            "rules": [
+              {
+                "id": "PUSPSMKw",
+                "condition": "allOf",
+                "subRules": [
+                  {
+                    "condition": "anyOf",
+                    "subRules": [
+                      {
+                        "condition": "completedAllOf",
+                        "value": {
+                          "condition": "courses",
+                          "values": [
+                            {
+                              "value": [
+                                "0184791"
+                              ],
+                              "logic": "and"
+                            },
+                            {
+                              "value": [
+                                "0187461"
+                              ],
+                              "logic": "and"
+                            },
+                            {
+                              "value": [
+                                "2058231"
+                              ],
+                              "logic": "and"
+                            }
+                          ],
+                          "id": "2ATpQay6",
+                          "subSelections": []
+                        },
+                        "id": "e2PmIHtw",
+                        "name": "Introduction"
+                      },
+                      {
+                        "condition": "completedAllOf",
+                        "value": {
+                          "condition": "courses",
+                          "values": [
+                            {
+                              "value": [
+                                "2058221"
+                              ],
+                              "logic": "and"
+                            },
+                            {
+                              "value": [
+                                "2058231"
+                              ],
+                              "logic": "and"
+                            }
+                          ],
+                          "id": "fwzZCiyS",
+                          "subSelections": []
+                        },
+                        "id": "EqmITAOb",
+                        "name": "Accelerated Introduction"
+                      }
+                    ],
+                    "id": "vDyWt8Zd",
+                    "name": "Computer Programming"
+                  },
+                  {
+                    "condition": "completedAllOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017511",
+                            "0112961",
+                            "0185881"
+                          ],
+                          "logic": "or"
+                        }
+                      ],
+                      "id": "aiJwi6ou",
+                      "subSelections": []
+                    },
+                    "id": "TawmFC8C",
+                    "name": "Calculus"
+                  }
+                ],
+                "name": "Foundation courses",
+                "description": "<p>Earn a minimum grade of \"C-\" in CS 1400 &amp; CS 1410 OR CS 1420.<br>Earn a minimum grade of \"B-\" in CS 2420.<br>Earn a minimum grade of \"C\" in MATH 1210.</p>"
+              },
+              {
+                "id": "q6ffOywJ",
+                "condition": "completedAtLeastXOf",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "0058671"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "2090951"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0049511"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "g6BR0D8F",
+                  "subSelections": []
+                },
+                "restriction": 1,
+                "name": "Upper Division Writing",
+                "description": "<p>Varies with Emphasis.</p>"
+              },
+              {
+                "id": "Nd9jI6zQ",
+                "condition": "allOf",
+                "subRules": [
+                  {
+                    "condition": "completedAllOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017531",
+                            "0112951"
+                          ],
+                          "logic": "or"
+                        },
+                        {
+                          "value": [
+                            "2018111",
+                            "0193771"
+                          ],
+                          "logic": "or"
+                        },
+                        {
+                          "value": [
+                            "0050012",
+                            "2018211"
+                          ],
+                          "logic": "or"
+                        }
+                      ],
+                      "id": "bQE7jXwI",
+                      "subSelections": []
+                    },
+                    "id": "yNFcPeTo",
+                    "name": "Math"
+                  },
+                  {
+                    "condition": "completedAtLeastXOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2045211"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2045231"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2018071"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2018141"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2022131"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2018311"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2018321"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2080571"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2080581"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0008601"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2019931"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2019941"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2014241"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2092711"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2013261"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2013271"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2037531"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0166861"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "N3NLWCu9",
+                      "subSelections": []
+                    },
+                    "id": "Bouviw4P",
+                    "restriction": 1,
+                    "name": "Math/Science",
+                    "description": "<p>Cleared with Emphasis.</p>"
+                  }
+                ],
+                "name": "Math/Science"
+              },
+              {
+                "id": "XT40Lko9",
+                "condition": "completedAllOf",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "0014611",
+                        "0082521"
+                      ],
+                      "logic": "or"
+                    },
+                    {
+                      "value": [
+                        "2059041"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0068611"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "2092871"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "2092801"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0056421"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "bJMsussl",
+                  "subSelections": []
+                },
+                "name": "Computer Science Core",
+                "grade": "C-",
+                "gradeType": "G.P.A"
+              },
+              {
+                "id": "kWiORsRz",
+                "condition": "completedAtLeastXOf",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "2092771"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "2092781"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "e3Tdxc8M",
+                  "subSelections": []
+                },
+                "restriction": 1,
+                "name": "Theory"
+              },
+              {
+                "id": "tySq7knK",
+                "condition": "anyOf",
+                "subRules": [
+                  {
+                    "condition": "completedAllOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0120521"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2089611"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "bvCE2DRf",
+                      "subSelections": []
+                    },
+                    "id": "ZiyyYcFF",
+                    "name": "Project"
+                  },
+                  {
+                    "condition": "completedAllOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0120511"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2059871",
+                            "2097421"
+                          ],
+                          "logic": "or"
+                        }
+                      ],
+                      "id": "GOPzy8yY",
+                      "subSelections": []
+                    },
+                    "id": "eteyyr6a",
+                    "name": "Research/Thesis"
+                  },
+                  {
+                    "condition": "completedAllOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0120521"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0120521"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0138631"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "tlhz10rD",
+                      "subSelections": []
+                    },
+                    "id": "Gn07Ktzl",
+                    "name": "Honors Project"
+                  }
+                ],
+                "name": "Capstone",
+                "description": "<p>Will differ for emphasis.</p>"
+              },
+              {
+                "id": "3zHXWPvG",
+                "condition": "completeVariableCoursesAndVariableCredits",
+                "credits": 21,
+                "name": "Computer Science Electives",
+                "description": "<p>Cleared with Emphasis.</p><p></p><p>Earn credits from CS 3000 - 5999, excluding:</p><p>Any course used to fulfill other requirements.</p><p><a href=\"/courses/0107381\" class=\"custom-link\" data-course-id=\"0107381\">course</a>, <a href=\"/courses/0075601\" class=\"custom-link\" data-course-id=\"0075601\">course</a>, <a href=\"/courses/0040392\" class=\"custom-link\" data-course-id=\"0040392\">course</a>, <a href=\"/courses/0040382\" class=\"custom-link\" data-course-id=\"0040382\">course</a>, <a href=\"/courses/0120521\" class=\"custom-link\" data-course-id=\"0120521\">course</a>, <a href=\"/courses/0197451\" class=\"custom-link\" data-course-id=\"0197451\">course</a>, <a href=\"/courses/2089611\" class=\"custom-link\" data-course-id=\"2089611\">course</a>, <a href=\"/courses/0120511\" class=\"custom-link\" data-course-id=\"0120511\">course</a>, <a href=\"/courses/2059871\" class=\"custom-link\" data-course-id=\"2059871\">course</a></p>",
+                "minCourses": 7,
+                "minCredits": 21
+              }
+            ],
+            "notes": "<p>For students to graduate within the 120 hours, they must take General Education Breadth Requirements (FF, HF, and/or BF) that also fulfill the Baccalaureate Degree Requirements of DV and IR.</p>",
+            "type": "",
+            "sisId": ""
+          },
+          {
+            "id": "gI3lmvhT",
+            "name": "Entertainments Arts and Engineering ",
+            "showInCatalog": true,
+            "requirementLevel": "emphasesRequirements",
+            "rules": [
+              {
+                "id": "bdGDINmM",
+                "condition": "freeformText",
+                "value": "In addition to Foundation Courses, Math, Computer Science Core, Theory",
+                "name": "Emphasis Additional Required Course Work ",
+                "description": "<p>To complete in 120 hours; students must take a breadth course (HF or BF) that also counts as an DV or IR.</p>"
+              },
+              {
+                "id": "xwEoDoQ1",
+                "condition": "completedAtLeastXOf",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "0039111"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0070891"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0049511"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0058671"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "2090951"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "xc4IQeCy",
+                  "subSelections": []
+                },
+                "restriction": 1,
+                "name": "Writing"
+              },
+              {
+                "id": "JhMfU1Te",
+                "condition": "completedAllOf",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "0166431"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0166571"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0166591"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0087251"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0074603"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0074613"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "ZdStDNRe",
+                  "subSelections": []
+                },
+                "name": "Games Core Courses"
+              },
+              {
+                "id": "4EwH80ez",
+                "condition": "allOf",
+                "subRules": [
+                  {
+                    "condition": "completedAtLeastXOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0166511"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2093131"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0125481"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2060171"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2093161"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0187931"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2093121"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "fcVQv7j4",
+                      "subSelections": []
+                    },
+                    "id": "5L46tJiB",
+                    "restriction": 1,
+                    "name": "AI/Analytics"
+                  },
+                  {
+                    "condition": "completedAtLeastXOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2092811"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0108181"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2093011"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0075611"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2092991"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2092971"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "Cm9u5k98",
+                      "subSelections": []
+                    },
+                    "id": "xMaz25jZ",
+                    "restriction": 1,
+                    "name": "Core/Fundamentals"
+                  },
+                  {
+                    "condition": "completedAtLeastXOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0191731"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0179801"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2093191"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0205711"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0146001"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2093471"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0179591"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2093481"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "6NqUfnP7",
+                      "subSelections": []
+                    },
+                    "id": "zauEqkSG",
+                    "restriction": 1,
+                    "name": "Human Centered Computing"
+                  },
+                  {
+                    "condition": "completedAtLeastXOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0197501"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0161631"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2093041"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0197511"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0191741"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0129481"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "2093101"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "9NOLMWZj",
+                      "subSelections": []
+                    },
+                    "id": "uElLjYzS",
+                    "restriction": 1,
+                    "name": "Infrastructure"
+                  },
+                  {
+                    "condition": "minimumCredits",
+                    "value": {
+                      "condition": "none",
+                      "values": [],
+                      "id": "SUXLEUXF",
+                      "subSelections": []
+                    },
+                    "credits": 6,
+                    "id": "6IuMmkqI",
+                    "name": "Additional Electives",
+                    "description": "<p>Choose 2 more classes from ANY of the FOCUS AREAS ABOVE</p>"
+                  }
+                ],
+                "name": "Area Focus Electives"
+              },
+              {
+                "id": "bLSx2w7V",
+                "condition": "anyOf",
+                "name": "Capstone",
+                "subRules": [
+                  {
+                    "condition": "completedAllOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2089651"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0087241"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "TU7Nhjej",
+                      "subSelections": []
+                    },
+                    "id": "CHIGShu8",
+                    "name": "Capstone Project"
+                  },
+                  {
+                    "condition": "completedAllOf",
+                    "id": "JnBgEQdC",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2089651"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0087241"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0138631"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "wft6H2sh",
+                      "subSelections": []
+                    },
+                    "name": "Honors Capstone Project"
+                  }
+                ]
+              }
+            ],
+            "type": "",
+            "sisId": ""
+          }
+        ]
+      },
+      "status": "Active",
+      "sulaSpecialProgram": "",
+      "transcriptDescription": "",
+      "transcriptLevel": "",
+      "type": "Undergraduate Major",
+      "version": 6,
+      "createdBy": "u0065609@utah.edu"
+    },
+    {
+      "_id": "CPSCMIN-2025-04-01",
+      "assessments": "",
+      "campus": "",
+      "campuses": [],
+      "career": "Undergraduate Semester",
+      "careerPaths": [],
+      "catalogDescription": "Minor",
+      "catalogDisplayName": "Computer Science ",
+      "catalogFullDescription": "<p>A minor in computer science exposes students to the fundamentals of programming and broader areas of computer science.</p>",
+      "catalogQuote": "",
+      "catalogQuoteAuthor": "",
+      "categories": "",
+      "cipCode": "11.0701",
+      "code": "CPSCMIN",
+      "college": "EN - J & M Price College of Eng.",
+      "contacts": [],
+      "createdAt": 1743164490481,
+      "customFields": {
+        "Cg8Es": "<p>Website: <a href=\"http://www.cs.utah.edu/\" target=\"_blank\" rel=\"noopener noreferrer nofollow\">www.cs.utah.edu</a></p><p>Merrill Engineering Building, Rm 3190</p><p>Phone: 801-581-8224<br>Email: <a href=\"mailto:ugrad-help@cs.utah.edu\" rel=\"noopener noreferrer nofollow\">ugrad-help@cs.utah.edu</a></p>",
+        "9VKoN": "<p>A B- or better in CS 2420</p><p>A C or better in Math 1210</p>",
+        "XwfIO": "<p>Upper division courses (3000 or higher) must be taken at the University of Utah.</p><p>If CS 2100 is taken toward the minor, it must be taken at the University of Utah.</p><p>GPA from the best three CS 3000+ courses must be 2.5 or greater. (CS 2100 can also be utilized in the GPA computation) </p>",
+        "GgLIH": false,
+        "kgNb8": [],
+        "d9JTS": false,
+        "dCFyF": false,
+        "tkyPP": "<a href='https://majormaps.utah.edu/majors_list/index.php'>https://majormaps.utah.edu/majors_list/index.php</a>",
+        "QBO1Z": "<p><a href=\"https://advising.utah.edu/majors/quick-look/computer-science.php\">https://advising.utah.edu/majors/quick-look/computer-science.php</a></p>",
+        "ZKOtz": 21,
+        "lr4tn": "Fall 2025",
+        "XHTFF": "<p>Want to write software, create applications for phones and websites, and engineer human-computer interfaces? If you want to enhance your programming skills, work to create exciting new technologies, and learn more about the place computing has in society, consider this program.</p>",
+        "jZ7Lv": "<p>https://zion.umc.utah.edu/wp-content/uploads/2020/07/computer-science-banner.jpg</p>",
+        "UdvvG": "Project Management, IT Manager, JavaScript (Programming Language), C (Programming Language), IT Specialist, Software Engineering, Unix, Network Engineer, Python (Programming Language), JQuery, Web Developer, Systems Engineer, Consultant, Requirements Analysis, PHP (Scripting Language), Systems Administrator, Programmer Analyst, SQL (Programming Language), Microsoft SQL Servers, C++ (Programming Language), Research Assistant, Java (Programming Language), Software Developer, Application Developer, Linux, Systems Analyst, HyperText Markup Language (HTML), Software Engineer, Software Development Engineer, Developer, Project Manager, Agile Methodology, Business Analysis, Extensible Markup Language (XML), MySQL, C# (Programming Language), Business Analyst, Web Services, Data Analysis, Java Developer, Systems Development Life Cycle, Software Development, Cascading Style Sheets (CSS)",
+        "stjkB": [
+          "Computers & Technology",
+          "Math & Sciences",
+          "Arts & Performance"
+        ],
+        "bKsc2": "<p><a href=\"https://us.utah.edu/loa-matrix-public/eng_computing-combined_computerscience_assessplan.docx\" class=\"open_in_new_tab\" rel=\"noopener noreferrer nofollow\">https://us.utah.edu/loa-matrix-public/eng_computing-combined_computerscience_assessplan.docx</a></p>",
+        "fvl9s": 11.0701,
+        "nHBHl": "<p>Only one Ethics class can be taken, CS 3090 or CS 3390.</p>"
+      },
+      "defaultOfRequirementTerm": "",
+      "degreeDesignation": "",
+      "degreeDesignations": [],
+      "degreeMaps": [],
+      "delivery": "",
+      "departments": [
+        "CP SC"
+      ],
+      "description": "",
+      "diplomaDescription": "",
+      "effectiveEndDate": null,
+      "effectiveStartDate": "2025-04-01",
+      "fieldOfStudy": "",
+      "firstTermValid": "",
+      "hegisCode": "",
+      "id": "CPSCMIN-2025-04-01",
+      "institution": "",
+      "institutionId": "",
+      "instructionalMethods": [],
+      "lastAdmitTerm": "",
+      "lastEditedAt": 1745961594809,
+      "lastEditedBy": "u0065609@utah.edu",
+      "lastProspectDate": "",
+      "learningOutcomes": [
+        {
+          "name": "Develop and utilize abstractions",
+          "tags": [],
+          "activity": "CPSCMINLO1",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Understand and analyze the efficiency of classical algorithms and data structures",
+          "tags": [],
+          "activity": "CPSCMINLO2",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Create programs",
+          "tags": [],
+          "activity": "CPSCMINLO3",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Learn new programming languages and tools",
+          "tags": [],
+          "activity": "CPSCMINLO4",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Develop reusable and maintainable code",
+          "tags": [],
+          "activity": "CPSCMINLO5",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Work in a team setting toward a common goal",
+          "tags": [],
+          "activity": "CPSCMINLO6",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        }
+      ],
+      "learningOutcomesV2": {
+        "originalValue": {},
+        "mappedDocumentItemIds": [],
+        "customValue": {}
+      },
+      "level": "Minor",
+      "longName": "",
+      "name": "Computer Science Minor",
+      "notes": "",
+      "nscClassification": "",
+      "parentName": "",
+      "programGroupId": "CPSCMIN",
+      "programLengthType": "",
+      "programLengthValue": 21,
+      "registrationMode": "",
+      "requirementLevels": [],
+      "requisites": {
+        "requisitesSimple": [
+          {
+            "id": "hwWzqwaw",
+            "name": "Required Course Work",
+            "type": "Completion Requirement",
+            "showInCatalog": true,
+            "requirementLevel": "programRequirements",
+            "rules": [
+              {
+                "id": "8KtPyeLH",
+                "condition": "allOf",
+                "subRules": [
+                  {
+                    "condition": "numberOf",
+                    "subRules": [
+                      {
+                        "condition": "minimumGrade",
+                        "value": {
+                          "condition": "courses",
+                          "values": [
+                            {
+                              "value": [
+                                "0184791"
+                              ],
+                              "logic": "and"
+                            },
+                            {
+                              "value": [
+                                "0187461"
+                              ],
+                              "logic": "and"
+                            }
+                          ],
+                          "id": "bb0X4EAQ",
+                          "subSelections": []
+                        },
+                        "gradeType": "Letter Grade",
+                        "grade": "C-",
+                        "id": "C85PQOuF",
+                        "name": "Course Work"
+                      },
+                      {
+                        "condition": "minimumGrade",
+                        "value": {
+                          "condition": "courses",
+                          "values": [
+                            {
+                              "value": [
+                                "2058221"
+                              ],
+                              "logic": "and"
+                            }
+                          ],
+                          "id": "4tVzlmkr",
+                          "subSelections": []
+                        },
+                        "gradeType": "Letter Grade",
+                        "grade": "C-",
+                        "id": "67yld7fJ",
+                        "name": "Course Work"
+                      }
+                    ],
+                    "number": 1,
+                    "id": "KEs0MoYT",
+                    "name": "Course Work"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2058231"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "DIo42pdl",
+                      "subSelections": []
+                    },
+                    "gradeType": "Letter Grade",
+                    "grade": "B-",
+                    "id": "dxuAaV0k",
+                    "name": "Course Work"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017511",
+                            "0112961",
+                            "0185881"
+                          ],
+                          "logic": "or"
+                        }
+                      ],
+                      "id": "bhoThB8j",
+                      "subSelections": []
+                    },
+                    "gradeType": "Letter Grade",
+                    "grade": "C",
+                    "id": "gqvGqJh0",
+                    "name": "Course Work"
+                  }
+                ],
+                "name": "Pre-Minor Courses"
+              },
+              {
+                "id": "zC69RGmv",
+                "condition": "numberOf",
+                "subRules": [
+                  {
+                    "condition": "minimumCredits",
+                    "value": {
+                      "condition": "none",
+                      "values": [],
+                      "id": "JQRNiMAa",
+                      "subSelections": []
+                    },
+                    "credits": 9,
+                    "id": "mKnfkLVV",
+                    "name": "Option 1",
+                    "description": "<p>Earned at least 9 credits from CS 3000 - 5999</p>",
+                    "notes": "<p>Excluding:</p><p><a href=\"/courses/0107381\" class=\"custom-link\" data-course-id=\"0107381\">course</a></p><p><a href=\"/courses/0075601\" class=\"custom-link\" data-course-id=\"0075601\">course</a></p><p><a href=\"/courses/0044731\" class=\"custom-link\" data-course-id=\"0044731\">course</a></p><p><a href=\"/courses/0040392\" class=\"custom-link\" data-course-id=\"0040392\">course</a></p><p><a href=\"/courses/0040382\" class=\"custom-link\" data-course-id=\"0040382\">course</a></p><p><a href=\"/courses/0120521\" class=\"custom-link\" data-course-id=\"0120521\">course</a></p><p><a href=\"/courses/2089611\" class=\"custom-link\" data-course-id=\"2089611\">course</a></p><ul><li><p>Earned a minimum grade of C- in all courses taken from the following subject codes: CS</p></li><li><p>Only one Ethics class can be taken, CS 3090 or CS 3390.</p></li></ul>"
+                  },
+                  {
+                    "condition": "allOf",
+                    "subRules": [
+                      {
+                        "condition": "minimumGrade",
+                        "value": {
+                          "condition": "courses",
+                          "values": [
+                            {
+                              "value": [
+                                "0014611"
+                              ],
+                              "logic": "and"
+                            }
+                          ],
+                          "id": "YUFyreol",
+                          "subSelections": []
+                        },
+                        "gradeType": "Letter Grade",
+                        "grade": "C-",
+                        "id": "p3OErWKV",
+                        "name": "Course Work"
+                      },
+                      {
+                        "condition": "minimumCredits",
+                        "value": {
+                          "condition": "none",
+                          "values": [],
+                          "id": "03BCWalO",
+                          "subSelections": []
+                        },
+                        "credits": 6,
+                        "id": "UNMHrXxb",
+                        "name": "Course Work",
+                        "description": "<p>Earned at least 6 credits from CS 3000 - 5999</p>",
+                        "notes": "<p><a href=\"/courses/0075601\" class=\"custom-link\" data-course-id=\"0075601\">course</a></p><p><a href=\"/courses/0107381\" class=\"custom-link\" data-course-id=\"0107381\">course</a></p><p><a href=\"/courses/0120521\" class=\"custom-link\" data-course-id=\"0120521\">course</a></p><p><a href=\"/courses/2089611\" class=\"custom-link\" data-course-id=\"2089611\">course</a></p><p><a href=\"/courses/0040392\" class=\"custom-link\" data-course-id=\"0040392\">course</a></p><p><a href=\"/courses/0040382\" class=\"custom-link\" data-course-id=\"0040382\">course</a></p><p><a href=\"/courses/0044731\" class=\"custom-link\" data-course-id=\"0044731\">course</a></p><ul><li><p>Earned a minimum grade of C- in all courses taken from the following subject codes: CS</p></li><li><p>Only one Ethics class can be taken, CS 3090 or CS 3390.</p></li></ul>"
+                      }
+                    ],
+                    "id": "3jTWfqth",
+                    "name": "Option 2"
+                  }
+                ],
+                "number": 1,
+                "name": "Course Work"
+              }
+            ],
+            "sisId": ""
+          }
+        ]
+      },
+      "sisId": "CPSCMIN",
+      "status": "Active",
+      "sulaSpecialProgram": "",
+      "transcriptDescription": "",
+      "transcriptLevel": "",
+      "type": "Minor",
+      "version": 2,
+      "createdBy": "u0065609@utah.edu"
+    }
+  ]
+}

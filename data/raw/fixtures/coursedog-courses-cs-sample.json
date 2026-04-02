@@ -1,0 +1,2251 @@
+{
+  "listLength": 7,
+  "data": [
+    {
+      "_id": "2058201-2020-02-01",
+      "archived": false,
+      "attributes": [],
+      "blindGrading": false,
+      "campus": "",
+      "campuses": [],
+      "canSchedule": true,
+      "career": "Undergraduate Semester",
+      "catalogPrint": true,
+      "cipCode": "",
+      "code": "CS1000",
+      "college": "EN - J & M Price College of Eng.",
+      "components": [
+        {
+          "id": "LAB",
+          "code": "LAB",
+          "name": "LAB - Laboratory",
+          "optionalComponent": false,
+          "defaultSectionSize": 0,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        },
+        {
+          "id": "LEC",
+          "code": "LEC",
+          "name": "LEC - Lecture",
+          "optionalComponent": false,
+          "defaultSectionSize": 0,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        }
+      ],
+      "consent": "N - No Special Consent Required",
+      "courseApproved": "A - Approved",
+      "courseDependents": [],
+      "courseGroupId": "2058201",
+      "courseNumber": "1000",
+      "courseTypicallyOffered": "",
+      "createdAt": 1714378132575,
+      "credits": {
+        "courseCount": 1,
+        "repeatable": false,
+        "numberOfRepeats": 1,
+        "numberOfCredits": 3,
+        "creditHours": {
+          "min": 3,
+          "max": 3,
+          "operator": ""
+        },
+        "contactHours": {
+          "value": 0,
+          "operator": ""
+        },
+        "academicProgressHours": {
+          "value": 3,
+          "operator": ""
+        },
+        "financialAidHours": {
+          "value": 3,
+          "operator": ""
+        }
+      },
+      "customFields": {
+        "rawCourseId": "205820",
+        "crseOfferNbr": "1",
+        "enrollmentUnitLoadCalcType": "1 - Actual Units",
+        "lastMultiTermCourse": false,
+        "allowMultipleEnroll": false,
+        "splitOwnership": false,
+        "feesExist": false,
+        "catalogAttributes": [],
+        "migratedCourseGroupId_202502182026515": "a2hzQ8u84WQPnD2HgCCV"
+      },
+      "departments": [
+        "CP SC"
+      ],
+      "dependents": [],
+      "description": "This course is an Introduction to programming principles and engineering problem solving via computational means using MATLAB and Spreadsheets. This course teaches how to apply programming to solve Engineering problems (e.g., data visualization, stochastic simulation, selected numerical techniques, image manipulation, ...). Students will be taught how to transform real world problems into programs using proper data representations, functions, and control structures. Clean programming practices will be emphasized.",
+      "designation": "",
+      "division": "",
+      "dropConsent": "N - No Special Consent Required",
+      "dynamicClassDateRule": "MISCRULE",
+      "effectiveEndDate": null,
+      "effectiveStartDate": "2020-02-01",
+      "equivalentCourseGroup": "",
+      "examOnlyCourse": false,
+      "glInterfaceRequired": false,
+      "gradeMode": "SEM - Graded",
+      "gradeRosterPrint": "C - Component",
+      "gradedComponent": "LEC - Lecture",
+      "hegisCode": "",
+      "id": "2058201-2020-02-01",
+      "institution": "UOFU",
+      "institutionId": "205820",
+      "instructionMode": "",
+      "instructionalMethods": [],
+      "instructorEdit": "N - No Enrollment Choice",
+      "lastEditedAt": 1775044476886,
+      "lastEditedBy": "$integration",
+      "lastSyncErrors": [],
+      "lastSyncMergeReportId": "SmBKk4XhDs5WVlGgsy7r",
+      "lastSyncStatus": "success",
+      "lastSyncedAt": 1775044181034,
+      "learningOutcomes": [],
+      "location": "",
+      "longName": "Engineering Computing",
+      "milestones": [],
+      "name": "Engineering Computing",
+      "notes": "",
+      "oeeDynamicDateRule": false,
+      "oeeEnrollment": true,
+      "offerNumber": 1,
+      "primaryComponent": "LEC - Lecture",
+      "printInstructorInSchedule": true,
+      "programDependents": [],
+      "registrationMode": "",
+      "requirementDesignation": "",
+      "requirementGroup": "004305",
+      "requirementLevels": [],
+      "requisites": {},
+      "rolloverSetting": "",
+      "scheduleDisplayName": "",
+      "schedulePrint": true,
+      "scheduleTermRoll": true,
+      "sisId": "2058201",
+      "startTerm": {
+        "year": "2021",
+        "id": "1206",
+        "semester": 6
+      },
+      "status": "Inactive",
+      "subjectCode": "CS",
+      "topics": [],
+      "tuitionGroup": "",
+      "type": "",
+      "version": 5,
+      "createdBy": "wsilva@coursedog.com",
+      "departmentOwnership": [],
+      "lastSyncErrorRecommendations": [],
+      "careers": [],
+      "aliases": [],
+      "deprecatedCourseGroupId": "a2hzQ8u84WQPnD2HgCCV",
+      "endTerm": null,
+      "collegesAllowedToOffer": [],
+      "globalCourseTitle": "CS1000 - Engineering Computing (3 cr)",
+      "orderByKeyForCode": "CS0000001000"
+    },
+    {
+      "_id": "0184791-2022-10-02",
+      "archived": false,
+      "attributes": [],
+      "blindGrading": false,
+      "campus": "",
+      "campuses": [],
+      "canSchedule": true,
+      "career": "Undergraduate Semester",
+      "catalogPrint": true,
+      "cipCode": "",
+      "code": "CS1400",
+      "college": "EN - J & M Price College of Eng.",
+      "components": [
+        {
+          "id": "LAB",
+          "code": "LAB",
+          "name": "LAB - Laboratory",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        },
+        {
+          "id": "LEC",
+          "code": "LEC",
+          "name": "LEC - Lecture",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        }
+      ],
+      "consent": "N - No Special Consent Required",
+      "courseApproved": "A - Approved",
+      "courseDependents": [],
+      "courseGroupId": "0184791",
+      "courseNumber": "1400",
+      "courseTypicallyOffered": "Fall and Spring",
+      "createdAt": 1714378132575,
+      "credits": {
+        "courseCount": 1,
+        "repeatable": false,
+        "numberOfRepeats": 1,
+        "numberOfCredits": 4,
+        "creditHours": {
+          "min": 4,
+          "max": 4,
+          "operator": ""
+        },
+        "contactHours": {
+          "value": 0,
+          "operator": ""
+        },
+        "academicProgressHours": {
+          "value": 4,
+          "operator": ""
+        },
+        "financialAidHours": {
+          "value": 4,
+          "operator": ""
+        }
+      },
+      "customFields": {
+        "rawCourseId": "018479",
+        "lastMultiTermCourse": false,
+        "allowMultipleEnroll": false,
+        "enrollmentUnitLoadCalcType": "1 - Actual Units",
+        "oq2wN": [
+          "Lower Division",
+          "Undergraduate"
+        ],
+        "3CGqh": false,
+        "IxTXj": false,
+        "cE7SJ": [
+          "Spring 2023"
+        ],
+        "3ffFB": "<p><strong>03.11.25</strong> - Semesters Typically Offered added based off past 5 years of historical data. - Rachael Dick.</p>",
+        "Vo847": "Prerequisites: AP CalcAB score of 3+ OR AP CalcBC score of 3+ OR\nCorerequisites: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math",
+        "E8kE1": "Prerequisites: AP CalcAB score of 3+ OR AP CalcBC score of 3+ ORCorerequisites: 'C' or better in MATH 1050 OR 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math",
+        "crseOfferNbr": "1",
+        "splitOwnership": false,
+        "feesExist": false,
+        "catalogAttributes": [],
+        "migratedCourseGroupId_202502182026515": "LzCDcftzshk6GyO7mZs5"
+      },
+      "departments": [
+        "CP SC"
+      ],
+      "dependents": [],
+      "description": "This course is an introduction to the engineering and mathematical skills required to effectively program computers and is designed for students with no prior programming experience.",
+      "designation": "",
+      "division": "",
+      "dropConsent": "N - No Special Consent Required",
+      "dynamicClassDateRule": "MISCRULE",
+      "effectiveEndDate": null,
+      "effectiveStartDate": "2022-10-02",
+      "equivalentCourseGroup": "",
+      "examOnlyCourse": false,
+      "glInterfaceRequired": false,
+      "gradeMode": "SEM - Graded",
+      "gradeRosterPrint": "C - Component",
+      "gradedComponent": "LEC - Lecture",
+      "hegisCode": "",
+      "id": "0184791-2022-10-02",
+      "institution": "UOFU",
+      "institutionId": "018479",
+      "instructionMode": "",
+      "instructionalMethods": [],
+      "instructorEdit": "N - No Enrollment Choice",
+      "lastEditedAt": 1775044476886,
+      "lastEditedBy": "$integration",
+      "lastSyncErrors": [],
+      "lastSyncMergeReportId": "SmBKk4XhDs5WVlGgsy7r",
+      "lastSyncStatus": "success",
+      "lastSyncedAt": 1775044181035,
+      "learningOutcomes": [
+        {
+          "name": "Employ data collections and their algorithms to solve problems, especially canonical loop patterns to process arrays and lists",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Exploit procedural abstraction (non-recursive and recursive methods) to decompose a program into manageable pieces",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Incorporate an understanding of creating and using object types, as well as their scope and life cycle, into solutions",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Leverage the features of an Integrated Development Environment to design, implement, test, debug, and document a complete computer program, given only a problem statement",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Use variables, assignment, selection, and repetition to form solutions to simple problems",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Utilize binary representations, memory models (references, heap, stack), and persistent storage (files) in solving problems",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        }
+      ],
+      "location": "",
+      "longName": "Introduction to Computer Programming",
+      "milestones": [],
+      "name": "Intro Comp Programming",
+      "notes": "",
+      "oeeDynamicDateRule": false,
+      "oeeEnrollment": true,
+      "offerNumber": 1,
+      "primaryComponent": "LEC - Lecture",
+      "printInstructorInSchedule": true,
+      "programDependents": [],
+      "registrationMode": "",
+      "requirementDesignation": "",
+      "requirementGroup": "011150",
+      "requirementLevels": [],
+      "requisites": {
+        "requisitesSimple": [
+          {
+            "id": "oT3DcokF",
+            "name": "Required Corequisites",
+            "type": "Corequisite",
+            "showInCatalog": false,
+            "rules": [
+              {
+                "id": "xEPkS5hH",
+                "condition": "anyOf",
+                "subRules": [
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017321"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "acfBdBzw",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "H0joQxUT",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017331"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "1X03GjyE",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "43QokWLO",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0112941"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "UQvqV6op",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "00opPuPq",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017511"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "UaUf5ftj",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "CTSyPz5l",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0185881"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "zig7N8Xl",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "Sz1bZ136",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017961"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "I1sWHauR",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "3dzyYkWD",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0112961"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "L6p2Kk1g",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "Vs2rU5xd",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0053631"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "5KJUmSKl",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "e8zXNbPR",
+                    "name": "Required Corequisites"
+                  }
+                ]
+              }
+            ],
+            "sisId": ""
+          }
+        ]
+      },
+      "rolloverSetting": "",
+      "scheduleDisplayName": "",
+      "schedulePrint": true,
+      "scheduleTermRoll": true,
+      "sisId": "0184791",
+      "startTerm": {
+        "year": "2023",
+        "id": "1234",
+        "semester": 4
+      },
+      "status": "Active",
+      "subjectCode": "CS",
+      "topics": [],
+      "tuitionGroup": "",
+      "type": "",
+      "version": 8,
+      "createdBy": "wsilva@coursedog.com",
+      "departmentOwnership": [],
+      "lastSyncErrorRecommendations": [],
+      "careers": [],
+      "aliases": [],
+      "deprecatedCourseGroupId": "LzCDcftzshk6GyO7mZs5",
+      "learningOutcomesV2": {
+        "originalValue": {},
+        "mappedDocumentItemIds": [],
+        "customValue": {}
+      },
+      "endTerm": null,
+      "collegesAllowedToOffer": [],
+      "globalCourseTitle": "CS1400 - Intro Comp Programming (4 cr)",
+      "orderByKeyForCode": "CS0000001400"
+    },
+    {
+      "_id": "0187461-2026-03-01",
+      "aliases": [],
+      "allowIntegration": true,
+      "archived": false,
+      "attributes": [],
+      "blindGrading": false,
+      "campus": "",
+      "campuses": [],
+      "canSchedule": true,
+      "career": "Undergraduate Semester",
+      "careers": [],
+      "catalogPrint": true,
+      "cipCode": "",
+      "code": "CS1410",
+      "college": "EN - J & M Price College of Eng.",
+      "components": [
+        {
+          "id": "LAB",
+          "code": "LAB",
+          "name": "LAB - Laboratory",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        },
+        {
+          "id": "LEC",
+          "code": "LEC",
+          "name": "LEC - Lecture",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        }
+      ],
+      "consent": "N - No Special Consent Required",
+      "courseApproved": "A - Approved",
+      "courseDependents": [],
+      "courseGroupId": "0187461",
+      "courseNumber": "1410",
+      "courseTypicallyOffered": "All Terms",
+      "createdAt": 1760629694922,
+      "credits": {
+        "courseCount": 1,
+        "repeatable": false,
+        "numberOfRepeats": 1,
+        "numberOfCredits": 4,
+        "creditHours": {
+          "min": 4,
+          "max": 4,
+          "operator": ""
+        },
+        "contactHours": {
+          "value": 0,
+          "operator": ""
+        },
+        "academicProgressHours": {
+          "value": 4,
+          "operator": ""
+        },
+        "financialAidHours": {
+          "value": 4,
+          "operator": ""
+        }
+      },
+      "customFields": {
+        "rawCourseId": "018746",
+        "lastMultiTermCourse": false,
+        "allowMultipleEnroll": false,
+        "enrollmentUnitLoadCalcType": "1 - Actual Units",
+        "oq2wN": [
+          "Undergraduate",
+          "Lower Division"
+        ],
+        "3CGqh": false,
+        "IxTXj": false,
+        "cE7SJ": "Fall 2026",
+        "Vo847": "Prerequisites: 'C-' or better in CS 1400.\nCorequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+.",
+        "E8kE1": "Prerequisites: 'C-' or better in CS 1400 OR Instructor Consent Corequisites: MATH 1060 OR 1080 OR 1210 OR 1215 OR 1220 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score 4+ OR AP CalcBC score 3+",
+        "crseOfferNbr": "1",
+        "splitOwnership": false,
+        "feesExist": false,
+        "catalogAttributes": [],
+        "migratedCourseGroupId_202502182026515": "sR6kzQJZZy450VDsdydv",
+        "0uM4R": true,
+        "a6s00": "Updating Required Requisite(s)",
+        "oV3nG": "<p>Removing instructor consent from prerequisite as it is no longer relevant.</p>"
+      },
+      "departmentOwnership": [],
+      "departments": [
+        "CP SC"
+      ],
+      "dependents": [],
+      "deprecatedCourseGroupId": "sR6kzQJZZy450VDsdydv",
+      "description": "This course builds on the programming skills learned in CS 1400, while introducing the paradigm of object-oriented programming.",
+      "designation": "",
+      "division": "",
+      "dropConsent": "N - No Special Consent Required",
+      "dynamicClassDateRule": "MISCRULE",
+      "effectiveEndDate": null,
+      "effectiveStartDate": "2026-03-01",
+      "endTerm": null,
+      "equivalentCourseGroup": "",
+      "examOnlyCourse": false,
+      "glInterfaceRequired": false,
+      "gradeMode": "SEM - Graded",
+      "gradeRosterPrint": "C - Component",
+      "gradedComponent": "LEC - Lecture",
+      "hegisCode": "",
+      "id": "0187461-2026-03-01",
+      "institution": "UOFU",
+      "institutionId": "018746",
+      "instructionMode": "",
+      "instructionalMethods": [],
+      "instructorEdit": "N - No Enrollment Choice",
+      "lastEditedAt": 1772531715617,
+      "lastEditedBy": "$integration",
+      "lastSyncErrorRecommendations": [],
+      "lastSyncErrors": [],
+      "lastSyncMergeReportId": "af5MaWg0W9TJGWZSi4p3",
+      "lastSyncStatus": "success",
+      "lastSyncedAt": 1772531257495,
+      "learningOutcomes": [
+        {
+          "name": "A knowledge of contemporary issues.",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "An ability to apply knowledge of mathematics, science, and engineering",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "An ability to design a system, component, or process to meet desired needs within realistic constraints such as economic, environmental, social, political, ethical, health and safety, manufacturability, and sustainability",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "An ability to design and conduct experiments, as well as to analyze and interpret data",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "An ability to identify, formulate, and solve engineering problems",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "An ability to use the techniques, skills, and modern engineering tools necessary for engineering practice.",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Emphasize models, code contracts, code clarity, and documentation as integral parts of the development process",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Evaluate the correctness of programs via unit testing",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Exploit data abstraction (classes and objects) to decompose a program into manageable pieces",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Leverage inheritance and polymorphism as cornerstones of the object-oriented programming design process",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Recognize what it means to be a computing professional and apply ethical codes of conduct to various scenarios",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Understand the organization of common application types such as command-line programs, graphical user interfaces, and internet-based applications",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Use type-independent collections from a language library to effectively solve problems",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        }
+      ],
+      "learningOutcomesV2": {
+        "originalValue": {},
+        "mappedDocumentItemIds": [],
+        "customValue": {}
+      },
+      "location": "",
+      "longName": "Introduction to Object-Oriented Programming",
+      "milestones": [],
+      "name": "Object-Oriented Prog",
+      "notes": "",
+      "oeeDynamicDateRule": false,
+      "oeeEnrollment": true,
+      "offerNumber": 1,
+      "primaryComponent": "LEC - Lecture",
+      "printInstructorInSchedule": true,
+      "programDependents": [],
+      "registrationMode": "",
+      "requirementDesignation": "",
+      "requirementGroup": "004307",
+      "requirementLevels": [],
+      "requisites": {
+        "requisitesSimple": [
+          {
+            "id": "B1hNfS1p",
+            "name": "Required Prerequisites",
+            "type": "Prerequisite",
+            "showInCatalog": false,
+            "rules": [
+              {
+                "id": "iPdBsnQ6",
+                "condition": "minimumGrade",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "0184791"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "6SIoLBZc",
+                  "subSelections": []
+                },
+                "gradeType": "Grade",
+                "grade": "C-"
+              }
+            ],
+            "sisId": ""
+          },
+          {
+            "id": "4axkXMxJ",
+            "name": "Required Corequisites",
+            "type": "Corequisite",
+            "showInCatalog": false,
+            "rules": [
+              {
+                "id": "gXgQrWWU",
+                "condition": "completedAtLeastXOf",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "2017331"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0112941"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "2017511"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0185881"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "2017531"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "2017961"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0112961"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0053631"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "Zw3gq1nq",
+                  "subSelections": []
+                },
+                "restriction": 1
+              }
+            ],
+            "sisId": ""
+          }
+        ]
+      },
+      "rolloverSetting": "",
+      "scheduleDisplayName": "",
+      "schedulePrint": true,
+      "scheduleTermRoll": true,
+      "sisId": "0187461",
+      "startTerm": {
+        "year": "2026",
+        "id": "1266",
+        "semester": 6
+      },
+      "status": "Active",
+      "subjectCode": "CS",
+      "topics": [],
+      "tuitionGroup": "",
+      "type": "",
+      "version": 4,
+      "collegesAllowedToOffer": [],
+      "globalCourseTitle": "CS1410 - Object-Oriented Prog (4 cr)",
+      "orderByKeyForCode": "CS0000001410"
+    },
+    {
+      "_id": "2058221-2022-10-02",
+      "archived": false,
+      "attributes": [],
+      "blindGrading": false,
+      "campus": "",
+      "campuses": [],
+      "canSchedule": true,
+      "career": "Undergraduate Semester",
+      "catalogPrint": true,
+      "cipCode": "",
+      "code": "CS1420",
+      "college": "EN - J & M Price College of Eng.",
+      "components": [
+        {
+          "id": "LAB",
+          "code": "LAB",
+          "name": "LAB - Laboratory",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        },
+        {
+          "id": "LEC",
+          "code": "LEC",
+          "name": "LEC - Lecture",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        }
+      ],
+      "consent": "N - No Special Consent Required",
+      "courseApproved": "A - Approved",
+      "courseDependents": [],
+      "courseGroupId": "2058221",
+      "courseNumber": "1420",
+      "courseTypicallyOffered": "Fall and Spring",
+      "createdAt": 1714378132575,
+      "credits": {
+        "courseCount": 1,
+        "repeatable": false,
+        "numberOfRepeats": 1,
+        "numberOfCredits": 4,
+        "creditHours": {
+          "min": 4,
+          "max": 4,
+          "operator": ""
+        },
+        "contactHours": {
+          "value": 0,
+          "operator": ""
+        },
+        "academicProgressHours": {
+          "value": 4,
+          "operator": ""
+        },
+        "financialAidHours": {
+          "value": 4,
+          "operator": ""
+        }
+      },
+      "customFields": {
+        "rawCourseId": "205822",
+        "lastMultiTermCourse": false,
+        "allowMultipleEnroll": false,
+        "enrollmentUnitLoadCalcType": "1 - Actual Units",
+        "oq2wN": [
+          "Lower Division"
+        ],
+        "3CGqh": false,
+        "IxTXj": false,
+        "cE7SJ": [
+          "Spring 2023"
+        ],
+        "3ffFB": "<p><strong>03.11.25</strong> - Semesters Typically Offered added based off past 5 years of historical data. - Rachael Dick.</p>",
+        "Vo847": "Corequisites: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+",
+        "E8kE1": "Corequisites: 'C' or better in MATH 1060 OR 1080 OR 1210 OR 1215 OR 1250 OR 1310 OR 1311 OR Higher Math OR AP CalcAB score of 4+ OR AP CalcBC score of 3+",
+        "crseOfferNbr": "1",
+        "splitOwnership": false,
+        "feesExist": false,
+        "catalogAttributes": [],
+        "migratedCourseGroupId_202502182026515": "hFLQUG82J5stT9Xcm8ZI"
+      },
+      "departments": [
+        "CP SC"
+      ],
+      "dependents": [],
+      "description": "This course is an introduction to the engineering and mathematical skills required to effectively program computers, covering in a single semester the material of both CS 1400 and CS 1410, and is designed for students with prior programming experience.",
+      "designation": "",
+      "division": "",
+      "dropConsent": "N - No Special Consent Required",
+      "dynamicClassDateRule": "MISCRULE",
+      "effectiveEndDate": null,
+      "effectiveStartDate": "2022-10-02",
+      "equivalentCourseGroup": "",
+      "examOnlyCourse": false,
+      "glInterfaceRequired": false,
+      "gradeMode": "SEM - Graded",
+      "gradeRosterPrint": "C - Component",
+      "gradedComponent": "LEC - Lecture",
+      "hegisCode": "",
+      "id": "2058221-2022-10-02",
+      "institution": "UOFU",
+      "institutionId": "205822",
+      "instructionMode": "",
+      "instructionalMethods": [],
+      "instructorEdit": "N - No Enrollment Choice",
+      "lastEditedAt": 1775044476886,
+      "lastEditedBy": "$integration",
+      "lastSyncErrors": [],
+      "lastSyncMergeReportId": "SmBKk4XhDs5WVlGgsy7r",
+      "lastSyncStatus": "success",
+      "lastSyncedAt": 1775044181035,
+      "learningOutcomes": [
+        {
+          "name": "Emphasize models, code contracts, code clarity, and documentation as integral parts of the development process",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Evaluate the correctness of programs via unit testing",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Exploit data abstraction (classes and objects) to decompose a program into manageable pieces",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Leverage inheritance and polymorphism as cornerstones of the object-oriented programming design process",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Recognize what it means to be a computing professional and apply ethical codes of conduct to various scenarios",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Understand the organization of common application types such as command-line programs, graphical user interfaces, and internet-based applications",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Use type-independent collections from a language library to effectively solve problems",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        }
+      ],
+      "location": "",
+      "longName": "Accelerated Introduction to Object-Oriented Programming",
+      "milestones": [],
+      "name": "Accel Obj-Orient Prog",
+      "notes": "",
+      "oeeDynamicDateRule": false,
+      "oeeEnrollment": true,
+      "offerNumber": 1,
+      "primaryComponent": "LEC - Lecture",
+      "printInstructorInSchedule": true,
+      "programDependents": [],
+      "registrationMode": "",
+      "requirementDesignation": "",
+      "requirementGroup": "011151",
+      "requirementLevels": [],
+      "requisites": {
+        "requisitesSimple": [
+          {
+            "id": "R02Ty09P",
+            "name": "Required Corequisites",
+            "type": "Corequisite",
+            "showInCatalog": false,
+            "rules": [
+              {
+                "id": "rzB9Lm0j",
+                "condition": "anyOf",
+                "subRules": [
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017331"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "U4P3huXi",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "BpkcnXx6",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0112941"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "d7LRIBjl",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "hJnj7efS",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017511"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "l5W2f6nQ",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "ztNE4nCF",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0185881"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "mVMqK1jj",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "FupscyYi",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2017961"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "VA0iJT3K",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "IpY4zdrc",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0112961"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "Mt6CKZaM",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "gA2EvHYu",
+                    "name": "Required Corequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0053631"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "JJjGnRKx",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "vzA1MhMy",
+                    "name": "Required Corequisites"
+                  }
+                ]
+              }
+            ],
+            "sisId": ""
+          }
+        ]
+      },
+      "rolloverSetting": "",
+      "scheduleDisplayName": "",
+      "schedulePrint": true,
+      "scheduleTermRoll": true,
+      "sisId": "2058221",
+      "startTerm": {
+        "year": "2023",
+        "id": "1234",
+        "semester": 4
+      },
+      "status": "Active",
+      "subjectCode": "CS",
+      "topics": [],
+      "tuitionGroup": "",
+      "type": "",
+      "version": 8,
+      "createdBy": "wsilva@coursedog.com",
+      "departmentOwnership": [],
+      "lastSyncErrorRecommendations": [],
+      "careers": [],
+      "aliases": [],
+      "deprecatedCourseGroupId": "hFLQUG82J5stT9Xcm8ZI",
+      "learningOutcomesV2": {
+        "originalValue": {},
+        "mappedDocumentItemIds": [],
+        "customValue": {}
+      },
+      "endTerm": null,
+      "collegesAllowedToOffer": [],
+      "globalCourseTitle": "CS1420 - Accel Obj-Orient Prog (4 cr)",
+      "orderByKeyForCode": "CS0000001420"
+    },
+    {
+      "_id": "2058231-2021-10-02",
+      "archived": false,
+      "attributes": [],
+      "blindGrading": false,
+      "campus": "",
+      "campuses": [],
+      "canSchedule": true,
+      "career": "Undergraduate Semester",
+      "catalogPrint": true,
+      "cipCode": "",
+      "code": "CS2420",
+      "college": "EN - J & M Price College of Eng.",
+      "components": [
+        {
+          "id": "LAB",
+          "code": "LAB",
+          "name": "LAB - Laboratory",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        },
+        {
+          "id": "LEC",
+          "code": "LEC",
+          "name": "LEC - Lecture",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        }
+      ],
+      "consent": "N - No Special Consent Required",
+      "courseApproved": "A - Approved",
+      "courseDependents": [],
+      "courseGroupId": "2058231",
+      "courseNumber": "2420",
+      "courseTypicallyOffered": "All Terms",
+      "createdAt": 1714378132575,
+      "credits": {
+        "courseCount": 1,
+        "repeatable": false,
+        "numberOfRepeats": 1,
+        "numberOfCredits": 4,
+        "creditHours": {
+          "min": 4,
+          "max": 4,
+          "operator": ""
+        },
+        "contactHours": {
+          "value": 0,
+          "operator": ""
+        },
+        "academicProgressHours": {
+          "value": 4,
+          "operator": ""
+        },
+        "financialAidHours": {
+          "value": 4,
+          "operator": ""
+        }
+      },
+      "customFields": {
+        "rawCourseId": "205823",
+        "lastMultiTermCourse": false,
+        "allowMultipleEnroll": false,
+        "enrollmentUnitLoadCalcType": "1 - Actual Units",
+        "oq2wN": [
+          "Lower Division"
+        ],
+        "3CGqh": false,
+        "IxTXj": false,
+        "cE7SJ": [
+          "Spring 2022"
+        ],
+        "Vo847": "Prerequisites: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5",
+        "E8kE1": "Prerequisites: 'C-' or better in CS 1410 OR CS 1420 OR AP CS-A score of 5",
+        "crseOfferNbr": "1",
+        "splitOwnership": false,
+        "feesExist": false,
+        "catalogAttributes": [],
+        "migratedCourseGroupId_202502182026515": "KBgfdW5cXJwBI1yPQrGF"
+      },
+      "departments": [
+        "CP SC"
+      ],
+      "dependents": [],
+      "description": "This course provides an introduction to the problem of engineering computational efficiency into programs. Students will learn about classical algorithms (including sorting, searching, and graph traversal), data structures (including stacks, queues, linked lists, trees, hash tables, and graphs), and analysis of program space and time requirements. Students will complete extensive programming exercises that require the application of elementary techniques from software engineering.",
+      "designation": "",
+      "division": "",
+      "dropConsent": "N - No Special Consent Required",
+      "dynamicClassDateRule": "MISCRULE",
+      "effectiveEndDate": null,
+      "effectiveStartDate": "2021-10-02",
+      "equivalentCourseGroup": "",
+      "examOnlyCourse": false,
+      "glInterfaceRequired": false,
+      "gradeMode": "SEM - Graded",
+      "gradeRosterPrint": "C - Component",
+      "gradedComponent": "LEC - Lecture",
+      "hegisCode": "",
+      "id": "2058231-2021-10-02",
+      "institution": "UOFU",
+      "institutionId": "205823",
+      "instructionMode": "",
+      "instructionalMethods": [],
+      "instructorEdit": "N - No Enrollment Choice",
+      "lastEditedAt": 1775044476886,
+      "lastEditedBy": "$integration",
+      "lastSyncErrors": [],
+      "lastSyncMergeReportId": "SmBKk4XhDs5WVlGgsy7r",
+      "lastSyncStatus": "success",
+      "lastSyncedAt": 1775044181035,
+      "learningOutcomes": [
+        {
+          "name": "Implement, and analyze for efficiency, fundamental data structures (including lists, graphs, and trees) and algorithms (including searching, sorting, and hashing)",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Employ Big-O notation to describe and compare the asymptotic complexity of algorithms, as well as perform empirical studies to validate hypotheses about running time",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Recognize and describe common applications of abstract data types (including stacks, queues, priority queues, sets, and maps)",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Apply algorithmic solutions to real-world data",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Use generics to abstract over functions that differ only in their types",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Appreciate the collaborative nature of computer science by discussing the benefits of pair programming",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        }
+      ],
+      "location": "",
+      "longName": "Introduction to Algorithms & Data Structures",
+      "milestones": [],
+      "name": "Intro Alg & Data Struct",
+      "notes": "",
+      "oeeDynamicDateRule": false,
+      "oeeEnrollment": true,
+      "offerNumber": 1,
+      "primaryComponent": "LEC - Lecture",
+      "printInstructorInSchedule": true,
+      "programDependents": [],
+      "registrationMode": "",
+      "requirementDesignation": "",
+      "requirementGroup": "004310",
+      "requirementLevels": [],
+      "requisites": {
+        "requisitesSimple": [
+          {
+            "id": "KLGkSMRD",
+            "name": "Required Prerequisites",
+            "type": "Prerequisite",
+            "showInCatalog": false,
+            "rules": [
+              {
+                "id": "kuKCjkEK",
+                "condition": "anyOf",
+                "subRules": [
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0187461"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "3NKuhVDZ",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C-",
+                    "id": "4TScR4hb",
+                    "name": "Required Prerequisites"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2058221"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "qxct4esf",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C-",
+                    "id": "j27ViOdg",
+                    "name": "Required Prerequisites"
+                  }
+                ]
+              }
+            ],
+            "sisId": ""
+          }
+        ]
+      },
+      "rolloverSetting": "",
+      "scheduleDisplayName": "",
+      "schedulePrint": true,
+      "scheduleTermRoll": true,
+      "sisId": "2058231",
+      "startTerm": {
+        "year": "2022",
+        "id": "1224",
+        "semester": 4
+      },
+      "status": "Active",
+      "subjectCode": "CS",
+      "topics": [],
+      "tuitionGroup": "",
+      "type": "",
+      "version": 8,
+      "createdBy": "wsilva@coursedog.com",
+      "departmentOwnership": [],
+      "lastSyncErrorRecommendations": [],
+      "careers": [],
+      "learningOutcomesV2": {
+        "originalValue": {},
+        "mappedDocumentItemIds": [],
+        "customValue": {}
+      },
+      "aliases": [],
+      "deprecatedCourseGroupId": "KBgfdW5cXJwBI1yPQrGF",
+      "endTerm": null,
+      "collegesAllowedToOffer": [],
+      "globalCourseTitle": "CS2420 - Intro Alg & Data Struct (4 cr)",
+      "orderByKeyForCode": "CS0000002420"
+    },
+    {
+      "_id": "2059041-2025-03-01",
+      "archived": false,
+      "attributes": [],
+      "blindGrading": false,
+      "campus": "",
+      "campuses": [],
+      "canSchedule": true,
+      "career": "Undergraduate Semester",
+      "careers": [],
+      "catalogPrint": true,
+      "cipCode": "",
+      "code": "CS3500",
+      "college": "EN - J & M Price College of Eng.",
+      "components": [
+        {
+          "id": "LAB",
+          "code": "LAB",
+          "name": "LAB - Laboratory",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        },
+        {
+          "id": "LEC",
+          "code": "LEC",
+          "name": "LEC - Lecture",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        }
+      ],
+      "consent": "N - No Special Consent Required",
+      "courseApproved": "A - Approved",
+      "courseDependents": [],
+      "courseGroupId": "2059041",
+      "courseNumber": "3500",
+      "courseTypicallyOffered": "Fall and Spring",
+      "createdAt": 1738156645497,
+      "credits": {
+        "courseCount": 1,
+        "repeatable": false,
+        "numberOfRepeats": 1,
+        "numberOfCredits": 4,
+        "creditHours": {
+          "min": 4,
+          "max": 4,
+          "operator": ""
+        },
+        "contactHours": {
+          "value": 0,
+          "operator": ""
+        },
+        "academicProgressHours": {
+          "value": 4,
+          "operator": ""
+        },
+        "financialAidHours": {
+          "value": 4,
+          "operator": ""
+        }
+      },
+      "customFields": {
+        "rawCourseId": "205904",
+        "lastMultiTermCourse": false,
+        "allowMultipleEnroll": false,
+        "enrollmentUnitLoadCalcType": "1 - Actual Units",
+        "oq2wN": [
+          "Upper Division",
+          "Undergraduate"
+        ],
+        "F7o4O": "CS5010",
+        "3CGqh": false,
+        "IxTXj": false,
+        "cE7SJ": "Fall 2025",
+        "3ffFB": "<p><strong>03.11.25</strong> - Semesters Typically Offered added based off past 5 years of historical data. - Rachael Dick.</p>",
+        "Vo847": "Prerequisites: Foundational Courses complete ((‘C-‘ or better in (CS 1400 AND CS 1410) OR CS 1420) AND (‘B-‘ or better in CS 2420) AND (‘C’ or better in MATH 1210)) AND Major or Minor in Kahlert School of Computing or ECE or Major in Physics",
+        "E8kE1": "Prerequisites: 'C-' or better in CS 2420 AND (Full Major or Minor in Computer Science OR Full Major status in Computer Engineering OR Full Major status in Data Science OR Full Major status in Physics OR Full Major status in Software Development)",
+        "crseOfferNbr": "1",
+        "splitOwnership": false,
+        "feesExist": true,
+        "catalogAttributes": [],
+        "migratedCourseGroupId_202502182026515": "NRuNSh2xD9Fv77mUp8KE"
+      },
+      "departmentOwnership": [],
+      "departments": [
+        "CP SC"
+      ],
+      "dependents": [],
+      "description": "Practical exposure to the process of creating large software systems, including requirements specifications, design, implementation, testing, and maintenance. Emphasis on software process, software tools (debuggers, profilers, source code repositories, test harnesses), software engineering techniques (time management, code, and documentation standards, source code management, object-oriented analysis and design), and team development practice. Much of the work will be in groups and will involve modifying preexisting software systems.",
+      "designation": "",
+      "division": "",
+      "dropConsent": "N - No Special Consent Required",
+      "dynamicClassDateRule": "MISCRULE",
+      "effectiveEndDate": null,
+      "effectiveStartDate": "2025-03-01",
+      "equivalentCourseGroup": "",
+      "examOnlyCourse": false,
+      "glInterfaceRequired": false,
+      "gradeMode": "SEM - Graded",
+      "gradeRosterPrint": "C - Component",
+      "gradedComponent": "LEC - Lecture",
+      "hegisCode": "",
+      "id": "2059041-2025-03-01",
+      "institution": "UOFU",
+      "institutionId": "205904",
+      "instructionMode": "",
+      "instructionalMethods": [],
+      "instructorEdit": "N - No Enrollment Choice",
+      "lastEditedAt": 1775044476886,
+      "lastEditedBy": "$integration",
+      "lastSyncErrorRecommendations": [],
+      "lastSyncErrors": [],
+      "lastSyncMergeReportId": "SmBKk4XhDs5WVlGgsy7r",
+      "lastSyncStatus": "success",
+      "lastSyncedAt": 1775044181036,
+      "learningOutcomes": [
+        {
+          "name": "Apply the model-view-controller pattern and event handling fundamentals to create a graphical user interface",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Appreciate the collaborative nature of software development by discussing the benefits of peer code reviews",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Design and implement large and complex software systems (including concurrent software) through the use of process models (such as waterfall and agile), libraries (both standard and custom), and modern software development tools (such as debuggers, profilers, and revision control systems)",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Exercise the client-server model and high-level networking APIs to build a web-based software system",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Perform input validation and error handling, as well as employ advanced testing principles and tools to systematically evaluate software",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        },
+        {
+          "name": "Utilize a modern relational database to define tables/objects, as well as store and retrieve data",
+          "tags": [],
+          "activity": "",
+          "assessment": "",
+          "objective": "",
+          "justification": ""
+        }
+      ],
+      "learningOutcomesV2": {
+        "originalValue": {},
+        "mappedDocumentItemIds": [],
+        "customValue": {}
+      },
+      "location": "",
+      "longName": "Software Practice",
+      "milestones": [],
+      "name": "Software Practice",
+      "notes": "",
+      "oeeDynamicDateRule": false,
+      "oeeEnrollment": true,
+      "offerNumber": 1,
+      "primaryComponent": "LEC - Lecture",
+      "printInstructorInSchedule": true,
+      "programDependents": [],
+      "registrationMode": "",
+      "requirementDesignation": "",
+      "requirementGroup": "004314",
+      "requirementLevels": [],
+      "requisites": {
+        "requisitesSimple": [
+          {
+            "id": "x8qd2hFR",
+            "name": "Required Prerequisites",
+            "type": "Prerequisite",
+            "showInCatalog": false,
+            "rules": [
+              {
+                "id": "qvcnIkEs",
+                "condition": "minimumGrade",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "2058231"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "WWTvHYkD",
+                  "subSelections": []
+                },
+                "gradeType": "Grade",
+                "grade": "B-"
+              },
+              {
+                "id": "ZqO3X4NJ",
+                "condition": "minimumGrade",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "2017511"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "QHoe7YWQ",
+                  "subSelections": []
+                },
+                "gradeType": "Grade",
+                "grade": "C"
+              },
+              {
+                "id": "SCkzQuQf",
+                "condition": "anyOf",
+                "subRules": [
+                  {
+                    "condition": "completedAnyOf",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "0184791"
+                          ],
+                          "logic": "and"
+                        },
+                        {
+                          "value": [
+                            "0187461"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "Eu7NGzWW",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C",
+                    "id": "ZVWxhhVg",
+                    "notes": "<p>Completed with a grade of \"C-\" or better.</p>"
+                  },
+                  {
+                    "condition": "minimumGrade",
+                    "value": {
+                      "condition": "courses",
+                      "values": [
+                        {
+                          "value": [
+                            "2058221"
+                          ],
+                          "logic": "and"
+                        }
+                      ],
+                      "id": "kub5efZv",
+                      "subSelections": []
+                    },
+                    "gradeType": "Grade",
+                    "grade": "C-",
+                    "id": "ItRigkN5"
+                  }
+                ]
+              }
+            ],
+            "sisId": ""
+          }
+        ]
+      },
+      "rolloverSetting": "",
+      "scheduleDisplayName": "",
+      "schedulePrint": true,
+      "scheduleTermRoll": true,
+      "sisId": "2059041",
+      "startTerm": {
+        "year": "2026",
+        "id": "1256",
+        "semester": 6
+      },
+      "status": "Active",
+      "subjectCode": "CS",
+      "topics": [],
+      "tuitionGroup": "",
+      "type": "",
+      "version": 5,
+      "aliases": [],
+      "deprecatedCourseGroupId": "NRuNSh2xD9Fv77mUp8KE",
+      "createdBy": "u0787541@utah.edu",
+      "endTerm": null,
+      "collegesAllowedToOffer": [],
+      "globalCourseTitle": "CS3500 - Software Practice (4 cr)",
+      "orderByKeyForCode": "CS0000003500"
+    },
+    {
+      "_id": "2018071-2023-02-01",
+      "archived": false,
+      "attributes": [],
+      "blindGrading": false,
+      "campus": "",
+      "campuses": [],
+      "canSchedule": true,
+      "career": "Undergraduate Semester",
+      "catalogPrint": true,
+      "cipCode": "",
+      "code": "MATH2210",
+      "college": "SC - College of Science",
+      "components": [
+        {
+          "id": "LEC",
+          "code": "LEC",
+          "name": "LEC - Lecture",
+          "optionalComponent": false,
+          "defaultSectionSize": 1,
+          "contactHours": 0,
+          "workloadHours": 0,
+          "oeeWorkloadHours": 0,
+          "examSeatSpacing": 1,
+          "finalExamType": "Yes",
+          "includeInDynamicDate": true,
+          "autoCreate": false,
+          "attendanceGenerate": false,
+          "preferredRoomFeatures": [],
+          "deliveryMode": [],
+          "customFields": {},
+          "providerForAuthentication": "",
+          "lmsFileType": "",
+          "instructionMode": "",
+          "attendanceType": ""
+        }
+      ],
+      "consent": "N - No Special Consent Required",
+      "courseApproved": "A - Approved",
+      "courseDependents": [],
+      "courseGroupId": "2018071",
+      "courseNumber": "2210",
+      "courseTypicallyOffered": "All Terms",
+      "createdAt": 1714378132575,
+      "credits": {
+        "courseCount": 1,
+        "repeatable": false,
+        "numberOfRepeats": 1,
+        "numberOfCredits": 3,
+        "creditHours": {
+          "min": 3,
+          "max": 3,
+          "operator": ""
+        },
+        "contactHours": {
+          "value": 0,
+          "operator": ""
+        },
+        "academicProgressHours": {
+          "value": 3,
+          "operator": ""
+        },
+        "financialAidHours": {
+          "value": 3,
+          "operator": ""
+        }
+      },
+      "customFields": {
+        "rawCourseId": "201807",
+        "lastMultiTermCourse": false,
+        "allowMultipleEnroll": false,
+        "enrollmentUnitLoadCalcType": "1 - Actual Units",
+        "OGXiP": [
+          "Instructional Materials & Services"
+        ],
+        "z5i2t": "$12",
+        "oq2wN": [
+          "Undergraduate",
+          "Lower Division"
+        ],
+        "3CGqh": false,
+        "IxTXj": false,
+        "Y7vln": "01 1001 00124 31217 40770",
+        "cE7SJ": [
+          "Summer 2023"
+        ],
+        "iE4Wx": 140000015800,
+        "3ffFB": "<p>Added Kuali course fee info - June 2025 - BB</p>",
+        "Vo847": "Prerequisites: \"C\" or better in (MATH 1220 OR MATH 1250 OR MATH 1320) OR AP Calculus BC score of at least 4.",
+        "4menP": "<p>Tutoring</p>",
+        "crseOfferNbr": "1",
+        "splitOwnership": false,
+        "feesExist": true,
+        "catalogAttributes": [],
+        "migratedCourseGroupId_202502182026515": "eMEZYpljAjntz3kId61p"
+      },
+      "departments": [
+        "MATH"
+      ],
+      "dependents": [],
+      "description": "Vectors in the plane and in 3-space, differential calculus in several variables, integration and its applications in several variables, vector fields and line, surface, and volume integrals. Green's and Stokes' theorems.",
+      "designation": "",
+      "division": "",
+      "dropConsent": "N - No Special Consent Required",
+      "dynamicClassDateRule": "MISCRULE",
+      "effectiveEndDate": null,
+      "effectiveStartDate": "2023-02-01",
+      "equivalentCourseGroup": "",
+      "examOnlyCourse": false,
+      "glInterfaceRequired": false,
+      "gradeMode": "SEM - Graded",
+      "gradeRosterPrint": "C - Component",
+      "gradedComponent": "LEC - Lecture",
+      "hegisCode": "",
+      "id": "2018071-2023-02-01",
+      "institution": "UOFU",
+      "institutionId": "201807",
+      "instructionMode": "",
+      "instructionalMethods": [],
+      "instructorEdit": "N - No Enrollment Choice",
+      "lastEditedAt": 1773393527902,
+      "lastEditedBy": "$integration",
+      "lastSyncErrors": [],
+      "lastSyncMergeReportId": "nGLDB1K7cMQDoo3N2Kv4",
+      "lastSyncStatus": "success",
+      "lastSyncedAt": 1773393047619,
+      "learningOutcomes": [],
+      "location": "",
+      "longName": "Calculus III",
+      "milestones": [],
+      "name": "Calculus III",
+      "notes": "",
+      "oeeDynamicDateRule": false,
+      "oeeEnrollment": true,
+      "offerNumber": 1,
+      "primaryComponent": "LEC - Lecture",
+      "printInstructorInSchedule": true,
+      "programDependents": [],
+      "registrationMode": "",
+      "requirementDesignation": "",
+      "requirementGroup": "003856",
+      "requirementLevels": [],
+      "requisites": {
+        "requisitesSimple": [
+          {
+            "id": "2aDJjfUB",
+            "name": "Required Prerequisites",
+            "type": "Prerequisite",
+            "showInCatalog": false,
+            "rules": [
+              {
+                "id": "XIdFxU5Z",
+                "condition": "completedAnyOf",
+                "value": {
+                  "condition": "courses",
+                  "values": [
+                    {
+                      "value": [
+                        "2017531"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "2017961"
+                      ],
+                      "logic": "and"
+                    },
+                    {
+                      "value": [
+                        "0112951"
+                      ],
+                      "logic": "and"
+                    }
+                  ],
+                  "id": "qs0rJT6F",
+                  "subSelections": []
+                },
+                "notes": "<p>Completed with a grade of 'C' or better.</p>"
+              }
+            ],
+            "sisId": ""
+          }
+        ]
+      },
+      "rolloverSetting": "",
+      "scheduleDisplayName": "",
+      "schedulePrint": true,
+      "scheduleTermRoll": true,
+      "sisId": "2018071",
+      "startTerm": {
+        "year": "2024",
+        "id": "1236",
+        "semester": 6
+      },
+      "status": "Active",
+      "subjectCode": "MATH",
+      "topics": [],
+      "tuitionGroup": "",
+      "type": "",
+      "version": 10,
+      "createdBy": "wsilva@coursedog.com",
+      "departmentOwnership": [],
+      "lastSyncErrorRecommendations": [],
+      "learningOutcomesV2": {
+        "originalValue": {},
+        "mappedDocumentItemIds": [],
+        "customValue": {}
+      },
+      "careers": [],
+      "aliases": [],
+      "deprecatedCourseGroupId": "eMEZYpljAjntz3kId61p",
+      "endTerm": null,
+      "collegesAllowedToOffer": [],
+      "globalCourseTitle": "MATH2210 - Calculus III (3 cr)",
+      "orderByKeyForCode": "MATH0000002210"
+    }
+  ]
+}
