@@ -13,11 +13,10 @@ import type { SemesterData } from "./planner-grid";
 interface SuggestionsPanelProps {
   suggestions: SuggestedCourse[];
   semesters: SemesterData[];
-  planId: string;
   hasProgram: boolean;
 }
 
-export function SuggestionsPanel({ suggestions, semesters, planId, hasProgram }: SuggestionsPanelProps) {
+export function SuggestionsPanel({ suggestions, semesters, hasProgram }: SuggestionsPanelProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [addingCourseId, setAddingCourseId] = useState<string | null>(null);
   const router = useRouter();

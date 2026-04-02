@@ -32,18 +32,18 @@ const semesters = [
 describe("SuggestionsPanel", () => {
   it("renders suggestions when provided", () => {
     const suggestions = [makeSuggestion("c1", "CS 1400")];
-    render(<SuggestionsPanel suggestions={suggestions} semesters={semesters} planId="p1" hasProgram={true} />);
+    render(<SuggestionsPanel suggestions={suggestions} semesters={semesters}  hasProgram={true} />);
     expect(screen.getByText("Suggested Courses")).toBeDefined();
     expect(screen.getByText("CS 1400")).toBeDefined();
   });
 
   it("shows empty state when no suggestions", () => {
-    render(<SuggestionsPanel suggestions={[]} semesters={semesters} planId="p1" hasProgram={true} />);
+    render(<SuggestionsPanel suggestions={[]} semesters={semesters}  hasProgram={true} />);
     expect(screen.getByText("All Set")).toBeDefined();
   });
 
   it("shows program prompt when no program selected", () => {
-    render(<SuggestionsPanel suggestions={[]} semesters={semesters} planId="p1" hasProgram={false} />);
+    render(<SuggestionsPanel suggestions={[]} semesters={semesters}  hasProgram={false} />);
     expect(screen.getByText(/select a program/i)).toBeDefined();
   });
 
@@ -52,7 +52,7 @@ describe("SuggestionsPanel", () => {
       makeSuggestion("c1", "CS 1400", { category: "Core" }),
       makeSuggestion("c2", "MATH 1210", { category: "Math" }),
     ];
-    render(<SuggestionsPanel suggestions={suggestions} semesters={semesters} planId="p1" hasProgram={true} />);
+    render(<SuggestionsPanel suggestions={suggestions} semesters={semesters}  hasProgram={true} />);
     expect(screen.getByText("All")).toBeDefined();
     expect(screen.getByText("Core")).toBeDefined();
     expect(screen.getByText("Math")).toBeDefined();
@@ -60,13 +60,13 @@ describe("SuggestionsPanel", () => {
 
   it("shows add button for each suggestion", () => {
     const suggestions = [makeSuggestion("c1", "CS 1400")];
-    render(<SuggestionsPanel suggestions={suggestions} semesters={semesters} planId="p1" hasProgram={true} />);
+    render(<SuggestionsPanel suggestions={suggestions} semesters={semesters}  hasProgram={true} />);
     expect(screen.getByText("Add")).toBeDefined();
   });
 
   it("displays reason badge", () => {
     const suggestions = [makeSuggestion("c1", "CS 1400", { reason: "Unlocks 3 courses" })];
-    render(<SuggestionsPanel suggestions={suggestions} semesters={semesters} planId="p1" hasProgram={true} />);
+    render(<SuggestionsPanel suggestions={suggestions} semesters={semesters}  hasProgram={true} />);
     expect(screen.getByText("Unlocks 3 courses")).toBeDefined();
   });
 });

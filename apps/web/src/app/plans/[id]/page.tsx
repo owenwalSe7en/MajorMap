@@ -218,7 +218,6 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
           <SuggestionsPanel
             suggestions={suggestions}
             semesters={semesterData}
-            planId={id}
             hasProgram={!!plan.program_id}
           />
         </aside>
