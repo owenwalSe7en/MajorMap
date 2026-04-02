@@ -39,26 +39,29 @@ const MAX_SUGGESTIONS = 20;
  */
 function computeUnlockCounts(
   candidateIds: Set<string>,
+  remainingIds: Set<string>,
   completedIds: Set<string>,
   prereqRules: PrereqRule[],
 ): Map<string, number> {
   const counts = new Map<string, number>();
 
-  // For each candidate, check if it is a prerequisite for other remaining courses
+  // Pre-compute "without" results once per remaining course — O(n) not O(n²)
+  const blockedIds: string[] = [];
+  for (const id of remainingIds) {
+    if (candidateIds.has(id)) continue; // candidates already have prereqs met
+    const result = prerequisiteCheck(id, completedIds, prereqRules);
+    if (!result.met) blockedIds.push(id);
+  }
+
+  // For each candidate, simulate completing it and check what it unlocks
   for (const candidateId of candidateIds) {
-    // Simulate completing this candidate
     const simulatedCompleted = new Set(completedIds);
     simulatedCompleted.add(candidateId);
 
     let unlocked = 0;
-    for (const otherId of candidateIds) {
-      if (otherId === candidateId) continue;
-      // Check if other course's prereqs would be met with this candidate completed
-      const withoutResult = prerequisiteCheck(otherId, completedIds, prereqRules);
+    for (const otherId of blockedIds) {
       const withResult = prerequisiteCheck(otherId, simulatedCompleted, prereqRules);
-      if (!withoutResult.met && withResult.met) {
-        unlocked++;
-      }
+      if (withResult.met) unlocked++;
     }
     counts.set(candidateId, unlocked);
   }
@@ -108,7 +111,7 @@ export function suggestCourses(
 
   // Compute unlock counts
   const remainingIds = new Set(requiredItems.map((ri) => ri.courseId!));
-  const unlockCounts = computeUnlockCounts(remainingIds, completedIds, prereqRules);
+  const unlockCounts = computeUnlockCounts(candidateIds, remainingIds, completedIds, prereqRules);
 
   // Score and build suggestions
   const suggestions: SuggestedCourse[] = candidateItems.map(({ item, catalog }) => {
