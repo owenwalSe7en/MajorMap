@@ -19,6 +19,13 @@ export default defineConfig({
         },
       },
       {
+        test: {
+          name: "planner",
+          root: "./packages/planner",
+          include: ["src/**/*.test.ts"],
+        },
+      },
+      {
         esbuild: {
           jsx: "automatic",
         },
