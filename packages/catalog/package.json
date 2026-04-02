@@ -16,11 +16,18 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
-    "catalog:ping": "node dist/cli.js ping"
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@major-map/shared": "workspace:*",
+    "@supabase/supabase-js": "^2",
+    "uuid": "^9",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/uuid": "^9",
+    "tsx": "^4",
     "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "vitest": "^3.2.0"
   }
 }
