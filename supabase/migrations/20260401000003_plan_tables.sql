@@ -55,7 +55,9 @@ create policy "users insert own plans"
 
 create policy "users update own plans"
   on public.semester_plans for update
-  to authenticated using (user_id = (select auth.uid()));
+  to authenticated
+  using (user_id = (select auth.uid()))
+  with check (user_id = (select auth.uid()));
 
 create policy "users delete own plans"
   on public.semester_plans for delete
@@ -72,7 +74,9 @@ create policy "users insert own semesters"
 
 create policy "users update own semesters"
   on public.plan_semesters for update
-  to authenticated using (user_id = (select auth.uid()));
+  to authenticated
+  using (user_id = (select auth.uid()))
+  with check (user_id = (select auth.uid()));
 
 create policy "users delete own semesters"
   on public.plan_semesters for delete
@@ -89,7 +93,9 @@ create policy "users insert own courses"
 
 create policy "users update own courses"
   on public.plan_courses for update
-  to authenticated using (user_id = (select auth.uid()));
+  to authenticated
+  using (user_id = (select auth.uid()))
+  with check (user_id = (select auth.uid()));
 
 create policy "users delete own courses"
   on public.plan_courses for delete

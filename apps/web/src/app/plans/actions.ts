@@ -53,7 +53,11 @@ export async function removeSemester(semesterId: string) {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
-  const { error } = await supabase.from("plan_semesters").delete().eq("id", semesterId);
+  const { error } = await supabase
+    .from("plan_semesters")
+    .delete()
+    .eq("id", semesterId)
+    .eq("user_id", user.id);
 
   if (error) return { error: error.message };
   revalidatePath("/plans");
@@ -83,7 +87,11 @@ export async function removeCourse(planCourseId: string) {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
-  const { error } = await supabase.from("plan_courses").delete().eq("id", planCourseId);
+  const { error } = await supabase
+    .from("plan_courses")
+    .delete()
+    .eq("id", planCourseId)
+    .eq("user_id", user.id);
 
   if (error) return { error: error.message };
   revalidatePath("/plans");

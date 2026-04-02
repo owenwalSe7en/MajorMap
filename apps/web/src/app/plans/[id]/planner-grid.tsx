@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-const TERM_ORDER: Record<string, number> = { Fall: 0, Spring: 1, Summer: 2 };
 import { SemesterCard } from "./semester-card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import type { CourseDisplay } from "@/lib/course-lookup";
+
+const TERM_ORDER: Record<string, number> = { Fall: 0, Spring: 1, Summer: 2 };
 
 export interface SemesterData {
   id: string;
@@ -16,7 +16,6 @@ export interface SemesterData {
 
 interface PlannerGridProps {
   semesters: SemesterData[];
-  courseDisplayMap?: Map<string, CourseDisplay>;
   onAddSemester: (term: string, year: number) => void;
   onRemoveSemester: (semesterId: string) => void;
   onAddCourse: (semesterId: string, courseId: string) => void;
