@@ -25,6 +25,8 @@ export interface PlanCourse {
   courseId: string;
   code: string;
   credits: number;
+  status?: "planned" | "completed";
+  grade?: string;
 }
 
 /** A semester in a plan. */
@@ -38,6 +40,7 @@ export interface PlanSemester {
 /** Credit summary for a plan. */
 export interface CreditSummary {
   planned: number;
+  completed: number;
   remaining: number;
   totalRequired: number;
 }
