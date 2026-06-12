@@ -26,34 +26,48 @@ export function ProgramPicker({ planId, currentProgram, universityId }: ProgramP
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ProgramOption[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   useEffect(() => {
     if (!editing || !query.trim() || query.length < 2) {
       setResults([]);
+      setSearchError(null);
       return;
     }
 
     const controller = new AbortController();
-    const supabase = createClient();
+    const timer = setTimeout(() => {
+      const supabase = createClient();
 
-    let search = supabase
-      .from("programs")
-      .select("id, name, degree_type")
-      .eq("is_discontinued", false)
-      .ilike("name", `%${query.replace(/[%_]/g, "")}%`);
-    if (universityId) search = search.eq("university_id", universityId);
+      let search = supabase
+        .from("programs")
+        .select("id, name, degree_type")
+        .eq("is_discontinued", false)
+        .ilike("name", `%${query.replace(/[%_]/g, "")}%`);
+      if (universityId) search = search.eq("university_id", universityId);
 
-    search
-      .order("name")
-      .limit(10)
-      .then(({ data }) => {
-        if (controller.signal.aborted) return;
-        setResults((data ?? []) as ProgramOption[]);
-      });
+      search
+        .order("name")
+        .limit(10)
+        .abortSignal(controller.signal)
+        .then(({ data, error: searchFailure }) => {
+          if (controller.signal.aborted) return;
+          if (searchFailure) {
+            setResults([]);
+            setSearchError("Search failed — try again");
+            return;
+          }
+          setSearchError(null);
+          setResults((data ?? []) as ProgramOption[]);
+        });
+    }, 250);
 
-    return () => controller.abort();
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [editing, query, universityId]);
 
   function apply(programId: string | null) {
@@ -139,6 +153,7 @@ export function ProgramPicker({ planId, currentProgram, universityId }: ProgramP
               ))}
             </div>
           )}
+          {searchError && <p className="text-xs text-destructive">{searchError}</p>}
           <button
             className="text-xs text-muted-foreground hover:text-foreground"
             onClick={() => {

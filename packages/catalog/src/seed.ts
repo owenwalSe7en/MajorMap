@@ -128,6 +128,10 @@ async function markDiscontinued(
       .from(table)
       .select("id, is_discontinued")
       .eq("university_id", universityId)
+      // Explicit order: unordered .range() over rows just rewritten by the
+      // upsert can skip/duplicate rows across pages, perturbing the
+      // circuit-breaker math below.
+      .order("id")
       .range(from, from + PAGE - 1);
     if (error) throw new Error(`Failed reading ${table} for stale diff: ${error.message}`);
     dbRows.push(...(data ?? []));
@@ -162,7 +166,6 @@ interface RequirementWork {
   versionLabel: string;
   contentHash: string;
   items: RequirementItemDraft[];
-  stats: { leavesResolved: number; leavesFreeText: number };
 }
 
 export async function seed(school: SchoolConfig): Promise<void> {
@@ -378,16 +381,19 @@ export async function seed(school: SchoolConfig): Promise<void> {
     programResult.inserted,
     allWarnings,
   );
+  // "SUMMARY: " is a stable machine-consumed prefix — the catalog-refresh
+  // workflow greps these lines into the job summary. Keep the prefix intact
+  // when rewording.
   console.log(
-    `Requirement sets: ${reqStats.changed} updated, ${reqStats.skipped} unchanged, ${reqStats.withoutRules} programs without rules`,
+    `SUMMARY: Requirement sets: ${reqStats.changed} updated, ${reqStats.skipped} unchanged, ${reqStats.withoutRules} programs without rules`,
   );
   console.log(
-    `Requirement parse coverage: ${reqStats.leavesResolved} course leaves resolved, ` +
+    `SUMMARY: Requirement parse coverage: ${reqStats.leavesResolved} course leaves resolved, ` +
       `${reqStats.leavesFreeText} free-text fallbacks ` +
       `(${reqStats.coveragePct}% resolved)`,
   );
   console.log(
-    `Discontinued: ${courseStale.flagged} courses flagged / ${courseStale.restored} restored; ` +
+    `SUMMARY: Discontinued: ${courseStale.flagged} courses flagged / ${courseStale.restored} restored; ` +
       `${programStale.flagged} programs flagged / ${programStale.restored} restored`,
   );
 }
@@ -450,7 +456,6 @@ async function seedRequirements(
       versionLabel,
       contentHash: normalized.contentHash,
       items: normalized.items,
-      stats: normalized.stats,
     });
   }
 
@@ -483,8 +488,19 @@ async function seedRequirements(
 
   const cleanupNewSets = async () => {
     for (const ids of chunk(newSetIds, IN_CHUNK)) {
-      // Cascade removes any partially inserted items.
-      await supabase.from("requirement_sets").delete().in("id", ids);
+      // Delete only inactive debris — a flipped set is complete, valid, live
+      // data (its predecessor was already deactivated in the same committed
+      // transaction), so it must never be removed here. The is_active filter
+      // also makes the cleanup/flip race converge safely. Cascade removes any
+      // partially inserted items.
+      const { error } = await supabase
+        .from("requirement_sets")
+        .delete()
+        .eq("is_active", false)
+        .in("id", ids);
+      if (error) {
+        console.warn(`Cleanup of inactive requirement sets failed: ${error.message}`);
+      }
     }
   };
 
@@ -578,13 +594,16 @@ function summarize(
   programCount: number,
   warnings: string[],
 ): void {
+  // "SUMMARY: " is a stable machine-consumed prefix — the catalog-refresh
+  // workflow greps these lines into the job summary. Keep the prefix intact
+  // when rewording.
   console.log("\n=== Seed Summary ===");
-  console.log(`Universities: 1`);
-  console.log(`Departments: ${deptCount}`);
-  console.log(`Courses: ${courseCount}`);
-  console.log(`Prerequisites: ${prereqCount}`);
-  console.log(`Programs: ${programCount}`);
-  console.log(`Warnings: ${warnings.length}`);
+  console.log(`SUMMARY: Universities: 1`);
+  console.log(`SUMMARY: Departments: ${deptCount}`);
+  console.log(`SUMMARY: Courses: ${courseCount}`);
+  console.log(`SUMMARY: Prerequisites: ${prereqCount}`);
+  console.log(`SUMMARY: Programs: ${programCount}`);
+  console.log(`SUMMARY: Warnings: ${warnings.length}`);
 
   if (warnings.length > 0) {
     console.log("\nFirst 10 warnings:");

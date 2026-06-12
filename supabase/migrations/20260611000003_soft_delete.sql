@@ -5,16 +5,16 @@
 -- NULL rows.
 
 alter table public.courses
-  add column is_discontinued boolean not null default false;
+  add column if not exists is_discontinued boolean not null default false;
 
 alter table public.programs
-  add column is_discontinued boolean not null default false;
+  add column if not exists is_discontinued boolean not null default false;
 
 -- Browse/search/suggestions filter on this in every query.
-create index idx_courses_active
+create index if not exists idx_courses_active
   on public.courses (university_id)
   where not is_discontinued;
 
-create index idx_programs_active
+create index if not exists idx_programs_active
   on public.programs (university_id)
   where not is_discontinued;

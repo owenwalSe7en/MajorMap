@@ -10,15 +10,24 @@ import type { SchoolConfig } from "../schemas/school-config.js";
 
 const PAGE_SIZE = 500;
 const DELAY_MS = 200;
-const API_BASE = "https://app.coursedog.com/api/v1";
+const FETCH_TIMEOUT_MS = 30_000;
 
-function headersFor(origin: string): Record<string, string> {
+export const COURSEDOG_API_BASE = "https://app.coursedog.com/api/v1";
+
+/**
+ * Headers Coursedog's soft gate expects (catalog-origin Referer/Origin).
+ * Shared with the discovery probe, which additionally identifies itself via
+ * a User-Agent.
+ */
+export function coursedogHeaders(origin: string, userAgent?: string): Record<string, string> {
   const bare = origin.replace(/\/$/, "");
-  return {
+  const headers: Record<string, string> = {
     Referer: `${bare}/`,
     Origin: bare,
     "X-Requested-With": "catalog",
   };
+  if (userAgent) headers["User-Agent"] = userAgent;
+  return headers;
 }
 
 async function fetchPage<T extends z.ZodTypeAny>(
@@ -28,7 +37,10 @@ async function fetchPage<T extends z.ZodTypeAny>(
   retries = 3,
 ): Promise<z.infer<typeof schema>> {
   for (let attempt = 1; attempt <= retries; attempt++) {
-    const res = await fetch(url, { headers: headersFor(origin) });
+    const res = await fetch(url, {
+      headers: coursedogHeaders(origin),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
 
     if (res.status >= 400 && res.status < 500) {
       throw new Error(`Coursedog API returned ${res.status}: ${await res.text()}`);
@@ -95,9 +107,12 @@ export function resolveCatalogId(editions: CatalogEdition[], today: Date): strin
  * unavailable.
  */
 async function resolveCatalog(school: SchoolConfig): Promise<string> {
-  const url = `${API_BASE}/ca/${school.coursedogSchoolId}/catalogs`;
+  const url = `${COURSEDOG_API_BASE}/ca/${school.coursedogSchoolId}/catalogs`;
   try {
-    const res = await fetch(url, { headers: headersFor(school.origin) });
+    const res = await fetch(url, {
+      headers: coursedogHeaders(school.origin),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
     if (!res.ok) throw new Error(`status ${res.status}`);
     const editions = z.array(CatalogEditionSchema).parse(await res.json());
     const resolved = resolveCatalogId(editions, new Date());
@@ -139,12 +154,12 @@ async function fetchAllPages<T extends z.ZodTypeAny>(
   console.log(`Fetching ${label}...`);
 
   while (true) {
-    const url = `${endpoint}/search/%24filters?catalogId=${catalogId}&limit=${PAGE_SIZE}&skip=${skip}`;
+    const url = `${endpoint}/search/%24filters?catalogId=${encodeURIComponent(catalogId)}&limit=${PAGE_SIZE}&skip=${skip}`;
     const page = await fetchPage(url, origin, pageSchema);
     items.push(...page.data);
     console.log(`  Fetched ${items.length}/${page.listLength} ${label}`);
 
-    if (page.data.length < PAGE_SIZE || page.data.length === 0) break;
+    if (page.data.length < PAGE_SIZE) break;
     skip += PAGE_SIZE;
     await new Promise((r) => setTimeout(r, DELAY_MS));
   }
@@ -154,7 +169,7 @@ async function fetchAllPages<T extends z.ZodTypeAny>(
 }
 
 export async function fetchAll(school: SchoolConfig): Promise<void> {
-  const apiUrl = `${API_BASE}/cm/${school.coursedogSchoolId}`;
+  const apiUrl = `${COURSEDOG_API_BASE}/cm/${school.coursedogSchoolId}`;
   const catalogId = await resolveCatalog(school);
   console.log(`Fetching ${school.slug} (catalog ${catalogId})`);
 

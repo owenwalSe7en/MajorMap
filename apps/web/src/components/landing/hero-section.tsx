@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { DEFAULT_SCHOOL_SLUG } from "@major-map/shared";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { AnimatedGradCap } from "./animated-grad-cap";
@@ -104,7 +105,7 @@ export function HeroSection() {
             }`}
           >
             <Button size="lg" className="px-8 h-14 text-base rounded-full group" asChild>
-              <Link href="/utah/programs">
+              <Link href={`/${DEFAULT_SCHOOL_SLUG}/programs`}>
                 Explore Programs
                 <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
               </Link>

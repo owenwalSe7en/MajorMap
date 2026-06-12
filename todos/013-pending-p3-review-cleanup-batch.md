@@ -31,8 +31,20 @@ Low-stakes cleanup and hardening from the PR #8 review, batched.
 
 ## Acceptance Criteria
 
-- [ ] Triage each; fix or explicitly accept with a note
+- [x] Triage each; fix or explicitly accept with a note
 
 ## Work Log
 
 - 2026-06-11: Synthesized from PR #8 review agents.
+- 2026-06-12: Resolved on the PR branch: items 1–9 and 14 fixed (dead code
+  removed, derived UTAH_UNIVERSITY_ID, resolveSchool simplified, single
+  loadSchools, hero constant, shared coursedogHeaders/API base, migration
+  idempotency + single-statement FK swap + scoped backfill, fetch timeouts +
+  encodeURIComponent + tightened SCHOOL_ID_RE, sitemap discontinued filter,
+  guest plan name cap). Remaining (accepted/deferred): item 10
+  (courses/[code] split fragility + cache() dedupe — moved code, low risk),
+  item 11 (compare ?a=&b= URL state — follow-up feature), item 12 (CLI
+  default-to-utah vs workflow default-to-all — revisit when school #2 is
+  live), item 13 (DB-level plan↔program university trigger — action-layer
+  guards now run unconditionally; PostgREST PATCH bypass is self-harm-only;
+  accepted and documented here).

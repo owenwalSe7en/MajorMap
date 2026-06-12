@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { v4 as uuidv4 } from "uuid";
+import type { RequirementItemRow } from "@major-map/shared";
 import type { CoursedogProgram } from "../schemas/coursedog.js";
 
 /**
@@ -13,18 +14,12 @@ import type { CoursedogProgram } from "../schemas/coursedog.js";
  * why there is no "skipped" stat.
  */
 
-export interface RequirementItemDraft {
-  id: string;
-  parent_id: string | null;
-  sort_order: number;
-  label: string;
-  type: "group" | "course" | "free_text";
-  course_id: string | null;
-  credits_required: number | null;
-  courses_required: number | null;
-  description: string | null;
-  raw_rule: unknown;
-}
+/**
+ * A requirement_items row minus its set id — the normalizer doesn't know
+ * which requirement_set the tree will land in; the seed stamps that on
+ * insert. Derived from the canonical shared row type so the two can't drift.
+ */
+export type RequirementItemDraft = Omit<RequirementItemRow, "requirement_set_id">;
 
 export interface RequirementStats {
   leavesResolved: number;
@@ -223,8 +218,7 @@ function walkRule(ctx: Ctx, rule: unknown, parentId: string, sortOrder: number):
     label: name ?? condition,
     type: "free_text",
     course_id: null,
-    credits_required:
-      condition === "completedAtLeastXOf" && typeof r.restriction === "number" ? null : null,
+    credits_required: null,
     courses_required: null,
     description: description ?? describeValue(r.value),
     raw_rule: rule,

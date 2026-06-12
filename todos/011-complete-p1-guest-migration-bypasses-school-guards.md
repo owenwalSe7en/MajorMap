@@ -1,5 +1,5 @@
----
-status: pending
+﻿---
+status: complete
 priority: p1
 issue_id: 011
 tags: [code-review, security, web]
@@ -10,11 +10,11 @@ dependencies: []
 
 ## Problem Statement
 
-[apps/web/src/app/plans/actions.ts](../apps/web/src/app/plans/actions.ts) `migrateGuestPlan` validates the localStorage-supplied `programId` for existence only — no `university_id` match, no `is_discontinued` check — while hardcoding the new plan's university to Utah and ignoring the `GuestPlan.schoolSlug` field added in this same PR. A crafted payload attaches a BYU or discontinued program to a Utah plan, bypassing `setPlanProgram`'s guards. Related inconsistency: `setPlanProgram` skips its cross-school guard when `plan.university_id` is null instead of defaulting to Utah like `parseTranscriptAction`.
+[apps/web/src/app/plans/actions.ts](../apps/web/src/app/plans/actions.ts) `migrateGuestPlan` validates the localStorage-supplied `programId` for existence only â€” no `university_id` match, no `is_discontinued` check â€” while hardcoding the new plan's university to Utah and ignoring the `GuestPlan.schoolSlug` field added in this same PR. A crafted payload attaches a BYU or discontinued program to a Utah plan, bypassing `setPlanProgram`'s guards. Related inconsistency: `setPlanProgram` skips its cross-school guard when `plan.university_id` is null instead of defaulting to Utah like `parseTranscriptAction`.
 
 ## Findings
 
-- kieran-typescript-reviewer P1; security-sentinel P2-1 + P3-3; simplicity review flagged `schoolSlug` as write-only YAGNI — consuming it here resolves both findings.
+- kieran-typescript-reviewer P1; security-sentinel P2-1 + P3-3; simplicity review flagged `schoolSlug` as write-only YAGNI â€” consuming it here resolves both findings.
 
 ## Proposed Solutions
 

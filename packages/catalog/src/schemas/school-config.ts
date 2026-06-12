@@ -52,11 +52,10 @@ export function loadSchools(): SchoolConfig[] {
 }
 
 export function schoolBySlugOrThrow(slug: string): SchoolConfig {
-  const school = loadSchools().find((s) => s.slug === slug);
+  const schools = loadSchools();
+  const school = schools.find((s) => s.slug === slug);
   if (!school) {
-    const known = loadSchools()
-      .map((s) => s.slug)
-      .join(", ");
+    const known = schools.map((s) => s.slug).join(", ");
     throw new Error(`Unknown school "${slug}". Known schools: ${known}`);
   }
   return school;

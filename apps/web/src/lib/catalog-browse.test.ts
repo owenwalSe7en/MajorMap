@@ -31,7 +31,10 @@ describe("fetchProgramsPage", () => {
   it("scopes to the university, orders stably, and paginates", async () => {
     const { supabase, calls } = mockQuery({ data: [{ id: "p1" }], count: 593, error: null });
 
-    const result = await fetchProgramsPage(supabase, { page: 2 });
+    const result = await fetchProgramsPage(supabase, {
+      page: 2,
+      universityId: UTAH_UNIVERSITY_ID,
+    });
 
     expect(supabase.from).toHaveBeenCalledWith("programs");
     expect(calls.select?.[0]?.[1]).toEqual({ count: "exact" });
@@ -47,7 +50,12 @@ describe("fetchProgramsPage", () => {
   it("applies sanitized name search and type filter", async () => {
     const { supabase, calls } = mockQuery({ data: [], count: 0, error: null });
 
-    await fetchProgramsPage(supabase, { page: 1, q: "bio%_", type: "Bachelor of Science" });
+    await fetchProgramsPage(supabase, {
+      page: 1,
+      q: "bio%_",
+      type: "Bachelor of Science",
+      universityId: UTAH_UNIVERSITY_ID,
+    });
 
     expect(calls.ilike?.[0]).toEqual(["name", "%bio%"]);
     expect(calls.eq?.map((c) => c[0])).toContain("degree_type");
@@ -56,13 +64,16 @@ describe("fetchProgramsPage", () => {
   it("flags out-of-range pages so callers can redirect-clamp", async () => {
     const { supabase } = mockQuery({ data: [], count: 100, error: null });
 
-    const result = await fetchProgramsPage(supabase, { page: 50 });
+    const result = await fetchProgramsPage(supabase, {
+      page: 50,
+      universityId: UTAH_UNIVERSITY_ID,
+    });
 
     expect(result.outOfRange).toBe(true);
     expect(result.lastPage).toBe(Math.ceil(100 / 24));
   });
 
-  it("accepts a universityId override for multi-school routes", async () => {
+  it("scopes to whichever universityId the caller passes", async () => {
     const { supabase, calls } = mockQuery({ data: [], count: 0, error: null });
 
     await fetchProgramsPage(supabase, { page: 1, universityId: "other-uni" });
@@ -75,7 +86,10 @@ describe("fetchCoursesPage", () => {
   it("scopes, orders by code with id tiebreak, and paginates", async () => {
     const { supabase, calls } = mockQuery({ data: [], count: 17892, error: null });
 
-    const result = await fetchCoursesPage(supabase, { page: 1 });
+    const result = await fetchCoursesPage(supabase, {
+      page: 1,
+      universityId: UTAH_UNIVERSITY_ID,
+    });
 
     expect(supabase.from).toHaveBeenCalledWith("courses");
     expect(calls.eq?.[0]).toEqual(["university_id", UTAH_UNIVERSITY_ID]);
@@ -88,7 +102,11 @@ describe("fetchCoursesPage", () => {
   it("searches title and code through a sanitized .or() with separate scoping eq", async () => {
     const { supabase, calls } = mockQuery({ data: [], count: 0, error: null });
 
-    await fetchCoursesPage(supabase, { page: 1, q: "CS 3500,id.not.is.null" });
+    await fetchCoursesPage(supabase, {
+      page: 1,
+      q: "CS 3500,id.not.is.null",
+      universityId: UTAH_UNIVERSITY_ID,
+    });
 
     // university scoping must stay a chained .eq, never inside the .or string
     expect(calls.eq?.[0]).toEqual(["university_id", UTAH_UNIVERSITY_ID]);
@@ -100,7 +118,11 @@ describe("fetchCoursesPage", () => {
   it("applies the dept filter with existing sanitization", async () => {
     const { supabase, calls } = mockQuery({ data: [], count: 0, error: null });
 
-    await fetchCoursesPage(supabase, { page: 1, dept: "cs!" });
+    await fetchCoursesPage(supabase, {
+      page: 1,
+      dept: "cs!",
+      universityId: UTAH_UNIVERSITY_ID,
+    });
 
     expect(calls.eq?.map((c) => c.join("="))).toContain("subject_code=CS");
   });

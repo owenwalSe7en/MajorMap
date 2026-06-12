@@ -25,20 +25,20 @@ alter table public.requirement_sets alter column is_active set default false;
 --    constraint would make every re-seed of the same catalog year fail on
 --    insert; correctness is governed by the partial unique index instead.
 alter table public.requirement_sets
-  drop constraint requirement_sets_program_id_version_label_key;
+  drop constraint if exists requirement_sets_program_id_version_label_key;
 
 -- 4. Content hash of the normalized requirement tree — lets the weekly
 --    refresh skip insert+flip entirely when nothing changed.
-alter table public.requirement_sets add column content_hash text;
+alter table public.requirement_sets add column if not exists content_hash text;
 
 -- 5. Exactly one active set per program, ever.
-create unique index idx_req_sets_one_active
+create unique index if not exists idx_req_sets_one_active
   on public.requirement_sets (program_id)
   where is_active;
 
 -- 6. The parent_id self-FK cascade does a per-row child lookup on delete;
 --    idx_req_items_tree leads with requirement_set_id and cannot serve it.
-create index idx_req_items_parent on public.requirement_items (parent_id);
+create index if not exists idx_req_items_parent on public.requirement_items (parent_id);
 
 -- 7. Exact duplicate of the index backing unique(university_id, subject_code,
 --    number) — pure write amplification on every course upsert.

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { resolveCatalogId } from "../sources/coursedog.js";
+import { COURSEDOG_API_BASE, coursedogHeaders, resolveCatalogId } from "../sources/coursedog.js";
 
 /**
  * Onboarding helper: validates that a Coursedog school id + catalog origin
@@ -8,22 +8,13 @@ import { resolveCatalogId } from "../sources/coursedog.js";
  * See docs/onboarding-a-school.md for the full runbook.
  */
 
-const API_BASE = "https://app.coursedog.com/api/v1";
-const SCHOOL_ID_RE = /^[a-z0-9_.-]{1,64}$/;
+// Observed Coursedog school ids only use [a-z0-9_-]; excluding "." also rules
+// out any ".."-style path tricks since the id lands in a URL path segment.
+const SCHOOL_ID_RE = /^[a-z0-9_-]{1,64}$/;
 const TIMEOUT_MS = 15_000;
 
 const USER_AGENT =
   "MajorMapProbe/1.0 (+https://github.com/owenwalSe7en/MajorMap; degree-planning research)";
-
-function headersFor(origin: string): Record<string, string> {
-  const bare = origin.replace(/\/$/, "");
-  return {
-    Referer: `${bare}/`,
-    Origin: bare,
-    "X-Requested-With": "catalog",
-    "User-Agent": USER_AGENT,
-  };
-}
 
 const CountSchema = z.object({ listLength: z.number() }).passthrough();
 
@@ -38,8 +29,8 @@ export async function probeSchool(coursedogSchoolId: string, origin: string): Pr
 
   console.log(`Probing ${coursedogSchoolId} via ${parsed.origin} ...`);
 
-  const catalogsRes = await fetch(`${API_BASE}/ca/${coursedogSchoolId}/catalogs`, {
-    headers: headersFor(parsed.origin),
+  const catalogsRes = await fetch(`${COURSEDOG_API_BASE}/ca/${coursedogSchoolId}/catalogs`, {
+    headers: coursedogHeaders(parsed.origin, USER_AGENT),
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });
   if (catalogsRes.status === 403 || catalogsRes.status === 429) {
@@ -60,8 +51,11 @@ export async function probeSchool(coursedogSchoolId: string, origin: string): Pr
   console.log(`  Current edition: ${catalogId}`);
 
   const coursesRes = await fetch(
-    `${API_BASE}/cm/${coursedogSchoolId}/courses/search/%24filters?catalogId=${catalogId}&limit=1&skip=0`,
-    { headers: headersFor(parsed.origin), signal: AbortSignal.timeout(TIMEOUT_MS) },
+    `${COURSEDOG_API_BASE}/cm/${coursedogSchoolId}/courses/search/%24filters?catalogId=${encodeURIComponent(catalogId)}&limit=1&skip=0`,
+    {
+      headers: coursedogHeaders(parsed.origin, USER_AGENT),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    },
   );
   if (!coursesRes.ok) {
     throw new Error(`courses endpoint returned ${coursesRes.status}`);

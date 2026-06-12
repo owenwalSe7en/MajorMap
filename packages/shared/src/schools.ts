@@ -30,7 +30,8 @@ export const SCHOOLS: readonly SchoolRef[] = [
 
 export const DEFAULT_SCHOOL_SLUG = "utah";
 
-export const UTAH_UNIVERSITY_ID = "63b63f87-3a1d-58a9-b55d-c0d359823c77";
+/** Legacy single-school fallback — derived from the registry, never restated. */
+export const UTAH_UNIVERSITY_ID = SCHOOLS[0].universityId;
 
 /**
  * Top-level web route segments that can never be school slugs — a school
@@ -47,12 +48,6 @@ export const RESERVED_SCHOOL_SLUGS = [
   "health",
   "api",
 ] as const;
-
-const SLUG_PATTERN = /^[a-z0-9_-]{1,64}$/;
-
-export function isValidSchoolSlug(slug: string): boolean {
-  return SLUG_PATTERN.test(slug) && !RESERVED_SCHOOL_SLUGS.includes(slug as never);
-}
 
 export function schoolBySlug(slug: string): SchoolRef | undefined {
   return SCHOOLS.find((s) => s.slug === slug);

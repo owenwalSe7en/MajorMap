@@ -64,7 +64,6 @@ jobs:
         school: ${{ fromJSON(needs.matrix.outputs.schools) }}
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
@@ -72,8 +71,8 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-      # This job runs repo TypeScript with the service-role key in env —
-      # postinstall scripts would too, so they stay disabled here.
+      # The seed step runs repo TypeScript with the service-role key in env;
+      # postinstall scripts stay disabled as defense in depth.
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm --filter @major-map/shared build && pnpm --filter @major-map/catalog build
       - name: Fetch catalog
@@ -81,8 +80,11 @@ jobs:
           SCHOOL: ${{ matrix.school }}
         run: pnpm catalog:fetch "--school=$SCHOOL"
       - name: Seed database
+        # Service-role key is scoped to this step only — install/build/fetch
+        # run repo code that must never see it.
         env:
           SCHOOL: ${{ matrix.school }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: pnpm catalog:seed "--school=$SCHOOL" | tee seed-output.log
       - name: Job summary
         if: always()
@@ -92,6 +94,6 @@ jobs:
           {
             echo "## ${SCHOOL}"
             echo '```'
-            grep -E "coverage|Discontinued|Requirement sets|Upserted|Warnings" seed-output.log || echo "no summary lines captured"
+            grep -E "^SUMMARY: " seed-output.log || echo "no summary lines captured"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

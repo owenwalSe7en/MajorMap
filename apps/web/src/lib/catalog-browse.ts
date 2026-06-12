@@ -1,4 +1,3 @@
-import { UTAH_UNIVERSITY_ID } from "@major-map/shared";
 import {
   COURSES_PAGE_SIZE,
   PROGRAMS_PAGE_SIZE,
@@ -60,14 +59,14 @@ export interface ProgramsPageOptions {
   page: number;
   q?: string;
   type?: string;
-  universityId?: string;
+  universityId: string;
 }
 
 export async function fetchProgramsPage(
   supabase: SupabaseLike,
   options: ProgramsPageOptions,
 ): Promise<BrowsePage<ProgramRow>> {
-  const { page, q, type, universityId = UTAH_UNIVERSITY_ID } = options;
+  const { page, q, type, universityId } = options;
 
   let query = supabase
     .from("programs")
@@ -95,14 +94,14 @@ export interface CoursesPageOptions {
   page: number;
   q?: string;
   dept?: string;
-  universityId?: string;
+  universityId: string;
 }
 
 export async function fetchCoursesPage(
   supabase: SupabaseLike,
   options: CoursesPageOptions,
 ): Promise<BrowsePage<CourseRow>> {
-  const { page, q, dept, universityId = UTAH_UNIVERSITY_ID } = options;
+  const { page, q, dept, universityId } = options;
 
   let query = supabase
     .from("courses")

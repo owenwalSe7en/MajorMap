@@ -41,6 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .from("programs")
       .select("slug, updated_at")
       .eq("university_id", school.universityId)
+      .eq("is_discontinued", false)
       .order("name");
 
     for (const p of programs ?? []) {

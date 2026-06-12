@@ -1,5 +1,5 @@
----
-status: pending
+﻿---
+status: complete
 priority: p1
 issue_id: 010
 tags: [code-review, security, web]
@@ -10,7 +10,7 @@ dependencies: []
 
 ## Problem Statement
 
-[apps/web/src/app/plans/actions.ts](../apps/web/src/app/plans/actions.ts) `importTranscriptCourses` validates client-supplied course ids with an UNSCOPED `courses` lookup (existence only), selects the plan without `.eq("user_id")` (RLS-only) and without `university_id`, has no `isUuid(planId)` guard, and no `is_discontinued` check. Once BYU is seeded, a direct action call can import another school's (or discontinued) courses into a Utah plan as `status: "completed"`, corrupting credit summaries and suggestions — the exact corruption `parseTranscriptAction` was scoped in this same PR to prevent.
+[apps/web/src/app/plans/actions.ts](../apps/web/src/app/plans/actions.ts) `importTranscriptCourses` validates client-supplied course ids with an UNSCOPED `courses` lookup (existence only), selects the plan without `.eq("user_id")` (RLS-only) and without `university_id`, has no `isUuid(planId)` guard, and no `is_discontinued` check. Once BYU is seeded, a direct action call can import another school's (or discontinued) courses into a Utah plan as `status: "completed"`, corrupting credit summaries and suggestions â€” the exact corruption `parseTranscriptAction` was scoped in this same PR to prevent.
 
 ## Findings
 
@@ -25,7 +25,7 @@ dependencies: []
 
 - [ ] Plan lookup: explicit user_id + university_id, UUID-validated planId
 - [ ] Course validation scoped to the plan's university
-- [ ] addCourse course lookup scoped to the plan's university (derive via semester → plan)
+- [ ] addCourse course lookup scoped to the plan's university (derive via semester â†’ plan)
 - [ ] Tests cover cross-school rejection
 
 ## Work Log
