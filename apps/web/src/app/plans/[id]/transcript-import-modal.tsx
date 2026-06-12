@@ -129,7 +129,7 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
     dispatch({ type: "PARSE_START" });
 
     const result = await parseTranscriptAction(state.text);
-    if ("error" in result && result.error) {
+    if ("error" in result) {
       dispatch({ type: "PARSE_ERROR", error: result.error });
       return;
     }

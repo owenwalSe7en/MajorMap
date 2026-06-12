@@ -139,7 +139,17 @@ export default function ComparePage() {
           .filter((id) => !programBReqs.courseIds.has(id))
           .map((id) => courseMap.get(id))
           .filter((c): c is CourseInfo => !!c);
-        return { matching, remaining, notMatching };
+        const toWhatIf = (c: CourseInfo) => ({
+          courseId: c.id,
+          code: c.code,
+          title: c.title,
+          credits: c.credits,
+        });
+        return {
+          matching: matching.map(toWhatIf),
+          remaining: remaining.map(toWhatIf),
+          notMatching: notMatching.map(toWhatIf),
+        };
       })()
     : null;
 
