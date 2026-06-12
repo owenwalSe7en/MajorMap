@@ -1,7 +1,7 @@
 ---
 title: "feat: Multi-school platform foundation — visibility, requirement normalization, multi-school pipeline, scheduled refresh, discovery"
 type: feat
-status: active
+status: completed
 date: 2026-06-11
 ---
 
