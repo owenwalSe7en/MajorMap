@@ -1,16 +1,8 @@
-export interface RequirementItem {
-  id: string;
-  requirement_set_id: string;
-  parent_id: string | null;
-  sort_order: number;
-  label: string;
-  type: string;
-  course_id: string | null;
-  credits_required: number | null;
-  courses_required: number | null;
-  description: string | null;
-  raw_rule: unknown;
-}
+import type { RequirementItemRow } from "@major-map/shared";
+
+// Canonical row shape lives in @major-map/shared (written by the catalog
+// pipeline); `type` is widened because legacy rows may carry other strings.
+export type RequirementItem = Omit<RequirementItemRow, "type"> & { type: string };
 
 export interface RequirementNode extends RequirementItem {
   children: RequirementNode[];

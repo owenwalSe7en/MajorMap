@@ -24,23 +24,33 @@ function RequirementTree({ nodes, depth = 0 }: { nodes: RequirementNode[]; depth
     <div className={depth > 0 ? "ml-6 border-l border-foreground/10 pl-4" : ""}>
       {nodes.map((node) => (
         <div key={node.id} className="py-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {node.type === "group" ? (
               <span className="font-semibold text-foreground">{node.label}</span>
+            ) : node.type === "free_text" ? (
+              <span className="text-muted-foreground italic">{node.label}</span>
             ) : (
               <span className="text-muted-foreground">{node.label}</span>
             )}
-            {node.type !== "group" && (
+            {node.type === "free_text" && (
               <Badge variant="outline" className="text-xs">
-                {node.type}
+                see catalog
               </Badge>
             )}
-            {node.credits_required && (
+            {node.courses_required != null && (
+              <span className="text-xs text-muted-foreground">
+                (choose {node.courses_required})
+              </span>
+            )}
+            {node.credits_required != null && (
               <span className="text-xs text-muted-foreground">
                 ({node.credits_required} cr required)
               </span>
             )}
           </div>
+          {node.description && (
+            <p className="mt-1 text-xs text-muted-foreground/80 max-w-2xl">{node.description}</p>
+          )}
           {node.children.length > 0 && <RequirementTree nodes={node.children} depth={depth + 1} />}
         </div>
       ))}

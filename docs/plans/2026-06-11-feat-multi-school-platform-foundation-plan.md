@@ -248,14 +248,14 @@ grant execute on function public.activate_requirement_sets(jsonb) to service_rol
 ## Acceptance Criteria
 
 ### Phase 1
-- [ ] Root `pnpm test` (vitest) runs in CI
-- [ ] All 593 programs reachable via paginated browse; `?page=N` URLs shareable/deterministic (id tiebreak); out-of-range pages redirect to clamped page; `page=-1`/`abc`/`9999` handled
-- [ ] Courses paginated with total count; "CS 3500" found by code; `.or()` input whitelisted; injection probe (`q=x,id.not.is.null`) returns normal results, not a filter change or 500
-- [ ] Pagination component: `nav[aria-label]`, `aria-current="page"`, prev/next links with `rel`, non-link disabled boundaries
-- [ ] Set/change/clear program from plan page; planned courses untouched; suggestions react; zero-row update treated as error (cross-user attempt gets "Plan not found")
-- [ ] Guest migration preserves chosen program (validated server-side); `plans/actions.ts` returns no raw Postgres messages; `addSemester`/`addCourse` verify parent ownership
-- [ ] Root branded 404 with CTAs
-- [ ] Tests written FIRST (TDD per CLAUDE.md)
+- [x] Root `pnpm test` (vitest) runs in CI
+- [x] All 593 programs reachable via paginated browse; `?page=N` URLs shareable/deterministic (id tiebreak); out-of-range pages redirect to clamped page; `page=-1`/`abc`/`9999` handled
+- [x] Courses paginated with total count; "CS 3500" found by code; `.or()` input whitelisted; injection probe (`q=x,id.not.is.null`) returns normal results, not a filter change or 500
+- [x] Pagination component: `nav[aria-label]`, `aria-current="page"`, prev/next links with `rel`, non-link disabled boundaries
+- [x] Set/change/clear program from plan page; planned courses untouched; suggestions react; zero-row update treated as error (cross-user attempt gets "Plan not found")
+- [x] Guest migration preserves chosen program (validated server-side); `plans/actions.ts` returns no raw Postgres messages; `addSemester`/`addCourse` verify parent ownership
+- [x] Root branded 404 with CTAs
+- [x] Tests written FIRST (TDD per CLAUDE.md)
 
 ### Phase 2
 - [ ] Migration state reconciled (`supabase migration list` / `repair`) before new migrations
