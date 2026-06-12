@@ -38,39 +38,42 @@ export default function ComparePage() {
   // What-if state
   const [userCourseIds, setUserCourseIds] = useState<Set<string>>(new Set());
 
-  const fetchRequirements = useCallback(async (programId: string): Promise<{ courseIds: Set<string>; courses: CourseInfo[] }> => {
-    const supabase = createClient();
+  const fetchRequirements = useCallback(
+    async (programId: string): Promise<{ courseIds: Set<string>; courses: CourseInfo[] }> => {
+      const supabase = createClient();
 
-    // Get active requirement set
-    const { data: reqSet } = await supabase
-      .from("requirement_sets")
-      .select("id")
-      .eq("program_id", programId)
-      .eq("is_active", true)
-      .single();
+      // Get active requirement set
+      const { data: reqSet } = await supabase
+        .from("requirement_sets")
+        .select("id")
+        .eq("program_id", programId)
+        .eq("is_active", true)
+        .single();
 
-    if (!reqSet) return { courseIds: new Set(), courses: [] };
+      if (!reqSet) return { courseIds: new Set(), courses: [] };
 
-    // Get requirement items with course_id
-    const { data: items } = await supabase
-      .from("requirement_items")
-      .select("course_id")
-      .eq("requirement_set_id", reqSet.id)
-      .not("course_id", "is", null);
+      // Get requirement items with course_id
+      const { data: items } = await supabase
+        .from("requirement_items")
+        .select("course_id")
+        .eq("requirement_set_id", reqSet.id)
+        .not("course_id", "is", null);
 
-    const courseIds = new Set((items ?? []).map((i) => i.course_id as string));
+      const courseIds = new Set((items ?? []).map((i) => i.course_id as string));
 
-    // Fetch course details
-    const ids = [...courseIds];
-    if (ids.length === 0) return { courseIds, courses: [] };
+      // Fetch course details
+      const ids = [...courseIds];
+      if (ids.length === 0) return { courseIds, courses: [] };
 
-    const { data: courses } = await supabase
-      .from("courses")
-      .select("id, code, title, credits")
-      .in("id", ids);
+      const { data: courses } = await supabase
+        .from("courses")
+        .select("id, code, title, credits")
+        .in("id", ids);
 
-    return { courseIds, courses: (courses ?? []) as CourseInfo[] };
-  }, []);
+      return { courseIds, courses: (courses ?? []) as CourseInfo[] };
+    },
+    [],
+  );
 
   async function handleCompare() {
     if (!programA || !programB) return;
@@ -173,10 +176,7 @@ export default function ComparePage() {
       </div>
 
       <div className="flex items-center gap-4 mb-6">
-        <Button
-          onClick={handleCompare}
-          disabled={!programA || !programB || loading}
-        >
+        <Button onClick={handleCompare} disabled={!programA || !programB || loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Compare
         </Button>
@@ -185,7 +185,9 @@ export default function ComparePage() {
           <div className="flex gap-1">
             <button
               className={`rounded-full px-3 py-1 text-xs border transition-colors ${
-                activeTab === "compare" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"
+                activeTab === "compare"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-muted"
               }`}
               onClick={() => setActiveTab("compare")}
             >
@@ -193,7 +195,9 @@ export default function ComparePage() {
             </button>
             <button
               className={`rounded-full px-3 py-1 text-xs border transition-colors ${
-                activeTab === "whatif" ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"
+                activeTab === "whatif"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-muted"
               }`}
               onClick={() => setActiveTab("whatif")}
             >
@@ -224,7 +228,9 @@ export default function ComparePage() {
 
       {!overlap && !loading && (
         <div className="text-center py-16 text-muted-foreground">
-          <p className="text-sm">Select two programs above and click Compare to see overlapping courses.</p>
+          <p className="text-sm">
+            Select two programs above and click Compare to see overlapping courses.
+          </p>
         </div>
       )}
     </main>

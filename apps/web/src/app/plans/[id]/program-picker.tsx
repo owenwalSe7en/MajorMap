@@ -41,6 +41,7 @@ export function ProgramPicker({ planId, currentProgram, universityId }: ProgramP
     let search = supabase
       .from("programs")
       .select("id, name, degree_type")
+      .eq("is_discontinued", false)
       .ilike("name", `%${query.replace(/[%_]/g, "")}%`);
     if (universityId) search = search.eq("university_id", universityId);
 

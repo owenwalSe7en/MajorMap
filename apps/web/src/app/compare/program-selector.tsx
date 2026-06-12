@@ -40,6 +40,7 @@ export function ProgramSelector({ label, onSelect, excludeId }: ProgramSelectorP
       .from("programs")
       .select("id, name, degree_type, total_credits")
       .eq("university_id", UTAH_UNIVERSITY_ID)
+      .eq("is_discontinued", false)
       .ilike("name", `%${query}%`)
       .limit(10)
       .then(({ data }) => {
@@ -71,7 +72,10 @@ export function ProgramSelector({ label, onSelect, excludeId }: ProgramSelectorP
       {selectedName ? (
         <div className="flex items-center justify-between rounded-md border bg-muted/50 px-3 py-2 text-sm">
           <span className="truncate">{selectedName}</span>
-          <button onClick={handleClear} className="ml-2 text-xs text-muted-foreground hover:text-foreground">
+          <button
+            onClick={handleClear}
+            className="ml-2 text-xs text-muted-foreground hover:text-foreground"
+          >
             Change
           </button>
         </div>

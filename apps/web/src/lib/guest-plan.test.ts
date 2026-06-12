@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+﻿import { describe, expect, it, vi, beforeEach } from "vitest";
 
 // Mock localStorage
 const store = new Map<string, string>();
@@ -12,7 +12,9 @@ const mockLocalStorage = {
 };
 
 vi.stubGlobal("localStorage", mockLocalStorage);
-vi.stubGlobal("crypto", { randomUUID: () => "test-uuid-" + Math.random().toString(36).slice(2, 8) });
+vi.stubGlobal("crypto", {
+  randomUUID: () => "test-uuid-" + Math.random().toString(36).slice(2, 8),
+});
 
 describe("guest-plan", () => {
   beforeEach(() => {
@@ -70,8 +72,8 @@ describe("guest-plan", () => {
   });
 
   it("addSemester adds a semester to the plan", async () => {
-    const { loadGuestPlan, saveGuestPlan, addSemesterToGuest } = await import("./guest-plan.js");
-    const plan = { id: "p1", name: "My Plan", programId: null, semesters: [] };
+    const { saveGuestPlan, addSemesterToGuest } = await import("./guest-plan.js");
+    const plan = { id: "p1", name: "My Plan", programId: null, schoolSlug: "utah", semesters: [] };
     saveGuestPlan(plan);
 
     const updated = addSemesterToGuest(plan, "Fall", 2026);
@@ -86,6 +88,7 @@ describe("guest-plan", () => {
       id: "p1",
       name: "My Plan",
       programId: null,
+      schoolSlug: "utah",
       semesters: [{ id: "s1", term: "Fall", year: 2026, courseIds: ["c1", "c2"] }],
     };
     const updated = removeSemesterFromGuest(plan, "s1");
@@ -98,6 +101,7 @@ describe("guest-plan", () => {
       id: "p1",
       name: "My Plan",
       programId: null,
+      schoolSlug: "utah",
       semesters: [{ id: "s1", term: "Fall", year: 2026, courseIds: [] }],
     };
     const updated = addCourseToGuest(plan, "s1", "course-123");
@@ -110,6 +114,7 @@ describe("guest-plan", () => {
       id: "p1",
       name: "My Plan",
       programId: null,
+      schoolSlug: "utah",
       semesters: [{ id: "s1", term: "Fall", year: 2026, courseIds: ["course-123"] }],
     };
     const updated = addCourseToGuest(plan, "s1", "course-123");
@@ -122,6 +127,7 @@ describe("guest-plan", () => {
       id: "p1",
       name: "My Plan",
       programId: null,
+      schoolSlug: "utah",
       semesters: [{ id: "s1", term: "Fall", year: 2026, courseIds: ["c1", "c2"] }],
     };
     const updated = removeCourseFromGuest(plan, "s1", "c1");

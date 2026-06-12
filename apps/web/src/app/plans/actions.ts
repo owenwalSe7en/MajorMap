@@ -43,7 +43,8 @@ export async function createPlan(name = "My Plan") {
 
 export async function addSemester(planId: string, term: string, year: number) {
   if (!VALID_TERMS.includes(term)) return { error: "Invalid term" };
-  if (!Number.isInteger(year) || year < MIN_YEAR || year > MAX_YEAR) return { error: "Invalid year" };
+  if (!Number.isInteger(year) || year < MIN_YEAR || year > MAX_YEAR)
+    return { error: "Invalid year" };
 
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
@@ -102,6 +103,15 @@ export async function addCourse(planSemesterId: string, courseId: string) {
     .single();
   if (!semester) return { error: "Semester not found" };
 
+  // Discontinued courses stay visible in existing plans but can't be added.
+  const { data: course } = await supabase
+    .from("courses")
+    .select("id, is_discontinued")
+    .eq("id", courseId)
+    .single();
+  if (!course) return { error: "Course not found" };
+  if (course.is_discontinued) return { error: "That course is no longer offered" };
+
   const { data, error } = await supabase
     .from("plan_courses")
     .insert({ plan_semester_id: planSemesterId, user_id: user.id, course_id: courseId })
@@ -158,7 +168,7 @@ export async function setPlanProgram(planId: string, programId: string | null) {
     }
     const { data: program } = await supabase
       .from("programs")
-      .select("id, university_id")
+      .select("id, university_id, is_discontinued")
       .eq("id", programId)
       .single();
     if (!program) return { error: "Program not found" };
@@ -166,6 +176,9 @@ export async function setPlanProgram(planId: string, programId: string | null) {
     // suggestions and transcript scoping.
     if (plan.university_id && program.university_id !== plan.university_id) {
       return { error: "That program belongs to a different school" };
+    }
+    if (program.is_discontinued) {
+      return { error: "That program is no longer offered" };
     }
   }
 
@@ -198,7 +211,10 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
     if (!Number.isInteger(semester.year) || semester.year < MIN_YEAR || semester.year > MAX_YEAR) {
       return { error: `Invalid year ${semester.year} in semester` };
     }
-    if (!Array.isArray(semester.courseIds) || !semester.courseIds.every((id) => typeof id === "string")) {
+    if (
+      !Array.isArray(semester.courseIds) ||
+      !semester.courseIds.every((id) => typeof id === "string")
+    ) {
       return { error: "Each semester must contain a valid list of course IDs" };
     }
   }
@@ -206,18 +222,18 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
-  // Pre-validate courseIds exist
+  // Pre-validate courseIds; courses that vanished from the catalog are
+  // skipped (with a count reported) instead of dead-ending the migration.
   const allCourseIds = guestPlan.semesters.flatMap((s) => s.courseIds);
+  let validIds = new Set<string>(allCourseIds);
+  let skippedCourses = 0;
   if (allCourseIds.length > 0) {
     const { data: validCourses } = await supabase
       .from("courses")
       .select("id")
       .in("id", allCourseIds);
-    const validIds = new Set(validCourses?.map((c: { id: string }) => c.id) ?? []);
-    const invalidCount = allCourseIds.filter((id) => !validIds.has(id)).length;
-    if (invalidCount > 0) {
-      return { error: `${invalidCount} course(s) no longer exist in the catalog.` };
-    }
+    validIds = new Set(validCourses?.map((c: { id: string }) => c.id) ?? []);
+    skippedCourses = allCourseIds.filter((id) => !validIds.has(id)).length;
   }
 
   // Carry the guest's chosen program over when it still exists. The guest
@@ -261,8 +277,9 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
       return { error: "Could not migrate plan" };
     }
 
-    if (semester.courseIds.length > 0) {
-      const courseRows = semester.courseIds.map((courseId) => ({
+    const migratableCourseIds = semester.courseIds.filter((id) => validIds.has(id));
+    if (migratableCourseIds.length > 0) {
+      const courseRows = migratableCourseIds.map((courseId) => ({
         plan_semester_id: dbSemester.id,
         user_id: user.id,
         course_id: courseId,
@@ -278,7 +295,7 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
   }
 
   revalidatePath("/plans");
-  return { success: true, planId: plan.id };
+  return { success: true, planId: plan.id, skippedCourses };
 }
 
 // --- Transcript Import ---
@@ -302,7 +319,12 @@ const MAX_TRANSCRIPT_LENGTH = 50_000;
 
 type ParseResult =
   | { error: string }
-  | { matched: MatchedCourse[]; unmatched: UnmatchedCourse[]; skippedLines: number; totalCredits: number };
+  | {
+      matched: MatchedCourse[];
+      unmatched: UnmatchedCourse[];
+      skippedLines: number;
+      totalCredits: number;
+    };
 
 export async function parseTranscriptAction(planId: string, text: string): Promise<ParseResult> {
   const { user, supabase } = await getAuthenticatedUser();
@@ -327,7 +349,12 @@ export async function parseTranscriptAction(planId: string, text: string): Promi
   const { courses: parsed, skippedLines } = parseTranscript(text);
 
   if (parsed.length === 0) {
-    return { matched: [] as MatchedCourse[], unmatched: [] as UnmatchedCourse[], skippedLines, totalCredits: 0 };
+    return {
+      matched: [] as MatchedCourse[],
+      unmatched: [] as UnmatchedCourse[],
+      skippedLines,
+      totalCredits: 0,
+    };
   }
 
   // Single query using the generated `code` column
@@ -339,7 +366,10 @@ export async function parseTranscriptAction(planId: string, text: string): Promi
     .in("code", codes);
 
   const codeToDb = new Map(
-    (dbCourses ?? []).map((c: { id: string; code: string; title: string; credits: number }) => [c.code, c]),
+    (dbCourses ?? []).map((c: { id: string; code: string; title: string; credits: number }) => [
+      c.code,
+      c,
+    ]),
   );
 
   const matched: MatchedCourse[] = [];
@@ -401,10 +431,7 @@ export async function importTranscriptCourses(
 
   // Validate courseIds exist
   const courseIds = courses.map((c) => c.courseId);
-  const { data: validCourses } = await supabase
-    .from("courses")
-    .select("id")
-    .in("id", courseIds);
+  const { data: validCourses } = await supabase.from("courses").select("id").in("id", courseIds);
   const validIds = new Set(validCourses?.map((c: { id: string }) => c.id) ?? []);
   const invalidCount = courseIds.filter((id) => !validIds.has(id)).length;
   if (invalidCount > 0) {

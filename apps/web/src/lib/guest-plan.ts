@@ -58,10 +58,7 @@ export function createGuestPlan(name = "My Plan"): GuestPlan {
 export function addSemesterToGuest(plan: GuestPlan, term: string, year: number): GuestPlan {
   return {
     ...plan,
-    semesters: [
-      ...plan.semesters,
-      { id: crypto.randomUUID(), term, year, courseIds: [] },
-    ],
+    semesters: [...plan.semesters, { id: crypto.randomUUID(), term, year, courseIds: [] }],
   };
 }
 
@@ -72,11 +69,7 @@ export function removeSemesterFromGuest(plan: GuestPlan, semesterId: string): Gu
   };
 }
 
-export function addCourseToGuest(
-  plan: GuestPlan,
-  semesterId: string,
-  courseId: string,
-): GuestPlan {
+export function addCourseToGuest(plan: GuestPlan, semesterId: string, courseId: string): GuestPlan {
   return {
     ...plan,
     semesters: plan.semesters.map((s) => {

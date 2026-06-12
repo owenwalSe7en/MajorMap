@@ -224,9 +224,7 @@ function walkRule(ctx: Ctx, rule: unknown, parentId: string, sortOrder: number):
     type: "free_text",
     course_id: null,
     credits_required:
-      condition === "completedAtLeastXOf" && typeof r.restriction === "number"
-        ? null
-        : null,
+      condition === "completedAtLeastXOf" && typeof r.restriction === "number" ? null : null,
     courses_required: null,
     description: description ?? describeValue(r.value),
     raw_rule: rule,

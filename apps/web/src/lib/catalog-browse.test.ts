@@ -36,6 +36,7 @@ describe("fetchProgramsPage", () => {
     expect(supabase.from).toHaveBeenCalledWith("programs");
     expect(calls.select?.[0]?.[1]).toEqual({ count: "exact" });
     expect(calls.eq?.[0]).toEqual(["university_id", UTAH_UNIVERSITY_ID]);
+    expect(calls.eq?.[1]).toEqual(["is_discontinued", false]);
     expect(calls.order?.map((c) => c[0])).toEqual(["name", "id"]);
     expect(calls.range?.[0]).toEqual([24, 47]);
     expect(result.count).toBe(593);
@@ -78,6 +79,7 @@ describe("fetchCoursesPage", () => {
 
     expect(supabase.from).toHaveBeenCalledWith("courses");
     expect(calls.eq?.[0]).toEqual(["university_id", UTAH_UNIVERSITY_ID]);
+    expect(calls.eq?.[1]).toEqual(["is_discontinued", false]);
     expect(calls.order?.map((c) => c[0])).toEqual(["subject_code", "number", "id"]);
     expect(calls.range?.[0]).toEqual([0, 49]);
     expect(result.count).toBe(17892);

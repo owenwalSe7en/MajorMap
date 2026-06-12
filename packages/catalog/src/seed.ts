@@ -9,14 +9,10 @@ import {
 } from "./normalizers/courses.js";
 import { normalizeProgram, type NormalizedProgram } from "./normalizers/programs.js";
 import { normalizePrerequisites, type NormalizedPrereq } from "./normalizers/prerequisites.js";
-import {
-  normalizeRequirements,
-  type RequirementItemDraft,
-} from "./normalizers/requirements.js";
+import { normalizeRequirements, type RequirementItemDraft } from "./normalizers/requirements.js";
 import { universityUuid, departmentUuid } from "./uuid.js";
 import type { CoursedogCourse, CoursedogProgram } from "./schemas/coursedog.js";
-
-const UNIVERSITY_SLUG = "utah";
+import type { SchoolConfig } from "./schemas/school-config.js";
 
 // Differentiated by row width: courses/programs carry multi-KB raw_data JSONB
 // (PostgREST request bodies should stay under ~2 MB); prereqs and requirement
@@ -94,6 +90,72 @@ function chunk<T>(items: T[], size: number): T[][] {
   return out;
 }
 
+/**
+ * Mass-discontinuation circuit breaker: refuse to run the stale-marking diff
+ * when the fetch yields suspiciously few rows vs. the live catalog — a
+ * truncated response must never soft-delete the catalog platform-wide.
+ */
+export function staleMarkingAllowed(fetchedCount: number, currentActiveCount: number): boolean {
+  if (currentActiveCount === 0) return true;
+  return fetchedCount >= currentActiveCount * 0.9;
+}
+
+export function computeStaleDiff(
+  dbRows: Array<{ id: string; is_discontinued: boolean }>,
+  fetchedIds: Set<string>,
+): { flag: string[]; restore: string[] } {
+  const flag: string[] = [];
+  const restore: string[] = [];
+  for (const row of dbRows) {
+    const present = fetchedIds.has(row.id);
+    if (!present && !row.is_discontinued) flag.push(row.id);
+    else if (present && row.is_discontinued) restore.push(row.id);
+  }
+  return { flag, restore };
+}
+
+async function markDiscontinued(
+  supabase: ServiceClient,
+  universityId: string,
+  table: "courses" | "programs",
+  fetchedIds: Set<string>,
+): Promise<{ flagged: number; restored: number }> {
+  // Page through this university's rows (ids only).
+  const dbRows: Array<{ id: string; is_discontinued: boolean }> = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from(table)
+      .select("id, is_discontinued")
+      .eq("university_id", universityId)
+      .range(from, from + PAGE - 1);
+    if (error) throw new Error(`Failed reading ${table} for stale diff: ${error.message}`);
+    dbRows.push(...(data ?? []));
+    if (!data || data.length < PAGE) break;
+  }
+
+  const currentActive = dbRows.filter((r) => !r.is_discontinued).length;
+  if (!staleMarkingAllowed(fetchedIds.size, currentActive)) {
+    throw new Error(
+      `Refusing stale-marking for ${table}: fetch returned ${fetchedIds.size} rows vs ` +
+        `${currentActive} active in DB (<90%). The fetch looks truncated.`,
+    );
+  }
+
+  const { flag, restore } = computeStaleDiff(dbRows, fetchedIds);
+
+  for (const ids of chunk(flag, IN_CHUNK)) {
+    const { error } = await supabase.from(table).update({ is_discontinued: true }).in("id", ids);
+    if (error) throw new Error(`Failed flagging discontinued ${table}: ${error.message}`);
+  }
+  for (const ids of chunk(restore, IN_CHUNK)) {
+    const { error } = await supabase.from(table).update({ is_discontinued: false }).in("id", ids);
+    if (error) throw new Error(`Failed restoring ${table}: ${error.message}`);
+  }
+
+  return { flagged: flag.length, restored: restore.length };
+}
+
 interface RequirementWork {
   programId: string;
   setId: string;
@@ -103,10 +165,28 @@ interface RequirementWork {
   stats: { leavesResolved: number; leavesFreeText: number };
 }
 
-export async function seed(): Promise<void> {
+export async function seed(school: SchoolConfig): Promise<void> {
   const supabase = createServiceClient();
-  const rawDir = path.resolve(process.cwd(), "data/raw/utah");
+  const rawDir = path.resolve(process.cwd(), "data/raw", school.slug);
   const allFailures: string[] = [];
+
+  // Ordering guard: seeding a second school before the university-scoping
+  // migration (and the scoped web deploy) is live would interleave catalogs
+  // in every unscoped query. The migration added semester_plans.university_id
+  // — its absence means this database is not ready for school #2.
+  if (school.slug !== "utah") {
+    const { error: guardError } = await supabase
+      .from("semester_plans")
+      .select("university_id")
+      .limit(1);
+    if (guardError) {
+      throw new Error(
+        `Refusing to seed "${school.slug}": the university-scoping migration ` +
+          `(semester_plans.university_id) is not applied to this database. ` +
+          `Apply migrations and deploy the scoped web app first. (${guardError.message})`,
+      );
+    }
+  }
 
   // Read raw data
   const coursesPath = path.join(rawDir, "courses.json");
@@ -121,22 +201,23 @@ export async function seed(): Promise<void> {
 
   console.log(`Loaded ${rawCourses.length} courses and ${rawPrograms.length} programs from disk`);
 
-  // 1. Upsert university
-  const universityId = universityUuid(UNIVERSITY_SLUG);
+  // 1. Upsert university. The seed is authoritative over these config-derived
+  // columns — hand edits to the row are overwritten on the next run.
+  const universityId = universityUuid(school.slug);
   const { error: universityError } = await supabase.from("universities").upsert(
     {
       id: universityId,
-      slug: UNIVERSITY_SLUG,
-      name: "University of Utah",
-      coursedog_school_id: "utah_peoplesoft",
-      catalog_url: "https://catalog.utah.edu",
+      slug: school.slug,
+      name: school.name,
+      coursedog_school_id: school.coursedogSchoolId,
+      catalog_url: school.catalogUrl,
     },
     { onConflict: "slug" },
   );
   if (universityError) {
     throw new Error(`Failed to upsert university: ${universityError.message}`);
   }
-  console.log("Upserted university: Utah");
+  console.log(`Upserted university: ${school.name}`);
 
   // 2. Extract and upsert departments
   const deptCodes = new Set<string>();
@@ -144,7 +225,7 @@ export async function seed(): Promise<void> {
     for (const d of c.departments) deptCodes.add(d);
   }
   const departments = [...deptCodes].map((code) => ({
-    id: departmentUuid(UNIVERSITY_SLUG, code),
+    id: departmentUuid(school.slug, code),
     university_id: universityId,
     code,
     name: code,
@@ -161,7 +242,7 @@ export async function seed(): Promise<void> {
 
   // 3. Pass 1: Normalize all courses, deduplicate by natural key, build courseGroupId map
   const allCourses: NormalizedCourse[] = rawCourses.map((raw) =>
-    normalizeCourse(raw, UNIVERSITY_SLUG, universityId),
+    normalizeCourse(raw, school.slug, universityId),
   );
 
   // Deduplicate: keep last version per (subject_code, number) — Coursedog returns multiple versions
@@ -226,7 +307,7 @@ export async function seed(): Promise<void> {
 
   // 5. Normalize and upsert programs (deduplicate by slug)
   const allPrograms: NormalizedProgram[] = rawPrograms.map((raw) =>
-    normalizeProgram(raw, UNIVERSITY_SLUG, universityId),
+    normalizeProgram(raw, school.slug, universityId),
   );
   const programMap = new Map<string, NormalizedProgram>();
   const rawBySlug = new Map<string, CoursedogProgram>();
@@ -251,7 +332,13 @@ export async function seed(): Promise<void> {
   // failed, leaves would point at rows that never landed. Bail before
   // touching requirement_sets so the previously active sets stay live.
   if (allFailures.length > 0) {
-    summarize(deptResult.inserted, courseResult.inserted, prereqInserted, programResult.inserted, allWarnings);
+    summarize(
+      deptResult.inserted,
+      courseResult.inserted,
+      prereqInserted,
+      programResult.inserted,
+      allWarnings,
+    );
     throw new Error(
       `Seed failed: ${allFailures.length} batch failure(s); requirement seeding skipped.\n` +
         allFailures.slice(0, 5).join("\n"),
@@ -268,12 +355,40 @@ export async function seed(): Promise<void> {
     validCourseIds,
   });
 
-  summarize(deptResult.inserted, courseResult.inserted, prereqInserted, programResult.inserted, allWarnings);
-  console.log(`Requirement sets: ${reqStats.changed} updated, ${reqStats.skipped} unchanged, ${reqStats.withoutRules} programs without rules`);
+  // 7. Stale marking: flag rows that vanished from the catalog, restore ones
+  // that returned. Runs only after a fully successful fetch + seed, guarded
+  // by the truncation circuit breaker.
+  const courseStale = await markDiscontinued(
+    supabase,
+    universityId,
+    "courses",
+    new Set(courses.map((c) => c.id)),
+  );
+  const programStale = await markDiscontinued(
+    supabase,
+    universityId,
+    "programs",
+    new Set(programs.map((p) => p.id)),
+  );
+
+  summarize(
+    deptResult.inserted,
+    courseResult.inserted,
+    prereqInserted,
+    programResult.inserted,
+    allWarnings,
+  );
+  console.log(
+    `Requirement sets: ${reqStats.changed} updated, ${reqStats.skipped} unchanged, ${reqStats.withoutRules} programs without rules`,
+  );
   console.log(
     `Requirement parse coverage: ${reqStats.leavesResolved} course leaves resolved, ` +
       `${reqStats.leavesFreeText} free-text fallbacks ` +
       `(${reqStats.coveragePct}% resolved)`,
+  );
+  console.log(
+    `Discontinued: ${courseStale.flagged} courses flagged / ${courseStale.restored} restored; ` +
+      `${programStale.flagged} programs flagged / ${programStale.restored} restored`,
   );
 }
 
@@ -342,7 +457,10 @@ async function seedRequirements(
   // Compare against currently active sets — unchanged programs are skipped
   // entirely (no weekly churn).
   const activeHashes = new Map<string, string | null>();
-  for (const ids of chunk(work.map((w) => w.programId), IN_CHUNK)) {
+  for (const ids of chunk(
+    work.map((w) => w.programId),
+    IN_CHUNK,
+  )) {
     const { data, error } = await supabase
       .from("requirement_sets")
       .select("program_id, content_hash")
@@ -391,7 +509,12 @@ async function seedRequirements(
     const itemRows = changed.flatMap((w) =>
       w.items.map((item) => ({ ...item, requirement_set_id: w.setId })),
     );
-    const itemResult = await insertBatch(supabase, "requirement_items", itemRows, BATCH_SIZES.narrow);
+    const itemResult = await insertBatch(
+      supabase,
+      "requirement_items",
+      itemRows,
+      BATCH_SIZES.narrow,
+    );
     if (itemResult.failures.length > 0) {
       throw new Error(`requirement_items insert failed: ${itemResult.failures.join("; ")}`);
     }
@@ -413,7 +536,10 @@ async function seedRequirements(
   }
 
   // Retention: nothing reads historical sets — keep only the active one.
-  for (const ids of chunk(changed.map((w) => w.programId), IN_CHUNK)) {
+  for (const ids of chunk(
+    changed.map((w) => w.programId),
+    IN_CHUNK,
+  )) {
     const { error } = await supabase
       .from("requirement_sets")
       .delete()

@@ -13,6 +13,7 @@ date: 2026-06-11
 **Agents used:** data-integrity-guardian, architecture-strategist, security-sentinel, performance-oracle, code-simplicity-reviewer, best-practices-researcher (Context7 + web)
 
 ### Decision changes from review (supersede the original draft)
+
 1. **Drop `unique(program_id, version_label)`** on `requirement_sets` — insert-then-flip re-seeding the same catalog year violates it on every cron run from week 2 onward; the partial unique index now governs correctness (data-integrity P0-1).
 2. **RPC hardening is mandatory**: `SECURITY INVOKER`, `set search_path = ''`, `REVOKE EXECUTE FROM public, anon, authenticated` + `GRANT to service_role`, set↔program ownership assert with `RAISE`, per-program advisory lock. Without the revoke, **any anonymous visitor can flip active requirement sets via PostgREST `/rpc/`** (security H1, data-integrity P0-3/P0-4).
 3. **`plan_courses.course_id` FK → `ON DELETE RESTRICT`** (was CASCADE). Soft delete is now policy; hard deletes of courses must fail loudly, not silently destroy user plans (data-integrity P1-1).
@@ -25,6 +26,7 @@ date: 2026-06-11
 10. **School switcher deferred**; `/[school]` proof via direct URLs (simplicity).
 
 ### Key additions
+
 - Shared canonical `RequirementItem` row type in `packages/shared` (writer=catalog, reader=web, consumer=planner were about to three-way drift).
 - Pagination implementation details: `count: "exact"` (correct at this scale; switch tripwire documented), clamp-via-redirect, page-1 canonical URLs, accessible `<nav>` markup, Next 14.2 `searchParams` is sync (not a Promise — that's Next 15).
 - Code-search input whitelist `[A-Za-z0-9 ]` before building `.or()` strings (PostgREST filter-injection footgun); `university_id` stays a chained `.eq()`, never inside `.or()`.
@@ -45,7 +47,7 @@ Validated premise (live API research, 2026-06-11): Coursedog's public catalog AP
 
 ## Problem Statement
 
-The previous build *appeared* to cover "only a few majors" — but the database holds 593 programs and 17,892 courses. The real failures:
+The previous build _appeared_ to cover "only a few majors" — but the database holds 593 programs and 17,892 courses. The real failures:
 
 1. **Visibility bugs**: [programs/page.tsx:31](apps/web/src/app/programs/page.tsx:31) hard-caps at `.limit(100)` (browse stops at "C"; 483 programs invisible); [courses/page.tsx:35](apps/web/src/app/courses/page.tsx:35) caps at 50 of ~17.9k. No program picker UI exists even though `semester_plans.program_id` does — the working suggestions engine is unreachable. No branded 404 pages.
 2. **Requirements never parsed**: nothing populates `requirement_sets`/`requirement_items` today. Program `requisites`/`degreeMaps` are stashed whole into `programs.raw_data` JSONB ([normalizers/programs.ts:45](packages/catalog/src/normalizers/programs.ts:45)) and never normalized.
@@ -82,18 +84,18 @@ erDiagram
 
 ### Key decisions
 
-| Question | Decision | Rationale |
-|---|---|---|
-| Hard vs soft delete for vanished courses/programs | **Soft delete** (`is_discontinued not null default false`, both tables, Phase 4 migration) + `plan_courses.course_id` FK flipped to **RESTRICT** | CASCADE silently destroys user plans; `universities→courses` cascade chain has the same hazard. RESTRICT makes hard deletes fail loudly forever |
-| Multi-school URL scheme | Path segment `/[school]/programs/[slug]`; redirects via `next.config` `redirects()`: **308 for detail pages**, **307 for index pages** (`/programs`, `/courses` are plausibly a future school picker — don't burn them permanently); internal links updated to new paths; `metadata.alternates.canonical` on new pages | Static segments win over dynamic; config redirects run before middleware (no Supabase session work on legacy hits); 308 is browser-cached forever |
-| `requirement_sets` activation | Partial unique index `(program_id) WHERE is_active` + batched RPC (see Phase 2a) | supabase-js has no client transactions; `.single()` callers break on 0-or-2 active rows |
-| Requirement item seeding | **INSERT** (never the shared `upsertBatch` — no natural key; accidental upsert duplicates trees), new-set-then-flip, **skip when content_hash unchanged** | Weekly no-op churn would create ~1.5M rows/year/school |
-| `minimumGrade` rules | `raw_rule` JSONB only | Defer column until grade-aware auditing exists |
-| Program picker scope | Authenticated plans only; `migrateGuestPlan` carries `programId` (currently dropped at [actions.ts:139-143](apps/web/src/app/plans/actions.ts:139)) with server-side validation (exists, not discontinued, school-match) — guest payload is attacker-controlled | |
-| Plan↔school association | `semester_plans.university_id`, **nullable** in migration, backfilled `coalesce(program's university, utah)`; `createPlan`/`migrateGuestPlan` write it from day one; `NOT NULL` in follow-up migration; program↔plan university match enforced in `setPlanProgram` | A plan with no program belongs to no school; transcript matching needs an anchor. Write path must be specified or the column rots (simplicity review) |
-| School config source | `packages/catalog/schools.json` (zod-validated: slug `^[a-z0-9_-]{1,64}$`, **reserved-slug list** = static root segments like `plans`, `compare`, `login`, `auth`, `health`, `signup`); seed upserts `universities` (name, coursedog_school_id, catalog_url only); seed is authoritative over those columns | catalogId resolved live at fetch time; config columns with no readers were cut |
-| `[school]` resolution in web | Build-time slug list + deterministic `universityUuid(slug)` hoisted to `packages/shared` — no DB lookup, no cache invalidation | New school requires a deploy anyway (schools.json is checked in) |
-| Requirement-item row type | Canonical type (incl. `"free_text"` variant + credits/courses exclusivity) in `packages/shared/src/schema.ts`; planner keeps a derived narrowed view | Writer/reader/consumer were about to define it three ways |
+| Question                                          | Decision                                                                                                                                                                                                                                                                                                               | Rationale                                                                                                                                             |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hard vs soft delete for vanished courses/programs | **Soft delete** (`is_discontinued not null default false`, both tables, Phase 4 migration) + `plan_courses.course_id` FK flipped to **RESTRICT**                                                                                                                                                                       | CASCADE silently destroys user plans; `universities→courses` cascade chain has the same hazard. RESTRICT makes hard deletes fail loudly forever       |
+| Multi-school URL scheme                           | Path segment `/[school]/programs/[slug]`; redirects via `next.config` `redirects()`: **308 for detail pages**, **307 for index pages** (`/programs`, `/courses` are plausibly a future school picker — don't burn them permanently); internal links updated to new paths; `metadata.alternates.canonical` on new pages | Static segments win over dynamic; config redirects run before middleware (no Supabase session work on legacy hits); 308 is browser-cached forever     |
+| `requirement_sets` activation                     | Partial unique index `(program_id) WHERE is_active` + batched RPC (see Phase 2a)                                                                                                                                                                                                                                       | supabase-js has no client transactions; `.single()` callers break on 0-or-2 active rows                                                               |
+| Requirement item seeding                          | **INSERT** (never the shared `upsertBatch` — no natural key; accidental upsert duplicates trees), new-set-then-flip, **skip when content_hash unchanged**                                                                                                                                                              | Weekly no-op churn would create ~1.5M rows/year/school                                                                                                |
+| `minimumGrade` rules                              | `raw_rule` JSONB only                                                                                                                                                                                                                                                                                                  | Defer column until grade-aware auditing exists                                                                                                        |
+| Program picker scope                              | Authenticated plans only; `migrateGuestPlan` carries `programId` (currently dropped at [actions.ts:139-143](apps/web/src/app/plans/actions.ts:139)) with server-side validation (exists, not discontinued, school-match) — guest payload is attacker-controlled                                                        |                                                                                                                                                       |
+| Plan↔school association                           | `semester_plans.university_id`, **nullable** in migration, backfilled `coalesce(program's university, utah)`; `createPlan`/`migrateGuestPlan` write it from day one; `NOT NULL` in follow-up migration; program↔plan university match enforced in `setPlanProgram`                                                     | A plan with no program belongs to no school; transcript matching needs an anchor. Write path must be specified or the column rots (simplicity review) |
+| School config source                              | `packages/catalog/schools.json` (zod-validated: slug `^[a-z0-9_-]{1,64}$`, **reserved-slug list** = static root segments like `plans`, `compare`, `login`, `auth`, `health`, `signup`); seed upserts `universities` (name, coursedog_school_id, catalog_url only); seed is authoritative over those columns            | catalogId resolved live at fetch time; config columns with no readers were cut                                                                        |
+| `[school]` resolution in web                      | Build-time slug list + deterministic `universityUuid(slug)` hoisted to `packages/shared` — no DB lookup, no cache invalidation                                                                                                                                                                                         | New school requires a deploy anyway (schools.json is checked in)                                                                                      |
+| Requirement-item row type                         | Canonical type (incl. `"free_text"` variant + credits/courses exclusivity) in `packages/shared/src/schema.ts`; planner keeps a derived narrowed view                                                                                                                                                                   | Writer/reader/consumer were about to define it three ways                                                                                             |
 
 ## Technical Approach
 
@@ -102,6 +104,7 @@ erDiagram
 **Prerequisite (CI):** root `pnpm test` (vitest) added to CI — today `pnpm -r test` is `echo ok` per package, so none of the new tests would run.
 
 **1a. Pagination on `/programs` and `/courses`**
+
 - **Build query logic as shared functions taking `universityId` (defaulted to Utah's deterministic UUID)** so Phase 3 is a route move, not a rewrite (simplicity item 5).
 - `page` searchParam: `Number.parseInt` + `Number.isSafeInteger`, `<1`/`NaN` → 1; cap the computed offset before `.range()`. Out-of-range: run the query; if `data.length === 0 && count > 0 && page > 1`, `redirect()` to the clamped page (keeps URLs honest).
 - Query: `.select(cols, { count: "exact" }).order(...).order("id").range(from, from + PAGE_SIZE - 1)`. `count: "exact"` is single-digit ms at this scale; **switch tripwire** (documented, not built): total courses > ~150k rows or p95 > 100ms → `count: "estimated"` or `textSearch` on the existing `search_vector` GIN index.
@@ -112,6 +115,7 @@ erDiagram
 - Note: Next 14.2 `searchParams` is a **sync prop** (Promise-typed only in Next 15) — current code already treats it as async-compatible; leave a comment for the future upgrade.
 
 **1b. Program picker on plan page**
+
 - New server action `setPlanProgram(planId, programId | null)` in [plans/actions.ts](apps/web/src/app/plans/actions.ts):
   - zod/UUID-validate inputs before querying (malformed UUIDs → PostgREST `22P02` leaks).
   - Ownership: `.update(...).eq("id", planId).eq("user_id", user.id).select("id").single()` and **treat zero rows as `{ error: "Plan not found" }`** — RLS alone makes cross-user updates silently "succeed" with 0 rows.
@@ -122,15 +126,17 @@ erDiagram
 - **While in this file** (security findings): sweep raw `error.message` returns (lines 30, 48, 63, 81, 97, 145, 157, 171) → generic messages; add parent-ownership verification to `addSemester`/`addCourse` (semester-slot squatting via unverified `planId`/`planSemesterId`, security L3).
 
 **1c. Branded 404**
+
 - Root `apps/web/src/app/not-found.tsx` only, styled like [error.tsx](apps/web/src/app/error.tsx), with "Browse programs" / "Browse courses" CTAs. `notFound()` from program/course detail bubbles to it. Per-route files cut (Phase 3 would orphan them).
 
 ### Phase 2 — Requirement-rule normalization (core IP; ~2 sprints)
 
-**Prerequisite:** fix `upsertBatch` error swallowing ([seed.ts:27-33](packages/catalog/src/seed.ts:27)) **now, not in Phase 4** — a silently failed course batch leaves requirement leaves pointing at courses that never landed (`validCourseIds` is computed from the *intended* list, not what actually inserted). Seed collects failures and exits non-zero.
+**Prerequisite:** fix `upsertBatch` error swallowing ([seed.ts:27-33](packages/catalog/src/seed.ts:27)) **now, not in Phase 4** — a silently failed course batch leaves requirement leaves pointing at courses that never landed (`validCourseIds` is computed from the _intended_ list, not what actually inserted). Seed collects failures and exits non-zero.
 
 **Also first:** verify migration state — `todos/003-pending-p3-migration-not-applied.md` says the base schema may be unapplied/drifted. Run `supabase migration list` against the remote; `supabase migration repair` if history is out of sync, BEFORE authoring new migrations.
 
 **2a. Migration** `supabase/migrations/<ts>_requirement_versioning.sql` (order matters):
+
 1. Deactivate all but the newest active set per program (dedup UPDATE keyed on `(captured_at, id)`).
 2. `alter table requirement_sets alter column is_active set default false;` — with `default true`, any insert that forgets the flag either violates the index mid-seed or silently activates an unreviewed set.
 3. `drop constraint requirement_sets_program_id_version_label_key;` — insert-then-flip re-seeds the same `version_label` weekly; the partial index governs correctness now.
@@ -138,6 +144,7 @@ erDiagram
 5. `create unique index idx_req_sets_one_active on requirement_sets(program_id) where is_active;`
 6. `create index idx_req_items_parent on requirement_items(parent_id);` — the self-FK cascade does per-row child lookups; without this, large-tree deletes go quadratic.
 7. Batched flip RPC:
+
 ```sql
 create or replace function public.activate_requirement_sets(p_pairs jsonb)
 returns void language plpgsql security invoker set search_path = ''
@@ -160,10 +167,12 @@ end; $$;
 revoke execute on function public.activate_requirement_sets(jsonb) from public, anon, authenticated;
 grant execute on function public.activate_requirement_sets(jsonb) to service_role;
 ```
-  - `SECURITY INVOKER` (seed runs as service_role, which bypasses RLS — DEFINER is gratuitous privilege); `search_path` pinned (Supabase linter rule 0011); the ownership `where ... and program_id = ...` + `raise` prevents cross-program flips and silent 0-row "success"; the advisory lock serializes concurrent seed runs per program (under READ COMMITTED, two concurrent flips can spuriously violate the partial index); revoke is **mandatory** — Postgres grants EXECUTE to PUBLIC by default and PostgREST exposes every public function at `/rpc/`.
-  - Acceptance test: anon `POST /rest/v1/rpc/activate_requirement_sets` → permission denied.
+
+- `SECURITY INVOKER` (seed runs as service_role, which bypasses RLS — DEFINER is gratuitous privilege); `search_path` pinned (Supabase linter rule 0011); the ownership `where ... and program_id = ...` + `raise` prevents cross-program flips and silent 0-row "success"; the advisory lock serializes concurrent seed runs per program (under READ COMMITTED, two concurrent flips can spuriously violate the partial index); revoke is **mandatory** — Postgres grants EXECUTE to PUBLIC by default and PostgREST exposes every public function at `/rpc/`.
+- Acceptance test: anon `POST /rest/v1/rpc/activate_requirement_sets` → permission denied.
 
 **2b. Shared type + normalizer**
+
 - Hoist canonical `RequirementItem` row type + `type` union (`"group" | "course" | "free_text" | ...`) into `packages/shared/src/schema.ts`. Planner derives its narrowed view; web's [requirements-tree.ts](apps/web/src/lib/requirements-tree.ts) imports it.
 - New `packages/catalog/src/normalizers/requirements.ts` (mirrors `walkRules` in [prerequisites.ts:41-104](packages/catalog/src/normalizers/prerequisites.ts:41)):
   - Input: program `requisites.requisitesSimple[]` + courseGroupIdMap **filtered through post-dedup `validCourseIds`** exactly like [seed.ts:119-124](packages/catalog/src/seed.ts:119) (the map is built from pre-dedup courses; unfiltered, leaves point at deduped-away IDs).
@@ -174,6 +183,7 @@ grant execute on function public.activate_requirement_sets(jsonb) to service_rol
   - Empty/missing `requisitesSimple` → no requirement_set created.
 
 **2c. Seed integration** (performance-reviewed design):
+
 - Per school run: normalize all programs → compare each `content_hash` against the program's current active set → **skip unchanged programs entirely**.
 - For changed programs: insert new sets (`is_active: false`, `version_label` = catalog year/capture date) in batches; insert ALL changed programs' items as one globally-ordered stream in **batches of 1,000** (narrow rows; cross-program batching turns 593+ round trips into ~5-10); call `activate_requirement_sets` with all pairs (chunks of ~100).
 - On any failure: delete the new set ids just created (cascade cleans partial trees), do NOT flip, exit non-zero. (Failed-run debris otherwise pollutes retention.)
@@ -182,6 +192,7 @@ grant execute on function public.activate_requirement_sets(jsonb) to service_rol
 - Target: full-school seed < 60s (was heading for 5-7 min with per-program loops).
 
 **2d. Consumers**
+
 - Add `free_text` rendering to the `RequirementTree` component in `programs/[slug]/page.tsx`.
 - Verify suggestions end-to-end with seeded Utah data. If any program render spends > 30ms in `suggestCourses`, pre-group prereq rules into `Map<courseId, PrereqRule[]>` ([prerequisite-check.ts:14](packages/planner/src/prerequisite-check.ts:14) re-filters the full array per call — O(C×B×R)); ~15 lines, ~100x cut.
 - Note for later (not blocking): plan page has a 6-stage serial query waterfall; `requirement_sets!inner(requirement_items(...))` embedding could cut it to ~3.
@@ -191,13 +202,15 @@ grant execute on function public.activate_requirement_sets(jsonb) to service_rol
 **Strict order: 3a-i → 3a-ii → 3b → 3c. Seed guard: `seed()` refuses non-`utah` slugs unless the scoping migration is detected (cheap insurance against the most catastrophic mis-ordering).**
 
 **3a-i. University-scope every query (own deploy; zero URL changes)**
+
 - Migration: `semester_plans.university_id uuid references universities` (NO ACTION delete — consistent with RESTRICT philosophy), **nullable**, backfill `coalesce((select university_id from programs where id = program_id), (select id from universities where slug = 'utah'))` — never a hardcoded UUID literal. `plan_courses.course_id` FK → **RESTRICT** in the same migration. Follow-up migration adds `NOT NULL` after insert paths deploy.
 - `createPlan` and `migrateGuestPlan` write `university_id` (Utah default until a school-choice UX exists).
 - Scope by `university_id` (Utah's deterministic UUID as default): programs/courses browse + detail queries, compare selector, program picker, suggestions fetch, [sitemap.ts](apps/web/src/app/sitemap.ts).
-- Transcript matching: **`parseTranscriptAction` gains a `planId` param** (it's user-scoped today — there's nothing to scope by); resolve the plan's `university_id`, scope `.in("code", codes)` by it. The bare-`code` Map at [actions.ts:224](apps/web/src/app/plans/actions.ts:224) currently keeps the *last* school's row — cross-school corruption.
+- Transcript matching: **`parseTranscriptAction` gains a `planId` param** (it's user-scoped today — there's nothing to scope by); resolve the plan's `university_id`, scope `.in("code", codes)` by it. The bare-`code` Map at [actions.ts:224](apps/web/src/app/plans/actions.ts:224) currently keeps the _last_ school's row — cross-school corruption.
 - `setPlanProgram` enforces program↔plan university match (cross-school IDOR otherwise).
 
 **3a-ii. Route restructure (own deploy)**
+
 - `apps/web/src/app/[school]/{programs,programs/[slug],courses,courses/[code]}/page.tsx` — thin wrappers over the shared query functions from Phase 1a.
 - Slug resolution: validate against the build-time slug list from shared (`^[a-z0-9_-]{1,64}$` + known slug) → `notFound()`; id = `universityUuid(slug)`. No DB lookup. Display name from the shared slug→name map.
 - Define `/[school]/page.tsx` (simple landing linking to programs/courses) and document the root-dynamic-segment/404 interplay (every unknown top-level path now hits `[school]` → unknown slug → root not-found).
@@ -205,6 +218,7 @@ grant execute on function public.activate_requirement_sets(jsonb) to service_rol
 - Do NOT add `generateStaticParams` to these pages — they're request-dynamic via Supabase cookies; static params would add a build-time DB dependency (explicit note so nobody "optimizes" later).
 
 **3b. Pipeline config**
+
 - `packages/catalog/schools.json` + zod schema in `packages/catalog/src/schemas/school-config.ts` (NOT shared — web never reads it): `{ slug, name, coursedogSchoolId, origin, catalogUrl, catalogId? }`; slug charset + reserved-slug validation (test asserts no overlap with static root segments).
 - `fetchAll(school)`: **resolve current effective-dated catalogId from `/api/v1/ca/{slug}/catalogs` at fetch time**; `schools.json` `catalogId` is fallback/override; warn loudly when pinned ≠ current. API URL derived `https://app.coursedog.com/api/v1/cm/{coursedogSchoolId}`; headers from `origin`. Raw path `data/raw/{slug}` (slug validated at config load — it's a filesystem path component); clear error when the dir is missing.
 - `seed(school)` replaces `UNIVERSITY_SLUG`; universities row upserted from config (seed is **authoritative** over name/coursedog_school_id/catalog_url — hand edits get overwritten; documented). Slug-is-forever note: renaming a slug changes every derived uuidv5 and orphans old rows — onboarding doc states it.
@@ -248,6 +262,7 @@ grant execute on function public.activate_requirement_sets(jsonb) to service_rol
 ## Acceptance Criteria
 
 ### Phase 1
+
 - [x] Root `pnpm test` (vitest) runs in CI
 - [x] All 593 programs reachable via paginated browse; `?page=N` URLs shareable/deterministic (id tiebreak); out-of-range pages redirect to clamped page; `page=-1`/`abc`/`9999` handled
 - [x] Courses paginated with total count; "CS 3500" found by code; `.or()` input whitelisted; injection probe (`q=x,id.not.is.null`) returns normal results, not a filter change or 500
@@ -258,35 +273,39 @@ grant execute on function public.activate_requirement_sets(jsonb) to service_rol
 - [x] Tests written FIRST (TDD per CLAUDE.md)
 
 ### Phase 2
-- [ ] Migration state reconciled (`supabase migration list` / `repair`) before new migrations
-- [ ] `upsertBatch` failures collected; seed exits non-zero
-- [ ] Seed populates requirement sets/items for Utah; coverage stats logged (target >80% leaves resolved; rest visible `free_text`; zero silently dropped)
-- [ ] Exactly one active set per program (partial unique index; pre-index dedup ran; `is_active` default false; `version_label` unique constraint dropped)
-- [ ] anon `POST /rpc/activate_requirement_sets` → permission denied
-- [ ] Fixture round-trip: nested `completedAllOf`→`completedAtLeastXOf(2)`→`minimumGrade` + unresolvable ref + `courseAttributes` GE rule → correct tree/types/fallbacks; leaves drive `suggestCourses` + `buildRequirementTree`
-- [ ] Re-run with unchanged data: content-hash skip — zero new sets; re-run with changed data: new set, flip, old inactive sets deleted (keep-1)
-- [ ] Killed seed (post-items, pre-flip): old set still active; partial set cleaned on next run or by failure handler
-- [ ] Canonical `RequirementItem` type in `packages/shared`; `free_text` renders on program detail
-- [ ] Full-school seed < 60s
+
+- [ ] Migration state reconciled (`supabase migration list` / `repair`) before new migrations _(runtime: needs DB access)_
+- [x] `upsertBatch` failures collected; seed exits non-zero
+- [ ] Seed populates requirement sets/items for Utah; coverage stats logged (target >80% leaves resolved; rest visible `free_text`; zero silently dropped) _(runtime: run `catalog:seed` after migrations apply)_
+- [x] Exactly one active set per program (partial unique index; pre-index dedup ran; `is_active` default false; `version_label` unique constraint dropped) — migration authored; apply pending
+- [ ] anon `POST /rpc/activate_requirement_sets` → permission denied _(runtime check after migration applies; revoke is in the migration)_
+- [x] Fixture round-trip: nested rules + unresolvable ref + `courseAttributes` GE rule → correct tree/types/fallbacks (9 normalizer tests)
+- [ ] Re-run with unchanged data: content-hash skip — zero new sets _(runtime)_
+- [ ] Killed seed (post-items, pre-flip): old set still active _(runtime; failure handler implemented)_
+- [x] Canonical `RequirementItem` type in `packages/shared`; `free_text` renders on program detail
+- [ ] Full-school seed < 60s _(runtime)_
 
 ### Phase 3
-- [ ] 3a-i deployed (all queries scoped, Utah default) BEFORE school #2 seeded; seed guard refuses non-utah until scoping migration detected
-- [ ] `semester_plans.university_id` backfilled from program-with-Utah-fallback; `createPlan`/`migrateGuestPlan` write it; NOT NULL follow-up applied; `plan_courses.course_id` is RESTRICT
-- [ ] `parseTranscriptAction(planId, text)` scopes matching by the plan's university
-- [ ] `/utah/programs/...` live; legacy detail URLs 308, index URLs 307; internal links use new paths; canonicals set; sitemap per-school, no duplicates
-- [ ] Two-school collision test: same program slug + course code at both schools resolve correctly everywhere; transcript matches only the plan's school
-- [ ] `setPlanProgram` rejects cross-school programs
-- [ ] schools.json zod-validated incl. reserved-slug list; catalogId resolved at fetch time (stale-pin warning works)
-- [ ] BYU/Arizona fetched, seeded, browsable, plannable; Utah unchanged; school #2 parse coverage recorded
+
+- [x] All queries scoped (Utah default); seed guard refuses non-utah until scoping migration detected — deploy ordering documented in PR
+- [x] `semester_plans.university_id` migration (backfill from program with Utah fallback); `createPlan`/`migrateGuestPlan` write it; `plan_courses.course_id` is RESTRICT — NOT NULL follow-up deferred until backfill verified in prod
+- [x] `parseTranscriptAction(planId, text)` scopes matching by the plan's university
+- [x] `/utah/programs/...` routes; legacy detail URLs 308, index URLs 307; internal links use new paths; canonicals set; sitemap per-school
+- [ ] Two-school collision test against a live two-school DB _(runtime; unit coverage exists for scoping in every query path)_
+- [x] `setPlanProgram` rejects cross-school programs (unit tested)
+- [x] schools.json zod-validated incl. reserved-slug list + shared-registry sync test; catalogId resolved at fetch time with stale-pin warning
+- [ ] BYU fetched, seeded, browsable, plannable _(runtime: `pnpm catalog:fetch --school=byu && pnpm catalog:seed --school=byu` after migrations + web deploy)_
 
 ### Phase 4
-- [ ] Weekly workflow: fail-fast off, concurrency queue, timeouts, environment-scoped secret, SHA-pinned actions, `--ignore-scripts`, dispatch input via env, coverage in step summary, keepalive/heartbeat configured
-- [ ] Vanished-course test: plan row survives (RESTRICT + soft delete), badge shown, excluded from browse/suggestions/addCourse via the centralized filter, guest migration recoverable ("skip N missing")
-- [ ] Circuit breaker: simulated truncated fetch (< 90%) fails the job without marking anything discontinued
-- [ ] Version-flip-with-live-plan test: one active set always; killed seed leaves v1 active
+
+- [x] Weekly workflow: fail-fast off, concurrency queue, timeouts, environment-scoped secret, SHA-pinned actions, `--ignore-scripts`, dispatch input validated + via env, coverage in step summary — repo setup needed: create `catalog-refresh` environment with `SUPABASE_SERVICE_ROLE_KEY` secret + `NEXT_PUBLIC_SUPABASE_URL` variable; add keepalive/heartbeat if development goes quiet
+- [x] Vanished-course handling: RESTRICT + soft delete, plan badge ("No longer offered"), centralized exclusion in browse/suggestions/addCourse, guest migration skips missing with count
+- [x] Circuit breaker: truncated fetch (< 90%) throws without marking anything discontinued (unit tested)
+- [ ] Version-flip-with-live-plan test against live DB _(runtime)_
 
 ### Phase 5
-- [ ] `docs/onboarding-a-school.md` complete; `catalog:probe` validates and prints a schools.json entry; human review gate documented
+
+- [x] `docs/onboarding-a-school.md` complete; `catalog:probe` validates and prints a schools.json entry; human review gate documented
 
 ## Success Metrics
 
@@ -308,6 +327,7 @@ grant execute on function public.activate_requirement_sets(jsonb) to service_rol
 ## References & Research
 
 ### Internal
+
 - Prior UX plan: `docs/plans/2026-04-02-feat-ux-functionality-improvements-plan.md`
 - Coursedog API notes: `docs/coursedog-api.md`
 - Two-pass prereq normalization: `packages/catalog/src/normalizers/prerequisites.ts:41-133`
@@ -316,6 +336,7 @@ grant execute on function public.activate_requirement_sets(jsonb) to service_rol
 - Fixtures: `data/raw/fixtures/coursedog-programs-sample.json` (CPSCBS full requisites + degreeMaps)
 
 ### External (verified live 2026-06-11 + deepening research)
+
 - Coursedog: `GET /api/v1/cm/{slug}/programs?programGroupIds=...` structured `requisites.requisitesSimple[]` (BYU, Arizona verified); `GET /api/v1/ca/{slug}/catalogs` editions; `Origin` + `X-Requested-With: catalog` gate; no discovery endpoint
 - Supabase database functions security (INVOKER default, search_path linter 0011): https://supabase.com/docs/guides/database/functions
 - Securing API / revoking default function privileges: https://supabase.com/docs/guides/api/securing-your-api

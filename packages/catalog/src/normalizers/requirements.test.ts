@@ -81,16 +81,12 @@ function normalize(overrides?: { map?: Map<string, string>; labels?: Map<string,
 }
 
 function childrenOf(items: RequirementItemDraft[], parentId: string | null) {
-  return items
-    .filter((i) => i.parent_id === parentId)
-    .sort((a, b) => a.sort_order - b.sort_order);
+  return items.filter((i) => i.parent_id === parentId).sort((a, b) => a.sort_order - b.sort_order);
 }
 
 describe("normalizeRequirements", () => {
   it("returns null when the program has no requirement rules", () => {
-    expect(
-      normalizeRequirements(syntheticProgram([]), { courseGroupIdMap: new Map() }),
-    ).toBeNull();
+    expect(normalizeRequirements(syntheticProgram([]), { courseGroupIdMap: new Map() })).toBeNull();
     expect(
       normalizeRequirements(syntheticProgram([{ id: "g", name: "Empty", rules: [] }]), {
         courseGroupIdMap: new Map(),

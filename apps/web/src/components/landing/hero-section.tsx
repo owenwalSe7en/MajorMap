@@ -103,11 +103,7 @@ export function HeroSection() {
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            <Button
-              size="lg"
-              className="px-8 h-14 text-base rounded-full group"
-              asChild
-            >
+            <Button size="lg" className="px-8 h-14 text-base rounded-full group" asChild>
               <Link href="/utah/programs">
                 Explore Programs
                 <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />

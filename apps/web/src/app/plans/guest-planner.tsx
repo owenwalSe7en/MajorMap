@@ -59,7 +59,7 @@ export function GuestPlanner() {
         });
       }
     });
-  }, [courseIdKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [courseIdKey]);
 
   function updatePlan(newPlan: GuestPlan) {
     setPlan(newPlan);

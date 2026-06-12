@@ -1,14 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { upsertBatch } from "./seed.js";
+import { computeStaleDiff, staleMarkingAllowed, upsertBatch } from "./seed.js";
 
 function mockClient(failingBatches: number[]) {
   let call = 0;
   const upsert = vi.fn().mockImplementation(() => {
     call++;
     return Promise.resolve(
-      failingBatches.includes(call)
-        ? { error: { message: `boom ${call}` } }
-        : { error: null },
+      failingBatches.includes(call) ? { error: { message: `boom ${call}` } } : { error: null },
     );
   });
   return {
@@ -44,5 +42,35 @@ describe("upsertBatch", () => {
 
     expect(result).toEqual({ inserted: 1, failures: [] });
     expect(upsert).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("staleMarkingAllowed (mass-discontinuation circuit breaker)", () => {
+  it("allows the first seed of a school", () => {
+    expect(staleMarkingAllowed(5000, 0)).toBe(true);
+  });
+
+  it("allows normal drift", () => {
+    expect(staleMarkingAllowed(17500, 17892)).toBe(true);
+  });
+
+  it("refuses when the fetch looks truncated", () => {
+    // A truncated/partial response must never soft-delete the catalog.
+    expect(staleMarkingAllowed(9000, 17892)).toBe(false);
+    expect(staleMarkingAllowed(0, 17892)).toBe(false);
+  });
+});
+
+describe("computeStaleDiff", () => {
+  it("flags rows missing from the fetch and restores returned ones", () => {
+    const db = [
+      { id: "a", is_discontinued: false }, // still present → untouched
+      { id: "b", is_discontinued: false }, // vanished → flag
+      { id: "c", is_discontinued: true }, // returned → restore
+      { id: "d", is_discontinued: true }, // still gone → untouched
+    ];
+    const fetched = new Set(["a", "c"]);
+
+    expect(computeStaleDiff(db, fetched)).toEqual({ flag: ["b"], restore: ["c"] });
   });
 });

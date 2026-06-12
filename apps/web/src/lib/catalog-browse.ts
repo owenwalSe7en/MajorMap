@@ -73,6 +73,7 @@ export async function fetchProgramsPage(
     .from("programs")
     .select("id, slug, name, degree_type, total_credits, description", { count: "exact" })
     .eq("university_id", universityId)
+    .eq("is_discontinued", false)
     .order("name")
     .order("id");
 
@@ -107,6 +108,7 @@ export async function fetchCoursesPage(
     .from("courses")
     .select("id, subject_code, number, title, credits_min, credits_max", { count: "exact" })
     .eq("university_id", universityId)
+    .eq("is_discontinued", false)
     .order("subject_code")
     .order("number")
     .order("id");

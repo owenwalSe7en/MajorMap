@@ -21,6 +21,11 @@ export const SCHOOLS: readonly SchoolRef[] = [
     name: "University of Utah",
     universityId: "63b63f87-3a1d-58a9-b55d-c0d359823c77",
   },
+  {
+    slug: "byu",
+    name: "Brigham Young University",
+    universityId: "f6ada4f1-aa22-552a-84e3-f95a642f3b8e",
+  },
 ] as const;
 
 export const DEFAULT_SCHOOL_SLUG = "utah";

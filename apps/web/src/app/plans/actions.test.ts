@@ -10,6 +10,7 @@ function mockSupabase(overrides: Record<string, unknown> = {}) {
   const chainable = {
     select: vi.fn().mockReturnThis(),
     insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
     upsert: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
     in: vi.fn().mockReturnThis(),
@@ -84,13 +85,14 @@ describe("parseTranscriptAction", () => {
   it("queries courses scoped to the plan's university", async () => {
     mockPlanLookup("uni-123");
     supabaseMock._chain.in = vi.fn().mockResolvedValue({
-      data: [
-        { id: "uuid-1", code: "CS 1400", title: "Intro to CS", credits: 3 },
-      ],
+      data: [{ id: "uuid-1", code: "CS 1400", title: "Intro to CS", credits: 3 }],
     });
 
     const { parseTranscriptAction } = await import("./actions.js");
-    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, "CS  1400  Intro to CS  3.00  A");
+    const result = await parseTranscriptAction(
+      TRANSCRIPT_PLAN_ID,
+      "CS  1400  Intro to CS  3.00  A",
+    );
 
     expect(supabaseMock.from).toHaveBeenCalledWith("courses");
     expect(supabaseMock._chain.eq).toHaveBeenCalledWith("university_id", "uni-123");
@@ -104,17 +106,12 @@ describe("parseTranscriptAction", () => {
   it("separates matched and unmatched courses", async () => {
     mockPlanLookup();
     supabaseMock._chain.in = vi.fn().mockResolvedValue({
-      data: [
-        { id: "uuid-1", code: "CS 1400", title: "Intro to CS", credits: 3 },
-      ],
+      data: [{ id: "uuid-1", code: "CS 1400", title: "Intro to CS", credits: 3 }],
     });
 
     const { parseTranscriptAction } = await import("./actions.js");
-    const text = [
-      "CS  1400  Intro to CS  3.00  A",
-      "FAKE  9999  Not Real  3.00  B",
-    ].join("\n");
-    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, text) as {
+    const text = ["CS  1400  Intro to CS  3.00  A", "FAKE  9999  Not Real  3.00  B"].join("\n");
+    const result = (await parseTranscriptAction(TRANSCRIPT_PLAN_ID, text)) as {
       matched: Array<{ code: string }>;
       unmatched: Array<{ subjectCode: string }>;
     };
@@ -134,11 +131,8 @@ describe("parseTranscriptAction", () => {
     });
 
     const { parseTranscriptAction } = await import("./actions.js");
-    const text = [
-      "CS  1400  Intro  3.00  A",
-      "CS  1410  OOP  3.00  W",
-    ].join("\n");
-    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, text) as {
+    const text = ["CS  1400  Intro  3.00  A", "CS  1410  OOP  3.00  W"].join("\n");
+    const result = (await parseTranscriptAction(TRANSCRIPT_PLAN_ID, text)) as {
       matched: Array<{ grade: string; isPassingGrade: boolean }>;
     };
 
@@ -289,7 +283,7 @@ describe("migrateGuestPlan program carry-over", () => {
     const { migrateGuestPlan } = await import("./actions.js");
     const result = await migrateGuestPlan(guestPlan(PROGRAM_ID));
 
-    expect(result).toEqual({ success: true, planId: "plan-new" });
+    expect(result).toEqual({ success: true, planId: "plan-new", skippedCourses: 0 });
     expect(supabaseMock._chain.insert).toHaveBeenCalledWith(
       expect.objectContaining({ program_id: PROGRAM_ID }),
     );
@@ -306,7 +300,7 @@ describe("migrateGuestPlan program carry-over", () => {
     const { migrateGuestPlan } = await import("./actions.js");
     const result = await migrateGuestPlan(guestPlan(PROGRAM_ID));
 
-    expect(result).toEqual({ success: true, planId: "plan-new" });
+    expect(result).toEqual({ success: true, planId: "plan-new", skippedCourses: 0 });
     expect(supabaseMock._chain.insert).toHaveBeenCalledWith(
       expect.not.objectContaining({ program_id: expect.anything() }),
     );
