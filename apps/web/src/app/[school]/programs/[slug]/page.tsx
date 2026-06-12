@@ -1,22 +1,29 @@
 import { createClient } from "@/lib/supabase/server";
 import { buildRequirementTree, type RequirementNode } from "@/lib/requirements-tree";
+import { resolveSchool, SITE_URL } from "@/lib/school";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ school: string; slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { slug } = await params;
+  const { school, slug } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) return { title: "Program Not Found" };
   const supabase = await createClient();
   const { data: program } = await supabase
     .from("programs")
     .select("name, degree_type")
+    .eq("university_id", ref.universityId)
     .eq("slug", slug)
     .single();
   if (!program) return { title: "Program Not Found" };
-  return { title: `${program.name} ${program.degree_type}` };
+  return {
+    title: `${program.name} ${program.degree_type}`,
+    alternates: { canonical: `${SITE_URL}/${ref.slug}/programs/${slug}` },
+  };
 }
 
 function RequirementTree({ nodes, depth = 0 }: { nodes: RequirementNode[]; depth?: number }) {
@@ -59,10 +66,18 @@ function RequirementTree({ nodes, depth = 0 }: { nodes: RequirementNode[]; depth
 }
 
 export default async function ProgramDetailPage({ params }: Props) {
-  const { slug } = await params;
+  const { school, slug } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) notFound();
+
   const supabase = await createClient();
 
-  const { data: program } = await supabase.from("programs").select("*").eq("slug", slug).single();
+  const { data: program } = await supabase
+    .from("programs")
+    .select("*")
+    .eq("university_id", ref.universityId)
+    .eq("slug", slug)
+    .single();
   if (!program) notFound();
 
   const { data: reqSet } = await supabase
@@ -88,7 +103,7 @@ export default async function ProgramDetailPage({ params }: Props) {
         <div className="mb-12">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
             <span className="w-8 h-px bg-foreground/30" />
-            Program Detail
+            {ref.name}
           </span>
           <h1 className="text-4xl lg:text-6xl font-display tracking-tight mb-4">{program.name}</h1>
           <div className="flex items-center gap-3">

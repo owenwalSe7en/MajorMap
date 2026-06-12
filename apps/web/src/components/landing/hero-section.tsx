@@ -108,7 +108,7 @@ export function HeroSection() {
               className="px-8 h-14 text-base rounded-full group"
               asChild
             >
-              <Link href="/programs">
+              <Link href="/utah/programs">
                 Explore Programs
                 <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
               </Link>

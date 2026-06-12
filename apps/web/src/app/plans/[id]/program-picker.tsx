@@ -17,9 +17,11 @@ interface ProgramOption {
 interface ProgramPickerProps {
   planId: string;
   currentProgram: { id: string; name: string } | null;
+  /** Scopes the search to the plan's school. */
+  universityId?: string | null;
 }
 
-export function ProgramPicker({ planId, currentProgram }: ProgramPickerProps) {
+export function ProgramPicker({ planId, currentProgram, universityId }: ProgramPickerProps) {
   const [editing, setEditing] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ProgramOption[]>([]);
@@ -36,10 +38,13 @@ export function ProgramPicker({ planId, currentProgram }: ProgramPickerProps) {
     const controller = new AbortController();
     const supabase = createClient();
 
-    supabase
+    let search = supabase
       .from("programs")
       .select("id, name, degree_type")
-      .ilike("name", `%${query.replace(/[%_]/g, "")}%`)
+      .ilike("name", `%${query.replace(/[%_]/g, "")}%`);
+    if (universityId) search = search.eq("university_id", universityId);
+
+    search
       .order("name")
       .limit(10)
       .then(({ data }) => {
@@ -48,7 +53,7 @@ export function ProgramPicker({ planId, currentProgram }: ProgramPickerProps) {
       });
 
     return () => controller.abort();
-  }, [editing, query]);
+  }, [editing, query, universityId]);
 
   function apply(programId: string | null) {
     setError(null);

@@ -25,7 +25,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
   // Fetch plan with semesters and courses
   const { data: plan } = await supabase
     .from("semester_plans")
-    .select("id, name, program_id, secondary_program_id")
+    .select("id, name, program_id, secondary_program_id, university_id")
     .eq("id", id)
     .single();
 
@@ -230,6 +230,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
             currentProgram={
               plan.program_id && program ? { id: plan.program_id, name: program.name } : null
             }
+            universityId={(plan as { university_id?: string | null }).university_id ?? null}
           />
           <CreditSidebar
             credits={credits}

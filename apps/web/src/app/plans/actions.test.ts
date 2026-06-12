@@ -40,6 +40,15 @@ beforeEach(() => {
   supabaseMock = mockSupabase();
 });
 
+const TRANSCRIPT_PLAN_ID = "55555555-5555-4555-8555-555555555555";
+
+function mockPlanLookup(universityId: string | null = null) {
+  supabaseMock._chain.single = vi.fn().mockResolvedValue({
+    data: { id: TRANSCRIPT_PLAN_ID, university_id: universityId },
+    error: null,
+  });
+}
+
 describe("parseTranscriptAction", () => {
   it("returns error when not authenticated", async () => {
     supabaseMock.auth.getUser = vi.fn().mockResolvedValue({
@@ -47,24 +56,33 @@ describe("parseTranscriptAction", () => {
       error: null,
     });
     const { parseTranscriptAction } = await import("./actions.js");
-    const result = await parseTranscriptAction("CS  1400  Intro  3.00  A");
+    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, "CS  1400  Intro  3.00  A");
     expect(result).toEqual({ error: "Not authenticated" });
   });
 
   it("returns error for oversized input", async () => {
     const { parseTranscriptAction } = await import("./actions.js");
-    const result = await parseTranscriptAction("x".repeat(60_000));
+    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, "x".repeat(60_000));
     expect(result).toEqual({ error: "Invalid input" });
   });
 
-  it("returns empty matched when no courses parsed", async () => {
+  it("rejects plans the caller does not own", async () => {
+    supabaseMock._chain.single = vi.fn().mockResolvedValue({ data: null, error: null });
     const { parseTranscriptAction } = await import("./actions.js");
-    const result = await parseTranscriptAction("no valid course lines here");
+    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, "CS  1400  Intro  3.00  A");
+    expect(result).toEqual({ error: "Plan not found" });
+  });
+
+  it("returns empty matched when no courses parsed", async () => {
+    mockPlanLookup();
+    const { parseTranscriptAction } = await import("./actions.js");
+    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, "no valid course lines here");
     expect(result).toHaveProperty("matched");
     expect((result as { matched: unknown[] }).matched).toEqual([]);
   });
 
-  it("queries courses table with parsed codes", async () => {
+  it("queries courses scoped to the plan's university", async () => {
+    mockPlanLookup("uni-123");
     supabaseMock._chain.in = vi.fn().mockResolvedValue({
       data: [
         { id: "uuid-1", code: "CS 1400", title: "Intro to CS", credits: 3 },
@@ -72,9 +90,10 @@ describe("parseTranscriptAction", () => {
     });
 
     const { parseTranscriptAction } = await import("./actions.js");
-    const result = await parseTranscriptAction("CS  1400  Intro to CS  3.00  A");
+    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, "CS  1400  Intro to CS  3.00  A");
 
     expect(supabaseMock.from).toHaveBeenCalledWith("courses");
+    expect(supabaseMock._chain.eq).toHaveBeenCalledWith("university_id", "uni-123");
     expect(result).toHaveProperty("matched");
     const matched = (result as { matched: Array<{ courseId: string; grade: string }> }).matched;
     expect(matched).toHaveLength(1);
@@ -83,6 +102,7 @@ describe("parseTranscriptAction", () => {
   });
 
   it("separates matched and unmatched courses", async () => {
+    mockPlanLookup();
     supabaseMock._chain.in = vi.fn().mockResolvedValue({
       data: [
         { id: "uuid-1", code: "CS 1400", title: "Intro to CS", credits: 3 },
@@ -94,7 +114,7 @@ describe("parseTranscriptAction", () => {
       "CS  1400  Intro to CS  3.00  A",
       "FAKE  9999  Not Real  3.00  B",
     ].join("\n");
-    const result = await parseTranscriptAction(text) as {
+    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, text) as {
       matched: Array<{ code: string }>;
       unmatched: Array<{ subjectCode: string }>;
     };
@@ -105,6 +125,7 @@ describe("parseTranscriptAction", () => {
   });
 
   it("sets isPassingGrade correctly", async () => {
+    mockPlanLookup();
     supabaseMock._chain.in = vi.fn().mockResolvedValue({
       data: [
         { id: "uuid-1", code: "CS 1400", title: "Intro", credits: 3 },
@@ -117,7 +138,7 @@ describe("parseTranscriptAction", () => {
       "CS  1400  Intro  3.00  A",
       "CS  1410  OOP  3.00  W",
     ].join("\n");
-    const result = await parseTranscriptAction(text) as {
+    const result = await parseTranscriptAction(TRANSCRIPT_PLAN_ID, text) as {
       matched: Array<{ grade: string; isPassingGrade: boolean }>;
     };
 
@@ -176,6 +197,22 @@ describe("setPlanProgram", () => {
     const { setPlanProgram } = await import("./actions.js");
     const result = await setPlanProgram(PLAN_ID, PROGRAM_ID);
     expect(result).toEqual({ error: "Program not found" });
+  });
+
+  it("rejects programs from a different school", async () => {
+    let call = 0;
+    supabaseMock._chain.single = vi.fn().mockImplementation(() => {
+      call++;
+      if (call === 1)
+        return Promise.resolve({
+          data: { id: PLAN_ID, secondary_program_id: null, university_id: "uni-1" },
+          error: null,
+        });
+      return Promise.resolve({ data: { id: PROGRAM_ID, university_id: "uni-2" }, error: null });
+    });
+    const { setPlanProgram } = await import("./actions.js");
+    const result = await setPlanProgram(PLAN_ID, PROGRAM_ID);
+    expect(result).toEqual({ error: "That program belongs to a different school" });
   });
 
   it("updates the plan and reports success", async () => {
@@ -238,7 +275,7 @@ describe("addCourse ownership", () => {
 
 describe("migrateGuestPlan program carry-over", () => {
   function guestPlan(programId: string | null) {
-    return { id: "guest-1", name: "My Plan", programId, semesters: [] };
+    return { id: "guest-1", name: "My Plan", programId, schoolSlug: "utah", semesters: [] };
   }
 
   it("carries a valid programId onto the new plan", async () => {

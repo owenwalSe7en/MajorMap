@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
+import { UTAH_UNIVERSITY_ID } from "@major-map/shared";
 
 interface Program {
   id: string;
@@ -33,9 +34,12 @@ export function ProgramSelector({ label, onSelect, excludeId }: ProgramSelectorP
     const controller = new AbortController();
     const supabase = createClient();
 
+    // Compare is single-school for now — scope to the default school so a
+    // second seeded catalog can't interleave results.
     supabase
       .from("programs")
       .select("id, name, degree_type, total_credits")
+      .eq("university_id", UTAH_UNIVERSITY_ID)
       .ilike("name", `%${query}%`)
       .limit(10)
       .then(({ data }) => {

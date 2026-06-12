@@ -4,10 +4,13 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import { DEFAULT_SCHOOL_SLUG } from "@major-map/shared";
 
+// Internal links go straight to the school-scoped routes — the legacy
+// /programs and /courses paths only exist as redirects for old links.
 const navLinks = [
-  { name: "Programs", href: "/programs" },
-  { name: "Courses", href: "/courses" },
+  { name: "Programs", href: `/${DEFAULT_SCHOOL_SLUG}/programs` },
+  { name: "Courses", href: `/${DEFAULT_SCHOOL_SLUG}/courses` },
 ];
 
 export function Navigation() {
@@ -61,7 +64,7 @@ export function Navigation() {
 
           <div className="hidden md:flex items-center gap-4">
             <Button size="sm" className="rounded-full" asChild>
-              <Link href="/programs">Explore Programs</Link>
+              <Link href={`/${DEFAULT_SCHOOL_SLUG}/programs`}>Explore Programs</Link>
             </Button>
           </div>
 

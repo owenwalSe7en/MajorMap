@@ -5,28 +5,48 @@ import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
 import { fetchProgramsPage } from "@/lib/catalog-browse";
 import { pageHref, sanitizePage } from "@/lib/browse";
+import { resolveSchool, SITE_URL } from "@/lib/school";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Search } from "lucide-react";
 
-export const metadata = { title: "Programs" };
-
 interface Props {
+  params: Promise<{ school: string }>;
   searchParams: Promise<{ q?: string; type?: string; page?: string }>;
 }
 
-export default async function ProgramsPage({ searchParams }: Props) {
-  const params = await searchParams;
-  const supabase = await createClient();
+export async function generateMetadata({ params }: Props) {
+  const { school } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) return { title: "Programs" };
+  return {
+    title: `Programs — ${ref.name}`,
+    alternates: { canonical: `${SITE_URL}/${ref.slug}/programs` },
+  };
+}
 
-  const page = sanitizePage(params.page);
-  const result = await fetchProgramsPage(supabase, { page, q: params.q, type: params.type });
+export default async function ProgramsPage({ params, searchParams }: Props) {
+  const { school } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) notFound();
+
+  const query = await searchParams;
+  const supabase = await createClient();
+  const basePath = `/${ref.slug}/programs`;
+
+  const page = sanitizePage(query.page);
+  const result = await fetchProgramsPage(supabase, {
+    page,
+    q: query.q,
+    type: query.type,
+    universityId: ref.universityId,
+  });
 
   if (result.outOfRange) {
-    redirect(pageHref("/programs", { q: params.q, type: params.type }, result.lastPage));
+    redirect(pageHref(basePath, { q: query.q, type: query.type }, result.lastPage));
   }
 
-  const filterParams = { q: params.q, type: params.type };
+  const filterParams = { q: query.q, type: query.type };
 
   return (
     <main className="min-h-screen noise-overlay">
@@ -34,7 +54,7 @@ export default async function ProgramsPage({ searchParams }: Props) {
         <div className="mb-12">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
             <span className="w-8 h-px bg-foreground/30" />
-            Browse
+            {ref.name}
           </span>
           <h1 className="text-4xl lg:text-6xl font-display tracking-tight">Programs</h1>
         </div>
@@ -45,13 +65,13 @@ export default async function ProgramsPage({ searchParams }: Props) {
             <Input
               name="q"
               placeholder="Search programs..."
-              defaultValue={params.q ?? ""}
+              defaultValue={query.q ?? ""}
               className="pl-10 h-12 rounded-full border-foreground/10"
             />
           </div>
           <select
             name="type"
-            defaultValue={params.type ?? ""}
+            defaultValue={query.type ?? ""}
             className="h-12 px-4 rounded-full border border-foreground/10 bg-background text-sm"
           >
             <option value="">All Types</option>
@@ -71,7 +91,7 @@ export default async function ProgramsPage({ searchParams }: Props) {
           {result.rows.map((program) => (
             <Link
               key={program.id}
-              href={`/programs/${program.slug}`}
+              href={`${basePath}/${program.slug}`}
               className="group block p-6 rounded-xl border border-foreground/10 hover:border-foreground/20 transition-all duration-300 hover:-translate-y-1"
             >
               <h3 className="text-lg font-semibold mb-2 group-hover:translate-x-1 transition-transform duration-300">
@@ -99,7 +119,7 @@ export default async function ProgramsPage({ searchParams }: Props) {
 
         {result.count > 0 && (
           <Pagination
-            basePath="/programs"
+            basePath={basePath}
             page={result.page}
             lastPage={result.lastPage}
             params={filterParams}

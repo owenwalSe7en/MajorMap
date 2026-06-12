@@ -1,34 +1,45 @@
 import { createClient } from "@/lib/supabase/server";
+import { resolveSchool, SITE_URL } from "@/lib/school";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 interface Props {
-  params: Promise<{ code: string }>;
+  params: Promise<{ school: string; code: string }>;
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { code } = await params;
+  const { school, code } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) return { title: "Course Not Found" };
   const [subjectCode, number] = code.split("-");
   const supabase = await createClient();
   const { data: course } = await supabase
     .from("courses")
     .select("title, subject_code, number")
+    .eq("university_id", ref.universityId)
     .eq("subject_code", subjectCode)
     .eq("number", number)
     .single();
   if (!course) return { title: "Course Not Found" };
-  return { title: `${course.subject_code} ${course.number} — ${course.title}` };
+  return {
+    title: `${course.subject_code} ${course.number} — ${course.title}`,
+    alternates: { canonical: `${SITE_URL}/${ref.slug}/courses/${code}` },
+  };
 }
 
 export default async function CourseDetailPage({ params }: Props) {
-  const { code } = await params;
+  const { school, code } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) notFound();
+
   const [subjectCode, number] = code.split("-");
   const supabase = await createClient();
 
   const { data: course } = await supabase
     .from("courses")
     .select("*")
+    .eq("university_id", ref.universityId)
     .eq("subject_code", subjectCode)
     .eq("number", number)
     .single();
@@ -67,7 +78,7 @@ export default async function CourseDetailPage({ params }: Props) {
         <div className="mb-8">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
             <span className="w-8 h-px bg-foreground/30" />
-            Course Detail
+            {ref.name}
           </span>
           <h1 className="text-4xl lg:text-6xl font-display tracking-tight mb-2">
             {course.subject_code} {course.number}
@@ -97,7 +108,7 @@ export default async function CourseDetailPage({ params }: Props) {
               {prereqCourses.map((pc) => (
                 <li key={pc.id}>
                   <Link
-                    href={`/courses/${pc.subject_code}-${pc.number}`}
+                    href={`/${ref.slug}/courses/${pc.subject_code}-${pc.number}`}
                     className="text-primary hover:underline font-mono text-sm"
                   >
                     {pc.subject_code} {pc.number}

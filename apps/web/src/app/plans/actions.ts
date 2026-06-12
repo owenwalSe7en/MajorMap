@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { parseTranscript, PASSING_GRADE_SET, ALL_GRADES } from "@major-map/planner";
+import { UTAH_UNIVERSITY_ID } from "@major-map/shared";
 import type { GuestPlan } from "@/lib/guest-plan";
 
 const VALID_TERMS = ["Fall", "Spring", "Summer"];
@@ -27,9 +28,11 @@ export async function createPlan(name = "My Plan") {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
+  // New plans default to Utah until a school-choice step exists in plan
+  // creation; the column anchors transcript matching and program validation.
   const { data, error } = await supabase
     .from("semester_plans")
-    .insert({ user_id: user.id, name })
+    .insert({ user_id: user.id, name, university_id: UTAH_UNIVERSITY_ID })
     .select("id")
     .single();
 
@@ -143,7 +146,7 @@ export async function setPlanProgram(planId: string, programId: string | null) {
 
   const { data: plan } = await supabase
     .from("semester_plans")
-    .select("id, secondary_program_id")
+    .select("id, secondary_program_id, university_id")
     .eq("id", planId)
     .eq("user_id", user.id)
     .single();
@@ -155,10 +158,15 @@ export async function setPlanProgram(planId: string, programId: string | null) {
     }
     const { data: program } = await supabase
       .from("programs")
-      .select("id")
+      .select("id, university_id")
       .eq("id", programId)
       .single();
     if (!program) return { error: "Program not found" };
+    // Cross-school guard: attaching another school's program would corrupt
+    // suggestions and transcript scoping.
+    if (plan.university_id && program.university_id !== plan.university_id) {
+      return { error: "That program belongs to a different school" };
+    }
   }
 
   // A 0-row update means the plan vanished or isn't ours — RLS makes that a
@@ -232,6 +240,7 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
     .insert({
       user_id: user.id,
       name: guestPlan.name,
+      university_id: UTAH_UNIVERSITY_ID,
       ...(programId ? { program_id: programId } : {}),
     })
     .select("id")
@@ -295,13 +304,25 @@ type ParseResult =
   | { error: string }
   | { matched: MatchedCourse[]; unmatched: UnmatchedCourse[]; skippedLines: number; totalCredits: number };
 
-export async function parseTranscriptAction(text: string): Promise<ParseResult> {
+export async function parseTranscriptAction(planId: string, text: string): Promise<ParseResult> {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
   if (typeof text !== "string" || text.length > MAX_TRANSCRIPT_LENGTH) {
     return { error: "Invalid input" };
   }
+
+  // Matching is scoped to the plan's school — codes like "CS 1400" exist at
+  // every university, and an unscoped lookup would match another school's
+  // course rows once a second catalog is seeded.
+  const { data: plan } = await supabase
+    .from("semester_plans")
+    .select("id, university_id")
+    .eq("id", planId)
+    .eq("user_id", user.id)
+    .single();
+  if (!plan) return { error: "Plan not found" };
+  const universityId = plan.university_id ?? UTAH_UNIVERSITY_ID;
 
   const { courses: parsed, skippedLines } = parseTranscript(text);
 
@@ -314,6 +335,7 @@ export async function parseTranscriptAction(text: string): Promise<ParseResult> 
   const { data: dbCourses } = await supabase
     .from("courses")
     .select("id, code, title, credits")
+    .eq("university_id", universityId)
     .in("code", codes);
 
   const codeToDb = new Map(

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
+import { DEFAULT_SCHOOL_SLUG } from "@major-map/shared";
 
 export default function NotFound() {
   return (
@@ -17,10 +18,10 @@ export default function NotFound() {
         </div>
         <div className="flex gap-3">
           <Button asChild>
-            <Link href="/programs">Browse programs</Link>
+            <Link href={`/${DEFAULT_SCHOOL_SLUG}/programs`}>Browse programs</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/courses">Browse courses</Link>
+            <Link href={`/${DEFAULT_SCHOOL_SLUG}/courses`}>Browse courses</Link>
           </Button>
         </div>
       </div>
