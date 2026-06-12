@@ -1,38 +1,31 @@
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
+import { fetchCoursesPage } from "@/lib/catalog-browse";
+import { pageHref, sanitizePage } from "@/lib/browse";
 import { Search } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export const metadata = { title: "Courses" };
 
 interface Props {
-  searchParams: Promise<{ q?: string; dept?: string }>;
+  searchParams: Promise<{ q?: string; dept?: string; page?: string }>;
 }
 
 export default async function CoursesPage({ searchParams }: Props) {
   const params = await searchParams;
   const supabase = await createClient();
 
-  let query = supabase
-    .from("courses")
-    .select("id, subject_code, number, title, credits_min, credits_max")
-    .order("subject_code")
-    .order("number");
+  const page = sanitizePage(params.page);
+  const result = await fetchCoursesPage(supabase, { page, q: params.q, dept: params.dept });
 
-  if (params.q) {
-    const sanitized = params.q.slice(0, 100).replace(/[%_]/g, "");
-    query = query.ilike("title", `%${sanitized}%`);
-  }
-  if (params.dept) {
-    const dept = params.dept
-      .slice(0, 6)
-      .toUpperCase()
-      .replace(/[^A-Z ]/g, "");
-    query = query.eq("subject_code", dept);
+  if (result.outOfRange) {
+    redirect(pageHref("/courses", { q: params.q, dept: params.dept }, result.lastPage));
   }
 
-  const { data: courses } = await query.limit(50);
+  const filterParams = { q: params.q, dept: params.dept };
 
   return (
     <main className="min-h-screen noise-overlay">
@@ -50,7 +43,7 @@ export default async function CoursesPage({ searchParams }: Props) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               name="q"
-              placeholder="Search by title..."
+              placeholder="Search by title or code (e.g. CS 3500)..."
               defaultValue={params.q ?? ""}
               className="pl-10 h-12 rounded-full border-foreground/10"
             />
@@ -82,7 +75,7 @@ export default async function CoursesPage({ searchParams }: Props) {
               </tr>
             </thead>
             <tbody>
-              {courses?.map((course) => (
+              {result.rows.map((course) => (
                 <tr
                   key={course.id}
                   className="border-b border-foreground/5 hover:bg-muted/30 transition-colors"
@@ -107,10 +100,21 @@ export default async function CoursesPage({ searchParams }: Props) {
           </table>
         </div>
 
-        {(!courses || courses.length === 0) && (
+        {result.rows.length === 0 && (
           <p className="text-center text-muted-foreground py-12">
             No courses found. Try a different search.
           </p>
+        )}
+
+        {result.count > 0 && (
+          <Pagination
+            basePath="/courses"
+            page={result.page}
+            lastPage={result.lastPage}
+            params={filterParams}
+            totalCount={result.count}
+            pageSize={result.pageSize}
+          />
         )}
       </div>
     </main>

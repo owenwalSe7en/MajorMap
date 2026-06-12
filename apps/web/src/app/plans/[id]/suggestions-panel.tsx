@@ -14,9 +14,16 @@ interface SuggestionsPanelProps {
   suggestions: SuggestedCourse[];
   semesters: SemesterData[];
   hasProgram: boolean;
+  /** False when the program has no active requirement set yet. */
+  hasRequirements?: boolean;
 }
 
-export function SuggestionsPanel({ suggestions, semesters, hasProgram }: SuggestionsPanelProps) {
+export function SuggestionsPanel({
+  suggestions,
+  semesters,
+  hasProgram,
+  hasRequirements = true,
+}: SuggestionsPanelProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [addingCourseId, setAddingCourseId] = useState<string | null>(null);
   const router = useRouter();
@@ -30,6 +37,21 @@ export function SuggestionsPanel({ suggestions, semesters, hasProgram }: Suggest
         </div>
         <p className="text-xs text-muted-foreground">
           Select a program to get course suggestions.
+        </p>
+      </Card>
+    );
+  }
+
+  if (!hasRequirements) {
+    return (
+      <Card className="p-4 space-y-2">
+        <div className="flex items-center gap-2">
+          <Lightbulb className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-medium">Suggestions</h3>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Requirements for this program aren&apos;t available yet, so suggestions can&apos;t be
+          generated.
         </p>
       </Card>
     );

@@ -126,6 +126,166 @@ describe("parseTranscriptAction", () => {
   });
 });
 
+const PLAN_ID = "11111111-1111-4111-8111-111111111111";
+const PROGRAM_ID = "22222222-2222-4222-8222-222222222222";
+const OTHER_PROGRAM_ID = "33333333-3333-4333-8333-333333333333";
+
+describe("setPlanProgram", () => {
+  it("returns error when not authenticated", async () => {
+    supabaseMock.auth.getUser = vi.fn().mockResolvedValue({
+      data: { user: null },
+      error: null,
+    });
+    const { setPlanProgram } = await import("./actions.js");
+    const result = await setPlanProgram(PLAN_ID, PROGRAM_ID);
+    expect(result).toEqual({ error: "Not authenticated" });
+  });
+
+  it("rejects malformed UUIDs before any query", async () => {
+    const { setPlanProgram } = await import("./actions.js");
+    expect(await setPlanProgram("not-a-uuid", PROGRAM_ID)).toEqual({ error: "Invalid plan" });
+    expect(await setPlanProgram(PLAN_ID, "nope")).toEqual({ error: "Invalid program" });
+    expect(supabaseMock.from).not.toHaveBeenCalled();
+  });
+
+  it("treats a missing/foreign plan as not found (never silent success)", async () => {
+    supabaseMock._chain.single = vi.fn().mockResolvedValue({ data: null, error: null });
+    const { setPlanProgram } = await import("./actions.js");
+    const result = await setPlanProgram(PLAN_ID, PROGRAM_ID);
+    expect(result).toEqual({ error: "Plan not found" });
+  });
+
+  it("rejects setting the program that is already secondary", async () => {
+    supabaseMock._chain.single = vi.fn().mockResolvedValue({
+      data: { id: PLAN_ID, secondary_program_id: PROGRAM_ID },
+      error: null,
+    });
+    const { setPlanProgram } = await import("./actions.js");
+    const result = await setPlanProgram(PLAN_ID, PROGRAM_ID);
+    expect(result).toEqual({ error: "That program is already your comparison program" });
+  });
+
+  it("rejects a program that does not exist", async () => {
+    let call = 0;
+    supabaseMock._chain.single = vi.fn().mockImplementation(() => {
+      call++;
+      if (call === 1)
+        return Promise.resolve({ data: { id: PLAN_ID, secondary_program_id: null }, error: null });
+      return Promise.resolve({ data: null, error: null }); // program lookup
+    });
+    const { setPlanProgram } = await import("./actions.js");
+    const result = await setPlanProgram(PLAN_ID, PROGRAM_ID);
+    expect(result).toEqual({ error: "Program not found" });
+  });
+
+  it("updates the plan and reports success", async () => {
+    let call = 0;
+    supabaseMock._chain.single = vi.fn().mockImplementation(() => {
+      call++;
+      if (call === 1)
+        return Promise.resolve({
+          data: { id: PLAN_ID, secondary_program_id: OTHER_PROGRAM_ID },
+          error: null,
+        });
+      if (call === 2) return Promise.resolve({ data: { id: PROGRAM_ID }, error: null });
+      return Promise.resolve({ data: { id: PLAN_ID }, error: null }); // update result
+    });
+    supabaseMock._chain.update = vi.fn().mockReturnThis();
+
+    const { setPlanProgram } = await import("./actions.js");
+    const result = await setPlanProgram(PLAN_ID, PROGRAM_ID);
+
+    expect(result).toEqual({ success: true });
+    expect(supabaseMock._chain.update).toHaveBeenCalledWith({ program_id: PROGRAM_ID });
+  });
+
+  it("clears the program without a program lookup", async () => {
+    let call = 0;
+    supabaseMock._chain.single = vi.fn().mockImplementation(() => {
+      call++;
+      if (call === 1)
+        return Promise.resolve({ data: { id: PLAN_ID, secondary_program_id: null }, error: null });
+      return Promise.resolve({ data: { id: PLAN_ID }, error: null }); // update result
+    });
+    supabaseMock._chain.update = vi.fn().mockReturnThis();
+
+    const { setPlanProgram } = await import("./actions.js");
+    const result = await setPlanProgram(PLAN_ID, null);
+
+    expect(result).toEqual({ success: true });
+    expect(supabaseMock._chain.update).toHaveBeenCalledWith({ program_id: null });
+    expect(supabaseMock._chain.single).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("addSemester ownership", () => {
+  it("rejects semesters for plans the caller does not own", async () => {
+    supabaseMock._chain.single = vi.fn().mockResolvedValue({ data: null, error: null });
+    const { addSemester } = await import("./actions.js");
+    const result = await addSemester(PLAN_ID, "Fall", 2026);
+    expect(result).toEqual({ error: "Plan not found" });
+  });
+});
+
+describe("addCourse ownership", () => {
+  it("rejects courses for semesters the caller does not own", async () => {
+    supabaseMock._chain.single = vi.fn().mockResolvedValue({ data: null, error: null });
+    const { addCourse } = await import("./actions.js");
+    const result = await addCourse("44444444-4444-4444-8444-444444444444", PROGRAM_ID);
+    expect(result).toEqual({ error: "Semester not found" });
+  });
+});
+
+describe("migrateGuestPlan program carry-over", () => {
+  function guestPlan(programId: string | null) {
+    return { id: "guest-1", name: "My Plan", programId, semesters: [] };
+  }
+
+  it("carries a valid programId onto the new plan", async () => {
+    let call = 0;
+    supabaseMock._chain.single = vi.fn().mockImplementation(() => {
+      call++;
+      if (call === 1) return Promise.resolve({ data: { id: PROGRAM_ID }, error: null }); // program check
+      return Promise.resolve({ data: { id: "plan-new" }, error: null }); // plan insert
+    });
+
+    const { migrateGuestPlan } = await import("./actions.js");
+    const result = await migrateGuestPlan(guestPlan(PROGRAM_ID));
+
+    expect(result).toEqual({ success: true, planId: "plan-new" });
+    expect(supabaseMock._chain.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ program_id: PROGRAM_ID }),
+    );
+  });
+
+  it("drops an unknown programId but still migrates", async () => {
+    let call = 0;
+    supabaseMock._chain.single = vi.fn().mockImplementation(() => {
+      call++;
+      if (call === 1) return Promise.resolve({ data: null, error: null }); // program gone
+      return Promise.resolve({ data: { id: "plan-new" }, error: null }); // plan insert
+    });
+
+    const { migrateGuestPlan } = await import("./actions.js");
+    const result = await migrateGuestPlan(guestPlan(PROGRAM_ID));
+
+    expect(result).toEqual({ success: true, planId: "plan-new" });
+    expect(supabaseMock._chain.insert).toHaveBeenCalledWith(
+      expect.not.objectContaining({ program_id: expect.anything() }),
+    );
+  });
+
+  it("never leaks raw database error messages", async () => {
+    supabaseMock._chain.single = vi.fn().mockResolvedValue({
+      data: null,
+      error: { message: 'duplicate key value violates unique constraint "secret_constraint"' },
+    });
+    const { migrateGuestPlan } = await import("./actions.js");
+    const result = await migrateGuestPlan(guestPlan(null));
+    expect("error" in result && result.error).not.toMatch(/secret_constraint/);
+  });
+});
+
 describe("importTranscriptCourses", () => {
   it("returns error when not authenticated", async () => {
     supabaseMock.auth.getUser = vi.fn().mockResolvedValue({

@@ -9,6 +9,12 @@ const VALID_TERMS = ["Fall", "Spring", "Summer"];
 const MIN_YEAR = 2020;
 const MAX_YEAR = 2040;
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isUuid(value: unknown): value is string {
+  return typeof value === "string" && UUID_RE.test(value);
+}
+
 async function getAuthenticatedUser() {
   const supabase = await createClient();
   const {
@@ -27,7 +33,7 @@ export async function createPlan(name = "My Plan") {
     .select("id")
     .single();
 
-  if (error) return { error: error.message };
+  if (error) return { error: "Could not create plan" };
   revalidatePath("/plans");
   return { planId: data.id };
 }
@@ -39,13 +45,27 @@ export async function addSemester(planId: string, term: string, year: number) {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
+  // RLS only checks the inserted row's user_id — verify the parent plan is
+  // actually ours, or an attacker could squat (plan, term, year) slots on a
+  // victim's plan via the unique constraint.
+  const { data: plan } = await supabase
+    .from("semester_plans")
+    .select("id")
+    .eq("id", planId)
+    .eq("user_id", user.id)
+    .single();
+  if (!plan) return { error: "Plan not found" };
+
   const { data, error } = await supabase
     .from("plan_semesters")
     .insert({ plan_id: planId, user_id: user.id, term, year })
     .select("id")
     .single();
 
-  if (error) return { error: error.message };
+  if (error) {
+    if (error.code === "23505") return { error: "That semester already exists" };
+    return { error: "Could not add semester" };
+  }
   revalidatePath("/plans");
   return { semesterId: data.id };
 }
@@ -60,7 +80,7 @@ export async function removeSemester(semesterId: string) {
     .eq("id", semesterId)
     .eq("user_id", user.id);
 
-  if (error) return { error: error.message };
+  if (error) return { error: "Could not remove semester" };
   revalidatePath("/plans");
   return { success: true };
 }
@@ -68,6 +88,16 @@ export async function removeSemester(semesterId: string) {
 export async function addCourse(planSemesterId: string, courseId: string) {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
+
+  // Same parent-ownership rule as addSemester: never insert under a semester
+  // we can't prove is ours.
+  const { data: semester } = await supabase
+    .from("plan_semesters")
+    .select("id")
+    .eq("id", planSemesterId)
+    .eq("user_id", user.id)
+    .single();
+  if (!semester) return { error: "Semester not found" };
 
   const { data, error } = await supabase
     .from("plan_courses")
@@ -78,7 +108,7 @@ export async function addCourse(planSemesterId: string, courseId: string) {
   if (error) {
     // Handle duplicate constraint gracefully
     if (error.code === "23505") return { error: "Course already in this semester" };
-    return { error: error.message };
+    return { error: "Could not add course" };
   }
   revalidatePath("/plans");
   return { planCourseId: data.id };
@@ -94,7 +124,54 @@ export async function removeCourse(planCourseId: string) {
     .eq("id", planCourseId)
     .eq("user_id", user.id);
 
-  if (error) return { error: error.message };
+  if (error) return { error: "Could not remove course" };
+  revalidatePath("/plans");
+  return { success: true };
+}
+
+/**
+ * Sets (or clears, with null) the program a plan is working toward. Changing
+ * or clearing the program never touches planned courses — credits and
+ * suggestions simply recompute on the next render.
+ */
+export async function setPlanProgram(planId: string, programId: string | null) {
+  if (!isUuid(planId)) return { error: "Invalid plan" };
+  if (programId !== null && !isUuid(programId)) return { error: "Invalid program" };
+
+  const { user, supabase } = await getAuthenticatedUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: plan } = await supabase
+    .from("semester_plans")
+    .select("id, secondary_program_id")
+    .eq("id", planId)
+    .eq("user_id", user.id)
+    .single();
+  if (!plan) return { error: "Plan not found" };
+
+  if (programId !== null) {
+    if (programId === plan.secondary_program_id) {
+      return { error: "That program is already your comparison program" };
+    }
+    const { data: program } = await supabase
+      .from("programs")
+      .select("id")
+      .eq("id", programId)
+      .single();
+    if (!program) return { error: "Program not found" };
+  }
+
+  // A 0-row update means the plan vanished or isn't ours — RLS makes that a
+  // silent no-op, so check the returned row instead of trusting "no error".
+  const { data: updated, error } = await supabase
+    .from("semester_plans")
+    .update({ program_id: programId })
+    .eq("id", planId)
+    .eq("user_id", user.id)
+    .select("id")
+    .single();
+
+  if (error || !updated) return { error: "Plan not found" };
   revalidatePath("/plans");
   return { success: true };
 }
@@ -135,14 +212,32 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
     }
   }
 
+  // Carry the guest's chosen program over when it still exists. The guest
+  // payload comes from localStorage (fully client-controlled), so the id is
+  // validated against the catalog rather than trusted; an unknown program is
+  // dropped instead of blocking the migration.
+  let programId: string | null = null;
+  if (isUuid(guestPlan.programId)) {
+    const { data: program } = await supabase
+      .from("programs")
+      .select("id")
+      .eq("id", guestPlan.programId)
+      .single();
+    if (program) programId = guestPlan.programId;
+  }
+
   // Insert plan
   const { data: plan, error: planError } = await supabase
     .from("semester_plans")
-    .insert({ user_id: user.id, name: guestPlan.name })
+    .insert({
+      user_id: user.id,
+      name: guestPlan.name,
+      ...(programId ? { program_id: programId } : {}),
+    })
     .select("id")
     .single();
 
-  if (planError) return { error: planError.message };
+  if (planError || !plan) return { error: "Could not create plan" };
 
   // Insert semesters and courses
   for (const semester of guestPlan.semesters) {
@@ -154,7 +249,7 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
 
     if (semError) {
       await supabase.from("semester_plans").delete().eq("id", plan.id);
-      return { error: semError.message };
+      return { error: "Could not migrate plan" };
     }
 
     if (semester.courseIds.length > 0) {
@@ -168,7 +263,7 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
 
       if (courseError) {
         await supabase.from("semester_plans").delete().eq("id", plan.id);
-        return { error: courseError.message };
+        return { error: "Could not migrate plan" };
       }
     }
   }

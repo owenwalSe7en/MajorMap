@@ -3,9 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { AuthenticatedPlanner } from "./authenticated-planner";
 import { CreditSidebar } from "./credit-sidebar";
 import { ImportTranscriptButton } from "./import-transcript-button";
+import { ProgramPicker } from "./program-picker";
 import { SuggestionsPanel } from "./suggestions-panel";
 import { validateSemesters, creditSummary, suggestCourses } from "@major-map/planner";
-import type { PrereqRule, PrereqWarning, PlanSemester, CreditSummary, RequirementItem, SuggestedCourse } from "@major-map/planner";
+import type { PrereqRule, PrereqWarning, PlanSemester, CreditSummary, RequirementItem, SuggestedCourse, Grade } from "@major-map/planner";
 
 export const metadata = { title: "My Plan" };
 
@@ -127,7 +128,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
     id: s.id,
     term: s.term,
     year: s.year,
-    courses: s.courses.map((c) => ({ courseId: c.courseId, code: c.code, credits: c.credits, status: c.status, grade: c.grade })),
+    courses: s.courses.map((c) => ({ courseId: c.courseId, code: c.code, credits: c.credits, status: c.status, grade: c.grade as Grade | undefined })),
   }));
 
   const warnings: PrereqWarning[] = validateSemesters(planSemesters, prereqRules, courseCodeMap);
@@ -224,6 +225,12 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
           <AuthenticatedPlanner planId={id} initialSemesters={semesterData} warnings={warnings} />
         </div>
         <aside className="order-first lg:order-none lg:w-72 shrink-0 space-y-4">
+          <ProgramPicker
+            planId={id}
+            currentProgram={
+              plan.program_id && program ? { id: plan.program_id, name: program.name } : null
+            }
+          />
           <CreditSidebar
             credits={credits}
             totalPlanned={totalPlanned}
@@ -234,6 +241,7 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
             suggestions={suggestions}
             semesters={semesterData}
             hasProgram={!!plan.program_id}
+            hasRequirements={!!activeReqSet}
           />
         </aside>
       </div>

@@ -2,33 +2,31 @@ import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
+import { fetchProgramsPage } from "@/lib/catalog-browse";
+import { pageHref, sanitizePage } from "@/lib/browse";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Search } from "lucide-react";
 
 export const metadata = { title: "Programs" };
 
 interface Props {
-  searchParams: Promise<{ q?: string; type?: string }>;
+  searchParams: Promise<{ q?: string; type?: string; page?: string }>;
 }
 
 export default async function ProgramsPage({ searchParams }: Props) {
   const params = await searchParams;
   const supabase = await createClient();
 
-  let query = supabase
-    .from("programs")
-    .select("id, slug, name, degree_type, total_credits, description")
-    .order("name");
+  const page = sanitizePage(params.page);
+  const result = await fetchProgramsPage(supabase, { page, q: params.q, type: params.type });
 
-  if (params.q) {
-    const sanitized = params.q.slice(0, 100).replace(/[%_]/g, "");
-    query = query.ilike("name", `%${sanitized}%`);
-  }
-  if (params.type) {
-    query = query.eq("degree_type", params.type);
+  if (result.outOfRange) {
+    redirect(pageHref("/programs", { q: params.q, type: params.type }, result.lastPage));
   }
 
-  const { data: programs } = await query.limit(100);
+  const filterParams = { q: params.q, type: params.type };
 
   return (
     <main className="min-h-screen noise-overlay">
@@ -70,7 +68,7 @@ export default async function ProgramsPage({ searchParams }: Props) {
         </form>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {programs?.map((program) => (
+          {result.rows.map((program) => (
             <Link
               key={program.id}
               href={`/programs/${program.slug}`}
@@ -93,10 +91,21 @@ export default async function ProgramsPage({ searchParams }: Props) {
           ))}
         </div>
 
-        {(!programs || programs.length === 0) && (
+        {result.rows.length === 0 && (
           <p className="text-center text-muted-foreground py-12">
             No programs found. Try a different search.
           </p>
+        )}
+
+        {result.count > 0 && (
+          <Pagination
+            basePath="/programs"
+            page={result.page}
+            lastPage={result.lastPage}
+            params={filterParams}
+            totalCount={result.count}
+            pageSize={result.pageSize}
+          />
         )}
       </div>
     </main>
