@@ -1,22 +1,29 @@
 import { createClient } from "@/lib/supabase/server";
 import { buildRequirementTree, type RequirementNode } from "@/lib/requirements-tree";
+import { resolveSchool, SITE_URL } from "@/lib/school";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ school: string; slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { slug } = await params;
+  const { school, slug } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) return { title: "Program Not Found" };
   const supabase = await createClient();
   const { data: program } = await supabase
     .from("programs")
     .select("name, degree_type")
+    .eq("university_id", ref.universityId)
     .eq("slug", slug)
     .single();
   if (!program) return { title: "Program Not Found" };
-  return { title: `${program.name} ${program.degree_type}` };
+  return {
+    title: `${program.name} ${program.degree_type}`,
+    alternates: { canonical: `${SITE_URL}/${ref.slug}/programs/${slug}` },
+  };
 }
 
 function RequirementTree({ nodes, depth = 0 }: { nodes: RequirementNode[]; depth?: number }) {
@@ -24,23 +31,33 @@ function RequirementTree({ nodes, depth = 0 }: { nodes: RequirementNode[]; depth
     <div className={depth > 0 ? "ml-6 border-l border-foreground/10 pl-4" : ""}>
       {nodes.map((node) => (
         <div key={node.id} className="py-2">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {node.type === "group" ? (
               <span className="font-semibold text-foreground">{node.label}</span>
+            ) : node.type === "free_text" ? (
+              <span className="text-muted-foreground italic">{node.label}</span>
             ) : (
               <span className="text-muted-foreground">{node.label}</span>
             )}
-            {node.type !== "group" && (
+            {node.type === "free_text" && (
               <Badge variant="outline" className="text-xs">
-                {node.type}
+                see catalog
               </Badge>
             )}
-            {node.credits_required && (
+            {node.courses_required != null && (
+              <span className="text-xs text-muted-foreground">
+                (choose {node.courses_required})
+              </span>
+            )}
+            {node.credits_required != null && (
               <span className="text-xs text-muted-foreground">
                 ({node.credits_required} cr required)
               </span>
             )}
           </div>
+          {node.description && (
+            <p className="mt-1 text-xs text-muted-foreground/80 max-w-2xl">{node.description}</p>
+          )}
           {node.children.length > 0 && <RequirementTree nodes={node.children} depth={depth + 1} />}
         </div>
       ))}
@@ -49,10 +66,18 @@ function RequirementTree({ nodes, depth = 0 }: { nodes: RequirementNode[]; depth
 }
 
 export default async function ProgramDetailPage({ params }: Props) {
-  const { slug } = await params;
+  const { school, slug } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) notFound();
+
   const supabase = await createClient();
 
-  const { data: program } = await supabase.from("programs").select("*").eq("slug", slug).single();
+  const { data: program } = await supabase
+    .from("programs")
+    .select("*")
+    .eq("university_id", ref.universityId)
+    .eq("slug", slug)
+    .single();
   if (!program) notFound();
 
   const { data: reqSet } = await supabase
@@ -78,7 +103,7 @@ export default async function ProgramDetailPage({ params }: Props) {
         <div className="mb-12">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
             <span className="w-8 h-px bg-foreground/30" />
-            Program Detail
+            {ref.name}
           </span>
           <h1 className="text-4xl lg:text-6xl font-display tracking-tight mb-4">{program.name}</h1>
           <div className="flex items-center gap-3">

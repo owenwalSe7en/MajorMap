@@ -42,6 +42,9 @@ export default defineConfig({
           include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
           environment: "jsdom",
           setupFiles: ["./src/test-setup.ts"],
+          // First test in a file pays jsdom + module-graph startup, which can
+          // exceed the 5s default under full-suite parallelism (esp. Windows).
+          testTimeout: 30_000,
         },
       },
     ],

@@ -2,33 +2,51 @@ import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
+import { fetchProgramsPage } from "@/lib/catalog-browse";
+import { pageHref, sanitizePage } from "@/lib/browse";
+import { resolveSchool, SITE_URL } from "@/lib/school";
 import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 import { Search } from "lucide-react";
 
-export const metadata = { title: "Programs" };
-
 interface Props {
-  searchParams: Promise<{ q?: string; type?: string }>;
+  params: Promise<{ school: string }>;
+  searchParams: Promise<{ q?: string; type?: string; page?: string }>;
 }
 
-export default async function ProgramsPage({ searchParams }: Props) {
-  const params = await searchParams;
+export async function generateMetadata({ params }: Props) {
+  const { school } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) return { title: "Programs" };
+  return {
+    title: `Programs — ${ref.name}`,
+    alternates: { canonical: `${SITE_URL}/${ref.slug}/programs` },
+  };
+}
+
+export default async function ProgramsPage({ params, searchParams }: Props) {
+  const { school } = await params;
+  const ref = resolveSchool(school);
+  if (!ref) notFound();
+
+  const query = await searchParams;
   const supabase = await createClient();
+  const basePath = `/${ref.slug}/programs`;
 
-  let query = supabase
-    .from("programs")
-    .select("id, slug, name, degree_type, total_credits, description")
-    .order("name");
+  const page = sanitizePage(query.page);
+  const result = await fetchProgramsPage(supabase, {
+    page,
+    q: query.q,
+    type: query.type,
+    universityId: ref.universityId,
+  });
 
-  if (params.q) {
-    const sanitized = params.q.slice(0, 100).replace(/[%_]/g, "");
-    query = query.ilike("name", `%${sanitized}%`);
+  if (result.outOfRange) {
+    redirect(pageHref(basePath, { q: query.q, type: query.type }, result.lastPage));
   }
-  if (params.type) {
-    query = query.eq("degree_type", params.type);
-  }
 
-  const { data: programs } = await query.limit(100);
+  const filterParams = { q: query.q, type: query.type };
 
   return (
     <main className="min-h-screen noise-overlay">
@@ -36,7 +54,7 @@ export default async function ProgramsPage({ searchParams }: Props) {
         <div className="mb-12">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">
             <span className="w-8 h-px bg-foreground/30" />
-            Browse
+            {ref.name}
           </span>
           <h1 className="text-4xl lg:text-6xl font-display tracking-tight">Programs</h1>
         </div>
@@ -47,13 +65,13 @@ export default async function ProgramsPage({ searchParams }: Props) {
             <Input
               name="q"
               placeholder="Search programs..."
-              defaultValue={params.q ?? ""}
+              defaultValue={query.q ?? ""}
               className="pl-10 h-12 rounded-full border-foreground/10"
             />
           </div>
           <select
             name="type"
-            defaultValue={params.type ?? ""}
+            defaultValue={query.type ?? ""}
             className="h-12 px-4 rounded-full border border-foreground/10 bg-background text-sm"
           >
             <option value="">All Types</option>
@@ -70,10 +88,10 @@ export default async function ProgramsPage({ searchParams }: Props) {
         </form>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {programs?.map((program) => (
+          {result.rows.map((program) => (
             <Link
               key={program.id}
-              href={`/programs/${program.slug}`}
+              href={`${basePath}/${program.slug}`}
               className="group block p-6 rounded-xl border border-foreground/10 hover:border-foreground/20 transition-all duration-300 hover:-translate-y-1"
             >
               <h3 className="text-lg font-semibold mb-2 group-hover:translate-x-1 transition-transform duration-300">
@@ -93,10 +111,21 @@ export default async function ProgramsPage({ searchParams }: Props) {
           ))}
         </div>
 
-        {(!programs || programs.length === 0) && (
+        {result.rows.length === 0 && (
           <p className="text-center text-muted-foreground py-12">
             No programs found. Try a different search.
           </p>
+        )}
+
+        {result.count > 0 && (
+          <Pagination
+            basePath={basePath}
+            page={result.page}
+            lastPage={result.lastPage}
+            params={filterParams}
+            totalCount={result.count}
+            pageSize={result.pageSize}
+          />
         )}
       </div>
     </main>

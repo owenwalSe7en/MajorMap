@@ -91,6 +91,14 @@ export function SemesterCard({
                       )}
                     </div>
                   </div>
+                  {course.discontinued && (
+                    <Badge
+                      variant="outline"
+                      className="border-red-400 text-red-500 text-[10px] leading-tight"
+                    >
+                      No longer offered
+                    </Badge>
+                  )}
                   {warning && (
                     <Badge
                       variant="outline"

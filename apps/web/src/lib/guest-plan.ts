@@ -11,6 +11,8 @@ export interface GuestPlan {
   id: string;
   name: string;
   programId: string | null;
+  /** School the plan belongs to; v1 payloads predate this and mean "utah". */
+  schoolSlug: string;
   semesters: GuestSemester[];
 }
 
@@ -27,6 +29,8 @@ export function loadGuestPlan(): GuestPlan | null {
     ) {
       return null;
     }
+    // Migrate v1 payloads written before schools existed.
+    if (typeof parsed.schoolSlug !== "string") parsed.schoolSlug = "utah";
     return parsed as GuestPlan;
   } catch {
     return null;
@@ -46,6 +50,7 @@ export function createGuestPlan(name = "My Plan"): GuestPlan {
     id: crypto.randomUUID(),
     name,
     programId: null,
+    schoolSlug: "utah",
     semesters: [],
   };
 }
@@ -53,10 +58,7 @@ export function createGuestPlan(name = "My Plan"): GuestPlan {
 export function addSemesterToGuest(plan: GuestPlan, term: string, year: number): GuestPlan {
   return {
     ...plan,
-    semesters: [
-      ...plan.semesters,
-      { id: crypto.randomUUID(), term, year, courseIds: [] },
-    ],
+    semesters: [...plan.semesters, { id: crypto.randomUUID(), term, year, courseIds: [] }],
   };
 }
 
@@ -67,11 +69,7 @@ export function removeSemesterFromGuest(plan: GuestPlan, semesterId: string): Gu
   };
 }
 
-export function addCourseToGuest(
-  plan: GuestPlan,
-  semesterId: string,
-  courseId: string,
-): GuestPlan {
+export function addCourseToGuest(plan: GuestPlan, semesterId: string, courseId: string): GuestPlan {
   return {
     ...plan,
     semesters: plan.semesters.map((s) => {

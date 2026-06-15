@@ -14,14 +14,14 @@ export interface NormalizedProgram {
 }
 
 function slugify(code: string, name: string, degreeType: string): string {
-  const base = name || code;
-  const suffix = degreeType ? `-${degreeType.toLowerCase()}` : "";
-  return (
-    base
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "") + suffix
-  );
+  // Kebab-case the whole thing — degree type included — so slugs are
+  // URL-safe. Leaving spaces in the degree-type suffix produced slugs like
+  // "music-bachelor of music", which don't round-trip through the route param.
+  const base = `${name || code} ${degreeType}`;
+  return base
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 export function normalizeProgram(

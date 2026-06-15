@@ -32,6 +32,15 @@ describe("normalizeProgram", () => {
     expect(r1.id).toBe(r2.id);
   });
 
+  it("produces URL-safe slugs with no spaces (degree type kebab-cased)", () => {
+    const results = rawPrograms.map((p: Record<string, unknown>) =>
+      normalizeProgram(p as never, "utah", universityId),
+    );
+    for (const r of results as Array<{ slug: string }>) {
+      expect(r.slug).toMatch(/^[a-z0-9-]+$/);
+    }
+  });
+
   it("generates unique slugs for different programs", () => {
     const results = rawPrograms.map((p: Record<string, unknown>) =>
       normalizeProgram(p as never, "utah", universityId),

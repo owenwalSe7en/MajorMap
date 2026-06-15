@@ -40,7 +40,13 @@ interface State {
 type Action =
   | { type: "SET_TEXT"; text: string }
   | { type: "PARSE_START" }
-  | { type: "PARSE_SUCCESS"; matched: MatchedCourse[]; unmatched: UnmatchedCourse[]; totalCredits: number; skippedLines: number }
+  | {
+      type: "PARSE_SUCCESS";
+      matched: MatchedCourse[];
+      unmatched: UnmatchedCourse[];
+      totalCredits: number;
+      skippedLines: number;
+    }
   | { type: "PARSE_ERROR"; error: string }
   | { type: "TOGGLE_COURSE"; courseId: string }
   | { type: "TOGGLE_ALL" }
@@ -97,9 +103,7 @@ function reducer(state: State, action: Action): State {
     case "TOGGLE_ALL": {
       const passingCourses = state.matched.filter((c) => c.isPassingGrade);
       const allSelected = passingCourses.every((c) => state.selectedIds.has(c.courseId));
-      const next = allSelected
-        ? new Set<string>()
-        : new Set(passingCourses.map((c) => c.courseId));
+      const next = allSelected ? new Set<string>() : new Set(passingCourses.map((c) => c.courseId));
       return { ...state, selectedIds: next };
     }
     case "GO_BACK":
@@ -128,8 +132,8 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
     if (!state.text.trim()) return;
     dispatch({ type: "PARSE_START" });
 
-    const result = await parseTranscriptAction(state.text);
-    if ("error" in result && result.error) {
+    const result = await parseTranscriptAction(planId, state.text);
+    if ("error" in result) {
       dispatch({ type: "PARSE_ERROR", error: result.error });
       return;
     }
@@ -137,7 +141,10 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
     const { matched, unmatched, totalCredits, skippedLines } = result;
 
     if (matched.length === 0 && unmatched.length === 0) {
-      dispatch({ type: "PARSE_ERROR", error: "No courses found in the pasted text. Check the format and try again." });
+      dispatch({
+        type: "PARSE_ERROR",
+        error: "No courses found in the pasted text. Check the format and try again.",
+      });
       return;
     }
 
@@ -168,7 +175,8 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
     .reduce((s, c) => s + c.credits, 0);
 
   const passingCourses = state.matched.filter((c) => c.isPassingGrade);
-  const allSelected = passingCourses.length > 0 && passingCourses.every((c) => state.selectedIds.has(c.courseId));
+  const allSelected =
+    passingCourses.length > 0 && passingCourses.every((c) => state.selectedIds.has(c.courseId));
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -178,13 +186,16 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
             <DialogHeader>
               <DialogTitle>Import Transcript</DialogTitle>
               <DialogDescription>
-                Paste your unofficial UofU transcript below. We&apos;ll match courses against the catalog.
+                Paste your unofficial UofU transcript below. We&apos;ll match courses against the
+                catalog.
               </DialogDescription>
             </DialogHeader>
 
             <textarea
               className="w-full min-h-[200px] rounded-md border bg-background px-3 py-2 text-sm font-mono placeholder:text-muted-foreground"
-              placeholder={"CS  1400  Introduction to Computer Science  3.00  A\nMATH  1210  Calculus I  4.00  B+\n..."}
+              placeholder={
+                "CS  1400  Introduction to Computer Science  3.00  A\nMATH  1210  Calculus I  4.00  B+\n..."
+              }
               value={state.text}
               onChange={(e) => dispatch({ type: "SET_TEXT", text: e.target.value })}
               disabled={state.loading}
@@ -211,7 +222,8 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
             <DialogHeader>
               <DialogTitle>Review Courses</DialogTitle>
               <DialogDescription>
-                {state.matched.length} matched, {state.unmatched.length} unmatched, {state.skippedLines} lines skipped
+                {state.matched.length} matched, {state.unmatched.length} unmatched,{" "}
+                {state.skippedLines} lines skipped
               </DialogDescription>
             </DialogHeader>
 
@@ -241,16 +253,25 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
                         type="checkbox"
                         checked={state.selectedIds.has(course.courseId)}
                         disabled={!course.isPassingGrade}
-                        onChange={() => dispatch({ type: "TOGGLE_COURSE", courseId: course.courseId })}
+                        onChange={() =>
+                          dispatch({ type: "TOGGLE_COURSE", courseId: course.courseId })
+                        }
                         className="rounded"
                       />
-                      <CheckCircle2 className={`h-4 w-4 shrink-0 ${
-                        course.isPassingGrade ? "text-green-500" : "text-muted-foreground"
-                      }`} />
-                      <span className="font-mono text-xs text-muted-foreground w-20">{course.code}</span>
+                      <CheckCircle2
+                        className={`h-4 w-4 shrink-0 ${
+                          course.isPassingGrade ? "text-green-500" : "text-muted-foreground"
+                        }`}
+                      />
+                      <span className="font-mono text-xs text-muted-foreground w-20">
+                        {course.code}
+                      </span>
                       <span className="truncate flex-1">{course.title}</span>
                       <span className="text-xs text-muted-foreground">{course.credits}cr</span>
-                      <Badge variant={course.isPassingGrade ? "secondary" : "outline"} className="text-xs">
+                      <Badge
+                        variant={course.isPassingGrade ? "secondary" : "outline"}
+                        className="text-xs"
+                      >
                         {course.grade}
                       </Badge>
                     </label>
@@ -264,10 +285,17 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
                 <h4 className="text-sm font-medium text-muted-foreground">Unmatched Courses</h4>
                 <div className="border rounded-md divide-y">
                   {state.unmatched.map((course, i) => (
-                    <div key={i} className="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground">
-                      <span className="font-mono text-xs w-20">{course.subjectCode} {course.number}</span>
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground"
+                    >
+                      <span className="font-mono text-xs w-20">
+                        {course.subjectCode} {course.number}
+                      </span>
                       <span className="flex-1 text-xs">Not found in catalog</span>
-                      <Badge variant="outline" className="text-xs">{course.grade}</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {course.grade}
+                      </Badge>
                     </div>
                   ))}
                 </div>
@@ -282,11 +310,17 @@ export function TranscriptImportModal({ planId, open, onOpenChange }: Transcript
             )}
 
             <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>{state.selectedIds.size} courses selected ({selectedCredits} credits)</span>
+              <span>
+                {state.selectedIds.size} courses selected ({selectedCredits} credits)
+              </span>
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => dispatch({ type: "GO_BACK" })} disabled={state.importing}>
+              <Button
+                variant="outline"
+                onClick={() => dispatch({ type: "GO_BACK" })}
+                disabled={state.importing}
+              >
                 Back
               </Button>
               <Button

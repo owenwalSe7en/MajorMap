@@ -19,6 +19,8 @@ export interface SemesterData {
     credits: number;
     status?: "planned" | "completed";
     grade?: string;
+    /** Course vanished from the latest catalog refresh. */
+    discontinued?: boolean;
   }>;
 }
 

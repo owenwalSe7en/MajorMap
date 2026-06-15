@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DEFAULT_SCHOOL_SLUG } from "@major-map/shared";
 
 export function FooterSection() {
   return (
@@ -9,10 +10,16 @@ export function FooterSection() {
             Major Map — Free and open source degree planning.
           </p>
           <div className="flex gap-6 text-sm text-muted-foreground">
-            <Link href="/programs" className="hover:text-foreground transition-colors">
+            <Link
+              href={`/${DEFAULT_SCHOOL_SLUG}/programs`}
+              className="hover:text-foreground transition-colors"
+            >
               Programs
             </Link>
-            <Link href="/courses" className="hover:text-foreground transition-colors">
+            <Link
+              href={`/${DEFAULT_SCHOOL_SLUG}/courses`}
+              className="hover:text-foreground transition-colors"
+            >
               Courses
             </Link>
             <a

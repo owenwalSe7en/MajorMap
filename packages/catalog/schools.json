@@ -1,0 +1,17 @@
+[
+  {
+    "slug": "utah",
+    "name": "University of Utah",
+    "coursedogSchoolId": "utah_peoplesoft",
+    "origin": "https://catalog.utah.edu",
+    "catalogUrl": "https://catalog.utah.edu",
+    "catalogId": "Qv3fMzzbHWUO6lkzqwgg"
+  },
+  {
+    "slug": "byu",
+    "name": "Brigham Young University",
+    "coursedogSchoolId": "byu",
+    "origin": "https://catalog.byu.edu",
+    "catalogUrl": "https://catalog.byu.edu"
+  }
+]

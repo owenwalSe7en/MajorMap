@@ -3,11 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { parseTranscript, PASSING_GRADE_SET, ALL_GRADES } from "@major-map/planner";
+import { UTAH_UNIVERSITY_ID, schoolBySlug } from "@major-map/shared";
 import type { GuestPlan } from "@/lib/guest-plan";
 
 const VALID_TERMS = ["Fall", "Spring", "Summer"];
 const MIN_YEAR = 2020;
 const MAX_YEAR = 2040;
+const MAX_PLAN_NAME_LENGTH = 100;
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isUuid(value: unknown): value is string {
+  return typeof value === "string" && UUID_RE.test(value);
+}
 
 async function getAuthenticatedUser() {
   const supabase = await createClient();
@@ -21,23 +29,37 @@ export async function createPlan(name = "My Plan") {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
+  // New plans default to Utah until a school-choice step exists in plan
+  // creation; the column anchors transcript matching and program validation.
   const { data, error } = await supabase
     .from("semester_plans")
-    .insert({ user_id: user.id, name })
+    .insert({ user_id: user.id, name, university_id: UTAH_UNIVERSITY_ID })
     .select("id")
     .single();
 
-  if (error) return { error: error.message };
+  if (error) return { error: "Could not create plan" };
   revalidatePath("/plans");
   return { planId: data.id };
 }
 
 export async function addSemester(planId: string, term: string, year: number) {
   if (!VALID_TERMS.includes(term)) return { error: "Invalid term" };
-  if (!Number.isInteger(year) || year < MIN_YEAR || year > MAX_YEAR) return { error: "Invalid year" };
+  if (!Number.isInteger(year) || year < MIN_YEAR || year > MAX_YEAR)
+    return { error: "Invalid year" };
 
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
+
+  // RLS only checks the inserted row's user_id — verify the parent plan is
+  // actually ours, or an attacker could squat (plan, term, year) slots on a
+  // victim's plan via the unique constraint.
+  const { data: plan } = await supabase
+    .from("semester_plans")
+    .select("id")
+    .eq("id", planId)
+    .eq("user_id", user.id)
+    .single();
+  if (!plan) return { error: "Plan not found" };
 
   const { data, error } = await supabase
     .from("plan_semesters")
@@ -45,7 +67,10 @@ export async function addSemester(planId: string, term: string, year: number) {
     .select("id")
     .single();
 
-  if (error) return { error: error.message };
+  if (error) {
+    if (error.code === "23505") return { error: "That semester already exists" };
+    return { error: "Could not add semester" };
+  }
   revalidatePath("/plans");
   return { semesterId: data.id };
 }
@@ -60,7 +85,7 @@ export async function removeSemester(semesterId: string) {
     .eq("id", semesterId)
     .eq("user_id", user.id);
 
-  if (error) return { error: error.message };
+  if (error) return { error: "Could not remove semester" };
   revalidatePath("/plans");
   return { success: true };
 }
@@ -68,6 +93,32 @@ export async function removeSemester(semesterId: string) {
 export async function addCourse(planSemesterId: string, courseId: string) {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
+
+  // Same parent-ownership rule as addSemester: never insert under a semester
+  // we can't prove is ours. The embedded join resolves the parent plan's
+  // school so the course lookup below can be scoped to the same catalog.
+  const { data: semester } = await supabase
+    .from("plan_semesters")
+    .select("id, semester_plans(university_id)")
+    .eq("id", planSemesterId)
+    .eq("user_id", user.id)
+    .single();
+  if (!semester) return { error: "Semester not found" };
+  const semesterPlan = Array.isArray(semester.semester_plans)
+    ? semester.semester_plans[0]
+    : semester.semester_plans;
+  const universityId: string = semesterPlan?.university_id ?? UTAH_UNIVERSITY_ID;
+
+  // Discontinued courses stay visible in existing plans but can't be added.
+  // Scoping by university rejects another school's course ids outright.
+  const { data: course } = await supabase
+    .from("courses")
+    .select("id, is_discontinued")
+    .eq("id", courseId)
+    .eq("university_id", universityId)
+    .single();
+  if (!course) return { error: "Course not found" };
+  if (course.is_discontinued) return { error: "That course is no longer offered" };
 
   const { data, error } = await supabase
     .from("plan_courses")
@@ -78,7 +129,7 @@ export async function addCourse(planSemesterId: string, courseId: string) {
   if (error) {
     // Handle duplicate constraint gracefully
     if (error.code === "23505") return { error: "Course already in this semester" };
-    return { error: error.message };
+    return { error: "Could not add course" };
   }
   revalidatePath("/plans");
   return { planCourseId: data.id };
@@ -94,7 +145,65 @@ export async function removeCourse(planCourseId: string) {
     .eq("id", planCourseId)
     .eq("user_id", user.id);
 
-  if (error) return { error: error.message };
+  if (error) return { error: "Could not remove course" };
+  revalidatePath("/plans");
+  return { success: true };
+}
+
+/**
+ * Sets (or clears, with null) the program a plan is working toward. Changing
+ * or clearing the program never touches planned courses — credits and
+ * suggestions simply recompute on the next render.
+ */
+export async function setPlanProgram(planId: string, programId: string | null) {
+  if (!isUuid(planId)) return { error: "Invalid plan" };
+  if (programId !== null && !isUuid(programId)) return { error: "Invalid program" };
+
+  const { user, supabase } = await getAuthenticatedUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: plan } = await supabase
+    .from("semester_plans")
+    .select("id, secondary_program_id, university_id")
+    .eq("id", planId)
+    .eq("user_id", user.id)
+    .single();
+  if (!plan) return { error: "Plan not found" };
+
+  if (programId !== null) {
+    if (programId === plan.secondary_program_id) {
+      return { error: "That program is already your comparison program" };
+    }
+    const { data: program } = await supabase
+      .from("programs")
+      .select("id, university_id, is_discontinued")
+      .eq("id", programId)
+      .single();
+    if (!program) return { error: "Program not found" };
+    // Cross-school guard: attaching another school's program would corrupt
+    // suggestions and transcript scoping. Legacy rows with a null
+    // university_id predate multi-school support and mean "Utah", so the
+    // check is always on.
+    const planUniversity = plan.university_id ?? UTAH_UNIVERSITY_ID;
+    if ((program.university_id ?? UTAH_UNIVERSITY_ID) !== planUniversity) {
+      return { error: "That program belongs to a different school" };
+    }
+    if (program.is_discontinued) {
+      return { error: "That program is no longer offered" };
+    }
+  }
+
+  // A 0-row update means the plan vanished or isn't ours — RLS makes that a
+  // silent no-op, so check the returned row instead of trusting "no error".
+  const { data: updated, error } = await supabase
+    .from("semester_plans")
+    .update({ program_id: programId })
+    .eq("id", planId)
+    .eq("user_id", user.id)
+    .select("id")
+    .single();
+
+  if (error || !updated) return { error: "Plan not found" };
   revalidatePath("/plans");
   return { success: true };
 }
@@ -102,6 +211,10 @@ export async function removeCourse(planCourseId: string) {
 export async function migrateGuestPlan(guestPlan: GuestPlan) {
   if (typeof guestPlan?.name !== "string" || guestPlan.name.trim().length === 0) {
     return { error: "Plan name is required" };
+  }
+  const planName = guestPlan.name.trim();
+  if (planName.length > MAX_PLAN_NAME_LENGTH) {
+    return { error: "Plan name is too long" };
   }
   if (!Array.isArray(guestPlan.semesters)) {
     return { error: "Invalid plan structure" };
@@ -113,7 +226,10 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
     if (!Number.isInteger(semester.year) || semester.year < MIN_YEAR || semester.year > MAX_YEAR) {
       return { error: `Invalid year ${semester.year} in semester` };
     }
-    if (!Array.isArray(semester.courseIds) || !semester.courseIds.every((id) => typeof id === "string")) {
+    if (
+      !Array.isArray(semester.courseIds) ||
+      !semester.courseIds.every((id) => typeof id === "string")
+    ) {
       return { error: "Each semester must contain a valid list of course IDs" };
     }
   }
@@ -121,28 +237,64 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
-  // Pre-validate courseIds exist
+  // The guest payload comes from localStorage (fully client-controlled), so
+  // its school is resolved against the build-time registry rather than
+  // trusted; unknown or missing slugs fall back to Utah (v1 guest payloads
+  // predate schools).
+  const universityId =
+    (typeof guestPlan.schoolSlug === "string" &&
+      schoolBySlug(guestPlan.schoolSlug)?.universityId) ||
+    UTAH_UNIVERSITY_ID;
+
+  // Pre-validate courseIds within the plan's school; courses that vanished
+  // from the catalog (or belong to another school) are skipped (with a count
+  // reported) instead of dead-ending the migration.
   const allCourseIds = guestPlan.semesters.flatMap((s) => s.courseIds);
+  let validIds = new Set<string>(allCourseIds);
+  let skippedCourses = 0;
   if (allCourseIds.length > 0) {
     const { data: validCourses } = await supabase
       .from("courses")
       .select("id")
+      .eq("university_id", universityId)
       .in("id", allCourseIds);
-    const validIds = new Set(validCourses?.map((c: { id: string }) => c.id) ?? []);
-    const invalidCount = allCourseIds.filter((id) => !validIds.has(id)).length;
-    if (invalidCount > 0) {
-      return { error: `${invalidCount} course(s) no longer exist in the catalog.` };
+    validIds = new Set(validCourses?.map((c: { id: string }) => c.id) ?? []);
+    skippedCourses = allCourseIds.filter((id) => !validIds.has(id)).length;
+  }
+
+  // Carry the guest's chosen program over when it still exists. Like the
+  // course ids, it is validated against the catalog rather than trusted; a
+  // program that is unknown, discontinued, or belongs to a different school
+  // is dropped instead of blocking the migration.
+  let programId: string | null = null;
+  if (isUuid(guestPlan.programId)) {
+    const { data: program } = await supabase
+      .from("programs")
+      .select("id, university_id, is_discontinued")
+      .eq("id", guestPlan.programId)
+      .single();
+    if (
+      program &&
+      (program.university_id ?? UTAH_UNIVERSITY_ID) === universityId &&
+      !program.is_discontinued
+    ) {
+      programId = guestPlan.programId;
     }
   }
 
   // Insert plan
   const { data: plan, error: planError } = await supabase
     .from("semester_plans")
-    .insert({ user_id: user.id, name: guestPlan.name })
+    .insert({
+      user_id: user.id,
+      name: planName,
+      university_id: universityId,
+      ...(programId ? { program_id: programId } : {}),
+    })
     .select("id")
     .single();
 
-  if (planError) return { error: planError.message };
+  if (planError || !plan) return { error: "Could not create plan" };
 
   // Insert semesters and courses
   for (const semester of guestPlan.semesters) {
@@ -154,11 +306,12 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
 
     if (semError) {
       await supabase.from("semester_plans").delete().eq("id", plan.id);
-      return { error: semError.message };
+      return { error: "Could not migrate plan" };
     }
 
-    if (semester.courseIds.length > 0) {
-      const courseRows = semester.courseIds.map((courseId) => ({
+    const migratableCourseIds = semester.courseIds.filter((id) => validIds.has(id));
+    if (migratableCourseIds.length > 0) {
+      const courseRows = migratableCourseIds.map((courseId) => ({
         plan_semester_id: dbSemester.id,
         user_id: user.id,
         course_id: courseId,
@@ -168,13 +321,13 @@ export async function migrateGuestPlan(guestPlan: GuestPlan) {
 
       if (courseError) {
         await supabase.from("semester_plans").delete().eq("id", plan.id);
-        return { error: courseError.message };
+        return { error: "Could not migrate plan" };
       }
     }
   }
 
   revalidatePath("/plans");
-  return { success: true, planId: plan.id };
+  return { success: true, planId: plan.id, skippedCourses };
 }
 
 // --- Transcript Import ---
@@ -198,9 +351,14 @@ const MAX_TRANSCRIPT_LENGTH = 50_000;
 
 type ParseResult =
   | { error: string }
-  | { matched: MatchedCourse[]; unmatched: UnmatchedCourse[]; skippedLines: number; totalCredits: number };
+  | {
+      matched: MatchedCourse[];
+      unmatched: UnmatchedCourse[];
+      skippedLines: number;
+      totalCredits: number;
+    };
 
-export async function parseTranscriptAction(text: string): Promise<ParseResult> {
+export async function parseTranscriptAction(planId: string, text: string): Promise<ParseResult> {
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
@@ -208,10 +366,27 @@ export async function parseTranscriptAction(text: string): Promise<ParseResult> 
     return { error: "Invalid input" };
   }
 
+  // Matching is scoped to the plan's school — codes like "CS 1400" exist at
+  // every university, and an unscoped lookup would match another school's
+  // course rows once a second catalog is seeded.
+  const { data: plan } = await supabase
+    .from("semester_plans")
+    .select("id, university_id")
+    .eq("id", planId)
+    .eq("user_id", user.id)
+    .single();
+  if (!plan) return { error: "Plan not found" };
+  const universityId = plan.university_id ?? UTAH_UNIVERSITY_ID;
+
   const { courses: parsed, skippedLines } = parseTranscript(text);
 
   if (parsed.length === 0) {
-    return { matched: [] as MatchedCourse[], unmatched: [] as UnmatchedCourse[], skippedLines, totalCredits: 0 };
+    return {
+      matched: [] as MatchedCourse[],
+      unmatched: [] as UnmatchedCourse[],
+      skippedLines,
+      totalCredits: 0,
+    };
   }
 
   // Single query using the generated `code` column
@@ -219,10 +394,14 @@ export async function parseTranscriptAction(text: string): Promise<ParseResult> 
   const { data: dbCourses } = await supabase
     .from("courses")
     .select("id, code, title, credits")
+    .eq("university_id", universityId)
     .in("code", codes);
 
   const codeToDb = new Map(
-    (dbCourses ?? []).map((c: { id: string; code: string; title: string; credits: number }) => [c.code, c]),
+    (dbCourses ?? []).map((c: { id: string; code: string; title: string; credits: number }) => [
+      c.code,
+      c,
+    ]),
   );
 
   const matched: MatchedCourse[] = [];
@@ -255,6 +434,8 @@ export async function importTranscriptCourses(
   planId: string,
   courses: Array<{ courseId: string; grade: string }>,
 ): Promise<ImportResult> {
+  if (!isUuid(planId)) return { error: "Invalid plan" };
+
   const { user, supabase } = await getAuthenticatedUser();
   if (!user) return { error: "Not authenticated" };
 
@@ -274,19 +455,23 @@ export async function importTranscriptCourses(
     }
   }
 
-  // Verify plan ownership (RLS ensures only owner's plan returned)
+  // Verify plan ownership explicitly (not just via RLS) and resolve the
+  // plan's school so the course ids below validate against the same catalog.
   const { data: plan } = await supabase
     .from("semester_plans")
-    .select("id")
+    .select("id, university_id")
     .eq("id", planId)
+    .eq("user_id", user.id)
     .single();
   if (!plan) return { error: "Plan not found" };
 
-  // Validate courseIds exist
+  // Validate courseIds exist within the plan's university — another school's
+  // course ids count as invalid.
   const courseIds = courses.map((c) => c.courseId);
   const { data: validCourses } = await supabase
     .from("courses")
     .select("id")
+    .eq("university_id", plan.university_id ?? UTAH_UNIVERSITY_ID)
     .in("id", courseIds);
   const validIds = new Set(validCourses?.map((c: { id: string }) => c.id) ?? []);
   const invalidCount = courseIds.filter((id) => !validIds.has(id)).length;

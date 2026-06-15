@@ -14,9 +14,16 @@ interface SuggestionsPanelProps {
   suggestions: SuggestedCourse[];
   semesters: SemesterData[];
   hasProgram: boolean;
+  /** False when the program has no active requirement set yet. */
+  hasRequirements?: boolean;
 }
 
-export function SuggestionsPanel({ suggestions, semesters, hasProgram }: SuggestionsPanelProps) {
+export function SuggestionsPanel({
+  suggestions,
+  semesters,
+  hasProgram,
+  hasRequirements = true,
+}: SuggestionsPanelProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [addingCourseId, setAddingCourseId] = useState<string | null>(null);
   const router = useRouter();
@@ -28,8 +35,21 @@ export function SuggestionsPanel({ suggestions, semesters, hasProgram }: Suggest
           <Lightbulb className="h-4 w-4 text-muted-foreground" />
           <h3 className="text-sm font-medium">Suggestions</h3>
         </div>
+        <p className="text-xs text-muted-foreground">Select a program to get course suggestions.</p>
+      </Card>
+    );
+  }
+
+  if (!hasRequirements) {
+    return (
+      <Card className="p-4 space-y-2">
+        <div className="flex items-center gap-2">
+          <Lightbulb className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-medium">Suggestions</h3>
+        </div>
         <p className="text-xs text-muted-foreground">
-          Select a program to get course suggestions.
+          Requirements for this program aren&apos;t available yet, so suggestions can&apos;t be
+          generated.
         </p>
       </Card>
     );
@@ -71,7 +91,9 @@ export function SuggestionsPanel({ suggestions, semesters, hasProgram }: Suggest
       <div className="flex items-center gap-2">
         <Lightbulb className="h-4 w-4 text-amber-500" />
         <h3 className="text-sm font-medium">Suggested Courses</h3>
-        <Badge variant="secondary" className="text-[10px]">{suggestions.length}</Badge>
+        <Badge variant="secondary" className="text-[10px]">
+          {suggestions.length}
+        </Badge>
       </div>
 
       {/* Category filter pills */}
@@ -79,7 +101,9 @@ export function SuggestionsPanel({ suggestions, semesters, hasProgram }: Suggest
         <div className="flex flex-wrap gap-1">
           <button
             className={`rounded-full px-2 py-0.5 text-[10px] border transition-colors ${
-              activeCategory === null ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"
+              activeCategory === null
+                ? "bg-primary text-primary-foreground"
+                : "bg-background hover:bg-muted"
             }`}
             onClick={() => setActiveCategory(null)}
           >
@@ -89,7 +113,9 @@ export function SuggestionsPanel({ suggestions, semesters, hasProgram }: Suggest
             <button
               key={cat}
               className={`rounded-full px-2 py-0.5 text-[10px] border transition-colors ${
-                activeCategory === cat ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"
+                activeCategory === cat
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background hover:bg-muted"
               }`}
               onClick={() => setActiveCategory(cat)}
             >
@@ -105,10 +131,14 @@ export function SuggestionsPanel({ suggestions, semesters, hasProgram }: Suggest
           <div key={suggestion.courseId} className="rounded-md border p-2 space-y-1.5">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <span className="font-mono text-[10px] text-muted-foreground">{suggestion.code}</span>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  {suggestion.code}
+                </span>
                 <p className="text-xs truncate">{suggestion.title}</p>
               </div>
-              <span className="text-[10px] text-muted-foreground shrink-0">{suggestion.credits}cr</span>
+              <span className="text-[10px] text-muted-foreground shrink-0">
+                {suggestion.credits}cr
+              </span>
             </div>
             <div className="flex items-center justify-between gap-1">
               <Badge variant="outline" className="text-[9px] leading-tight">

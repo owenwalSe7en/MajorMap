@@ -46,6 +46,31 @@ export const EvaluationSchema = z.object({
 
 export type Evaluation = z.infer<typeof EvaluationSchema>;
 
+/**
+ * Canonical requirement_items row shape — written by the catalog pipeline,
+ * read by the web app, consumed (narrowed) by the planner. One definition so
+ * the three sides can't drift.
+ */
+export const REQUIREMENT_ITEM_TYPES = ["group", "course", "free_text"] as const;
+export type RequirementItemType = (typeof REQUIREMENT_ITEM_TYPES)[number];
+
+export const RequirementItemRowSchema = z.object({
+  id: z.string().uuid(),
+  requirement_set_id: z.string().uuid(),
+  parent_id: z.string().uuid().nullable(),
+  sort_order: z.number().int(),
+  label: z.string(),
+  type: z.enum(REQUIREMENT_ITEM_TYPES),
+  course_id: z.string().uuid().nullable(),
+  /** Exactly one of credits_required / courses_required may be set on a group. */
+  credits_required: z.number().nullable(),
+  courses_required: z.number().int().nullable(),
+  description: z.string().nullable(),
+  raw_rule: z.unknown(),
+});
+
+export type RequirementItemRow = z.infer<typeof RequirementItemRowSchema>;
+
 export function parseMajor(input: unknown): Major {
   return MajorSchema.parse(input);
 }
